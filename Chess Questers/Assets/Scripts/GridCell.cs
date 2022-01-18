@@ -90,21 +90,10 @@ public class GridCell : MonoBehaviour
             UpdateCellColour(highlightColour);
             BattleSystem.CharacterLook(X, Y);
         }
-
-        //if (IsMove)
-        //{
-        //    UpdateCellColour(highlightColour);
-        //}
     }
 
     public void OnMouseDown()
     {
-        //if (IsMove && (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE || BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK))
-        //{
-        //    //UpdateCellColour(highlightColour);
-        //    BattleSystem.OnGridSelection(X, Y);
-        //}
-
         if ((IsMove && BattleSystem.State == BattleStatesEnum.PLAYER_MOVE) || (IsAttack && BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK))
         {
             BattleSystem.OnGridSelection(X, Y);
@@ -117,11 +106,6 @@ public class GridCell : MonoBehaviour
         {
             UpdateCellColour(colour);
         }
-
-        //if (IsMove)
-        //{
-        //    UpdateCellColour(colour);
-        //}
     }
 
     private void UpdateCellColour(Color newColor)

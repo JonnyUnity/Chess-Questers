@@ -11,9 +11,9 @@ public class BattleSystem : MonoBehaviour
     public GameGrid Grid;
 
     [SerializeField]
-    private GameObject AdventurerPrefab;
+    private GameObject HeroPrefab;
 
-    private GameObject AdventurerObj;
+    private GameObject HeroObj;
     private List<Adventurer> Adventurers;
 
     [SerializeField]
@@ -34,11 +34,12 @@ public class BattleSystem : MonoBehaviour
     public IEnumerator Setup(InitiativeManager initiativeManager)
     {
 
+        // setup grid
         yield return StartCoroutine(Grid.CreateGameGrid(this));
 
         InitiativeManager = initiativeManager;
 
-        // setup grid
+        
         UIHandler.UpdateStateText("BATTLE START");
 
         // Spawn adventurers!
@@ -48,15 +49,15 @@ public class BattleSystem : MonoBehaviour
             GridCell cell = Grid.GetRandomUnoccupiedCell();
             Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
 
-            AdventurerObj = Instantiate(AdventurerPrefab, cellPos, Quaternion.identity);
-            AdventurerObj.name = advName;
+            HeroObj = Instantiate(HeroPrefab, cellPos, Quaternion.identity * Quaternion.Euler(0, -90, 0));
+            HeroObj.name = advName;
             
-            Creature tmp = AdventurerObj.GetComponent<Creature>();
+            Creature tmp = HeroObj.GetComponent<Creature>();
             tmp.SetColour(Color.green);
 
             tmp.Init(advName, 100, GameManager.Instance.GetRandomMoveClass(), GameManager.Instance.GetRandomSprite(), false, cell);
 
-            PartyManager.Instance.Adventurers.Add(tmp);
+            PartyManager.Instance.Heroes.Add(tmp);
 
         }
 
@@ -68,8 +69,8 @@ public class BattleSystem : MonoBehaviour
             GridCell cell = Grid.GetRandomUnoccupiedCell();
             Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
 
-            GameObject obj = Instantiate(AdventurerPrefab, cellPos, Quaternion.identity);
-            
+            GameObject obj = Instantiate(HeroPrefab, cellPos, Quaternion.identity);
+
             c = obj.GetComponent<Creature>();
             c.SetColour(Color.red);
             
@@ -77,7 +78,7 @@ public class BattleSystem : MonoBehaviour
             creatures.Add(c);
         }
 
-        InitiativeManager.Setup(PartyManager.Instance.Adventurers, creatures);
+        InitiativeManager.Setup(PartyManager.Instance.Heroes, creatures);
        
         c = InitiativeManager.StartInitiative();
         UIHandler.UpdateCharacterText(c.CreatureName);
@@ -115,7 +116,7 @@ public class BattleSystem : MonoBehaviour
         UIHandler.UpdateStateText("CALC PLAYER MOVES");
         Creature adv = InitiativeManager.GetCurrentCreature();
 
-        Grid.SetPossibleMovesForPlayer(adv);
+        Grid.GetMovesForPlayer(adv.MoveClass, adv.X, adv.Y);
         adv.ToggleSelected(true);
 
         UIHandler.UpdateCharacterText(adv.CreatureName);
@@ -155,9 +156,9 @@ public class BattleSystem : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         State = BattleStatesEnum.PLAYER_ATTACK;
+        
         //SetupPlayerAttack();
 
-        // SetupAttackUI...
         UIHandler.BuildAttackList(adv);
 
     }
@@ -168,13 +169,14 @@ public class BattleSystem : MonoBehaviour
         UIHandler.UpdateStateText("CALC PLAYER ATTACKS");
         Creature adv = InitiativeManager.GetCurrentCreature();
 
-        //Grid.SetPossibleAttacksForPlayer(adv);
-
-        var attacks = Grid.GetAttacksForPlayer(adv);
+        var attacks = Grid.GetAttacksForPlayer(adv.X, adv.Y);
         if (attacks.Count == 0)
         {
-
+            // only show pass option...
         }
+
+        // SetupAttackUI...
+        
 
         UIHandler.UpdateCharacterText(adv.CreatureName);
         UIHandler.UpdateStateText("WAITING FOR PLAYER ATTACK");
@@ -260,22 +262,6 @@ public class BattleSystem : MonoBehaviour
         {
             CheckBattleState();
         }
-    }
-
-    void EndBattle()
-    {
-        UIHandler.UpdateStateText("END BATTLE");
-
-
-        if (State == BattleStatesEnum.WON)
-        {
-
-        }
-        else
-        {
-
-        }
-
     }
 
     private IEnumerator EnemyMove()

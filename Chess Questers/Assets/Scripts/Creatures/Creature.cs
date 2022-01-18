@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class Creature : MonoBehaviour
 {
-    private GameObject Body;
-    private GameObject Head;
-
-
-    private BattleSystem BattleSystem;
 
     // Creature variables
     public string CreatureName { get; private set; }
@@ -25,14 +20,17 @@ public class Creature : MonoBehaviour
     public int X { private set; get; }
     public int Y { private set; get; }
 
-    private float MoveSpeed = 10f;
-
-    private Vector3 TargetPosition;
     public CreatureStatesEnum State;
 
+    private GameObject Body;
+    private GameObject Head;
 
-    public int TargetX;
-    public int TargetY;
+    private BattleSystem BattleSystem;
+
+    private Vector3 TargetPosition;
+    private int TargetX;
+    private int TargetY;
+    private float MoveSpeed = 10f;
 
     [SerializeField] private GameObject SelectedCircle;
 
@@ -119,6 +117,7 @@ public class Creature : MonoBehaviour
     {
         Debug.Log("HellO! " + CreatureName);
         
+        // FIX: BattleSystem not currently set!
         if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsEnemy)
         {
             BattleSystem.OnGridSelection(X, Y);

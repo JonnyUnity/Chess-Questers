@@ -68,43 +68,16 @@ public class GameGrid : MonoBehaviour
                 cell.Setup(BattleSystem, x, y, squareColour);
                 cell.transform.parent = transform;
                 cell.name = $"Grid Space (x:{x}, y:{y})";
-
-                //bool isLightSquare = (x + y) % 2 != 0;
-                //var squareColour = isLightSquare ? lightColor : darkColor;
-                //GridCell cell = GetCell(x, y);
-                //cell.Setup(BattleSystem, x, y, squareColour);
-                //cell.transform.parent = transform;
-                //cell.name = $"Grid Space (x:{x}, y:{y})";
-
-                //cell.SetPosition(x, y);
-                ////cell.SetCellNumber((y * Width) + x);
-
-
-                //cell.InitColour(squareColour);
-
-                //Grid[x, y].transform.parent = transform;
-                //Grid[x, y].name = $"Grid Space (x:{x}, y:{y})";
             }
         }
         yield return new WaitForSeconds(0.1f);
 
-        //for (int y = 0; y < Height; y++)
-        //{
-        //    for (int x = 0; x < Width; x++)
-        //    {
-
-        //    }
-        //}
-
         ComputeMoveData();
-
         SpawnObstacles();
     }
 
     private void ComputeMoveData()
     {
-
-
 
         // First 4 are orthogonal, last 4 are diagonals (N, S, W, E, NW, SE, NE, SW)
         slideOffsets = new List<(int, int)>() { (0, 1), (0, -1), (-1, 0), (1, 0), (-1, 1), (1, -1), (1, 1), (-1, -1) };
@@ -162,31 +135,27 @@ public class GameGrid : MonoBehaviour
         }
     }
 
-    public void SetPossibleMovesForPlayer(Creature adv)
+    public void GetMovesForPlayer(MoveClass moveClass, int x, int y)
     {
         ClearGrid();
-        Debug.Log("Adventurer located x:" + adv.X + ", y:" + adv.Y);
+        Debug.Log("Hero located x:" + x + ", y:" + y);
 
         int startDirIndex = 0;
         int endDirIndex = 8;
 
-        // get player's square from squaresToEdge array
-        var playerSquare = (adv.Y * Width) + adv.X;
-
-        if (adv.MoveClass.IsJumpingPiece)
+        if (moveClass.IsJumpingPiece)
         {
-            if (adv.MoveClass.MoveType == MoveTypeEnum.Knight)
+            if (moveClass.MoveType == MoveTypeEnum.Knight)
             {
                 foreach (var jumpMove in knightOffsets)
                 {
-                    int squareX = adv.X + jumpMove.Item1;
-                    int squareY = adv.Y + jumpMove.Item2;
+                    int squareX = x + jumpMove.Item1;
+                    int squareY = y + jumpMove.Item2;
                     if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
                     {
                         GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                         if (!cell.IsOccupied)
                         {
-                            //cell.SetMoveText("1");
                             cell.SetAsValidMove();
                         }
                     }
@@ -195,7 +164,9 @@ public class GameGrid : MonoBehaviour
         }
         else
         {
-            switch (adv.MoveClass.MoveType)
+            int playerSquare = (y * Width) + x;
+
+            switch (moveClass.MoveType)
             {
                 case MoveTypeEnum.Queen:
                     Debug.Log("King/Queen - consider all directions!");
@@ -211,26 +182,23 @@ public class GameGrid : MonoBehaviour
                     break;
             }
 
-
-
             for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++)
             {
                 var currentDirOffset = slideOffsets[dirIndex];
 
-                int maxDistance = Math.Min(adv.MoveClass.MoveLimit, numSquaresToEdge[playerSquare][dirIndex]);
+                int maxDistance = Math.Min(moveClass.MoveLimit, numSquaresToEdge[playerSquare][dirIndex]);
 
                 for (int n = 0; n < maxDistance; n++)
                 {
                     Debug.Log(currentDirOffset + " " + (n + 1));
-                    int squareX = adv.X + currentDirOffset.Item1 * (n + 1);
-                    int squareY = adv.Y + currentDirOffset.Item2 * (n + 1);
+                    int squareX = x + currentDirOffset.Item1 * (n + 1);
+                    int squareY = y + currentDirOffset.Item2 * (n + 1);
                     GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                     if (cell.IsOccupied)
                     {
                         break;
                     }
 
-                    //cell.SetMoveText((n + 1).ToString());
                     cell.SetAsValidMove();
                 }
 
@@ -240,38 +208,15 @@ public class GameGrid : MonoBehaviour
 
     }
 
-
-    public void SetPossibleAttacksForPlayer(Creature adv)
-    {
-        // set highlighted squares for the default attack?
-
-        ClearGrid();
-
-        foreach (var attack in baseAttack)
-        {
-            int squareX = adv.X + attack.Item1;
-            int squareY = adv.Y + attack.Item2;
-            if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
-            {
-                GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                if (cell.IsOccupied)
-                {
-                    cell.SetAsValidAttack();
-                }
-            }
-        }
-
-    }
-
-    public List<GridCell> GetAttacksForPlayer(Creature adv)
+    public List<GridCell> GetAttacksForPlayer(int x, int y)
     {
         ClearGrid();
         List<GridCell> AttackCells = new List<GridCell>();
 
         foreach (var attack in baseAttack)
         {
-            int squareX = adv.X + attack.Item1;
-            int squareY = adv.Y + attack.Item2;
+            int squareX = x + attack.Item1;
+            int squareY = y + attack.Item2;
             if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
             {
                 GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
@@ -285,7 +230,6 @@ public class GameGrid : MonoBehaviour
 
         return AttackCells;
     }
-
 
     public void UpdateGridOfMove(int startX, int startY, int finishX, int finishY)
     {

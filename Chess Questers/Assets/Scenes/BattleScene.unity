@@ -3069,7 +3069,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   State: 0
   Grid: {fileID: 2101179607}
-  AdventurerPrefab: {fileID: 1694538411215306276, guid: 04b91967f1fe98a4e872b51b2f14ec37, type: 3}
+  HeroPrefab: {fileID: 1694538411215306276, guid: 04b91967f1fe98a4e872b51b2f14ec37, type: 3}
   CreaturePanel: {fileID: 2035768993}
 --- !u!4 &2128089780
 Transform:

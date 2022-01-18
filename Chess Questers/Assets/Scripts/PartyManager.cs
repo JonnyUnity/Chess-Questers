@@ -5,10 +5,10 @@ using UnityEngine;
 public class PartyManager : Singleton<PartyManager>
 {
 
-    public List<Creature> Adventurers = new();
+    public List<Creature> Heroes = new();
 
     private bool IsAdventurerSelected;
-    public Creature CurrAdventurer;
+    public Creature CurrHero;
 
     public string[] DefaultNames = new string[] { "Streef", "Zeek", "Dot" };
     //public string[] DefaultNames = new string[] { "Streef" };
@@ -40,9 +40,9 @@ public class PartyManager : Singleton<PartyManager>
 
 
 
-    public Creature GetCurrentAdventurer()
+    public Creature GetCurrentHero()
     {
-        return CurrAdventurer;
+        return CurrHero;
     }
 
 }
