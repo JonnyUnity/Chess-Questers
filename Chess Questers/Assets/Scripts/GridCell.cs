@@ -59,6 +59,13 @@ public class GridCell : MonoBehaviour
         CellNumberText.text = num.ToString();
     }
 
+    public void AddCreature(Creature c)
+    {
+        objectInThisGridSpace = c.gameObject;
+    }
+
+    //public bool IsOccupied() => objectInThisGridSpace != null;
+
     public void SetOccupied()
     {
         IsOccupied = true;

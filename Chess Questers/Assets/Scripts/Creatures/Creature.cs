@@ -34,10 +34,15 @@ public class Creature : MonoBehaviour
 
     [SerializeField] private GameObject SelectedCircle;
 
+    private Transform _transform;
+    private Quaternion _orientation;
+
     public void Awake()
     {
         Body = GameObject.Find("Body");
         Head = GameObject.Find("Head");
+        _transform = transform;
+        _orientation = transform.rotation;
     }
 
     public void Init(string name, int hp, MoveClass moveClass, Sprite sprite, bool isEnemy, GridCell cell)
@@ -88,44 +93,28 @@ public class Creature : MonoBehaviour
     public void LookAtCell(Vector3 pos)
     {
         Quaternion lookRotation = Quaternion.LookRotation((pos - transform.position).normalized) * Quaternion.Euler(0, -90, 0);
-        transform.rotation = lookRotation;
+        _transform.rotation = lookRotation;
     }
 
     public void Update()
     {
 
-        if (State == CreatureStatesEnum.MOVING)
+        if (State != CreatureStatesEnum.MOVING) return;
+
+        Vector3 direction = (TargetPosition - _transform.position).normalized;
+        _transform.position += MoveSpeed * Time.deltaTime * direction;
+
+        if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
         {
+            _transform.SetPositionAndRotation(TargetPosition, _orientation);
 
-            Vector3 direction = (TargetPosition - transform.position).normalized;
-            transform.position += MoveSpeed * Time.deltaTime * direction;
-
-            if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
-            {
-                transform.position = TargetPosition;
-
-                SetPosition(TargetX, TargetY);
-                State = CreatureStatesEnum.IDLE;
-            }
+            SetPosition(TargetX, TargetY);
+            State = CreatureStatesEnum.IDLE;
         }
-
-
-
-    }
-
-    public void OnMouseDown()
-    {
-        Debug.Log("HellO! " + CreatureName);
         
-        // FIX: BattleSystem not currently set!
-        if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsEnemy)
-        {
-            BattleSystem.OnGridSelection(X, Y);
-        }
     }
 
-
-
+  
     public void DoMove(Vector3 position, int x, int y)
     {
         TargetX = x;

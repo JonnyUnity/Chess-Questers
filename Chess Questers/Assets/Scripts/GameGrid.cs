@@ -30,6 +30,8 @@ public class GameGrid : MonoBehaviour
     private List<(int, int)> knightOffsets;
 
     private List<(int, int)> baseAttack = new List<(int, int)>() { (1, 0), (-1, 0), (0, 1), (0, -1) };
+    private List<(int, int)> _cellNeighbourDirections = new() { (1, 0), (-1, 0), (0, 1), (0, -1) };
+
 
 
     public void Awake()
@@ -128,7 +130,7 @@ public class GameGrid : MonoBehaviour
 
             Vector3 cellPos = GetGridCellWorldPosition(cell);
             _ = Instantiate(ObstaclePrefab, cellPos, Quaternion.identity);
-            cell.IsOccupied = true;
+            
 
             Debug.Log($"Obstacle added at x:{randX}, y:{randY}");
 
@@ -231,6 +233,32 @@ public class GameGrid : MonoBehaviour
         return AttackCells;
     }
 
+    public List<GridCell> TestAttacksForPlayer(int x, int y, int range)
+    {
+        List<GridCell> AttackCells = new List<GridCell>();
+
+        foreach (var neighbourDirection in _cellNeighbourDirections)
+        {
+            int squareX = x + neighbourDirection.Item1;
+            int squareY = y + neighbourDirection.Item2;
+            if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
+            {
+                GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+                if (!AttackCells.Contains(cell))
+                {
+                    if (cell.IsOccupied)
+                    {
+                        cell.SetAsValidAttack();
+                        AttackCells.Add(cell);
+                    }
+                }                
+            }
+        }
+
+        return AttackCells;
+    }
+
+
     public void UpdateGridOfMove(int startX, int startY, int finishX, int finishY)
     {
         GetCell(startX, startY).IsOccupied = false;
@@ -306,6 +334,12 @@ public class GameGrid : MonoBehaviour
         } while (cell.IsOccupied);
 
         return cell;
+    }
+
+    public void AddToCell(Creature c, int x, int y)
+    {
+        GridCell cell = GetCell(x, y);
+
     }
 
     private bool CellExists(int x, int y)

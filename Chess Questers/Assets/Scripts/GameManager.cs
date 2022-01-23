@@ -41,7 +41,7 @@ public class GameManager : Singleton<GameManager>
         InitiativeManager = BattleSystem.gameObject.AddComponent<InitiativeManager>();
 
         StartCoroutine(BattleSystem.Setup(InitiativeManager));
-
+        
     }
 
     

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class BattleSystem : MonoBehaviour
 {
@@ -21,6 +22,15 @@ public class BattleSystem : MonoBehaviour
 
     private BattleUIHandler UIHandler;
 
+    [SerializeField]
+    private GameObject CameraRig;
+    private CameraHandler CameraHandler;
+
+    //[SerializeField]
+    //private CinemachineVirtualCamera VirtualCamera;
+
+    //[SerializeField]
+    //private CinemachineFreeLook FreeLookCamera;
 
 
     // Start is called before the first frame update
@@ -28,6 +38,9 @@ public class BattleSystem : MonoBehaviour
     {
         State = BattleStatesEnum.START;
         UIHandler = CreaturePanel.GetComponent<BattleUIHandler>();
+
+        CameraHandler = CameraRig.GetComponent<CameraHandler>();
+
     }
 
 
@@ -81,7 +94,16 @@ public class BattleSystem : MonoBehaviour
         InitiativeManager.Setup(PartyManager.Instance.Heroes, creatures);
        
         c = InitiativeManager.StartInitiative();
+
+        CameraHandler.LookAtCreature(c.transform);
+
+        //VirtualCamera.Follow = c.transform;
+        //VirtualCamera.LookAt = c.transform;
+        //FreeLookCamera.Follow = c.transform;
+        //FreeLookCamera.LookAt = c.transform;
+
         UIHandler.UpdateCharacterText(c.CreatureName);
+
         if (c.IsEnemy)
         {
             State = BattleStatesEnum.ENEMY_MOVE;
@@ -156,8 +178,6 @@ public class BattleSystem : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         State = BattleStatesEnum.PLAYER_ATTACK;
-        
-        //SetupPlayerAttack();
 
         UIHandler.BuildAttackList(adv);
 
@@ -205,10 +225,12 @@ public class BattleSystem : MonoBehaviour
     {
         // change state based on what happened...
         // if all enemies dead, then victory, else next combatant
-
-
-        // DEBUG
         InitiativeManager.NextTurn();
+
+        Creature c = InitiativeManager.GetCurrentCreature();
+
+        CameraHandler.LookAtCreature(c.transform);
+        
         if (InitiativeManager.IsEnemyTurn())
         {
             State = BattleStatesEnum.ENEMY_MOVE;
@@ -220,38 +242,10 @@ public class BattleSystem : MonoBehaviour
             SetupPlayerMove();
         }
 
-        //if (InitiativeManager.AllEnemiesDead())
-        //{
-        //    State = BattleStatesEnum.WON;
-        //    EndBattle();
-        //}
-        //else if (InitiativeManager.AllAdventurersDead())
-        //{
-        //    State = BattleStatesEnum.LOST;
-        //    EndBattle();
-        //}
-        //else
-        //{
-        //    // battle continues...
-        //    InitiativeManager.NextInitiative();
-        //    Creature c = InitiativeManager.GetCurrentCreature();
-        //    if (c.IsEnemy)
-        //    {
-        //        State = BattleStatesEnum.ENEMY_MOVE;
-        //        //EnemyMove();
-        //    }
-        //    else
-        //    {
-        //        State = BattleStatesEnum.PLAYER_MOVE;
-        //        //PlayerMove();
-        //    }
-
-        //}
     }
 
     public void OnAttack1()
     {
-        //StartCoroutine(PlayerAttack());
         SetupPlayerAttack();
     }
 
@@ -284,6 +278,28 @@ public class BattleSystem : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         CheckBattleState();
+    }
+
+
+    public void Update()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        int layerMask = 1 << 6;
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, layerMask))
+        {
+            GameObject hitObject = hitInfo.transform.gameObject;
+
+        }
+
+        Creature c = InitiativeManager.GetCurrentCreature();
+
+        if (c != null && c.State == CreatureStatesEnum.MOVING)
+        {
+            CameraHandler.LookAtCreature(InitiativeManager.GetCurrentCreature().transform);
+        }
+
     }
 
     #region Creature Panel UI
