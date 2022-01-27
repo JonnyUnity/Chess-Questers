@@ -24,27 +24,20 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private GameObject InitiativeTracker;
     private InitiativeManager InitiativeManager;
-    private BattleSystem BattleSystem;
-
-    //private GameState State;
-
-    private Initiative TurnOrder;
+    
 
     // Start is called before the first frame update
     public void Awake()
     {
         AllMoveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
-
         Sprites = Resources.LoadAll<Sprite>("Sprites/");
-
-        BattleSystem = GetComponentInChildren<BattleSystem>();
-        InitiativeManager = BattleSystem.gameObject.AddComponent<InitiativeManager>();
-
-        StartCoroutine(BattleSystem.Setup(InitiativeManager));
-        
     }
 
-    
+    private void Start()
+    {
+        StartCoroutine(BattleSystem.Instance.SetupCoroutine());
+    }
+
     public MoveClass GetRandomMoveClass()
     {
         if (AllMoveClasses.Length == 0)

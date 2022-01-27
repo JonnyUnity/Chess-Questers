@@ -28,11 +28,15 @@ public class Creature : MonoBehaviour
     private BattleSystem BattleSystem;
 
     private Vector3 TargetPosition;
+    public GridCell TargetCell;
+
     private int TargetX;
     private int TargetY;
     private float MoveSpeed = 10f;
 
     [SerializeField] private GameObject SelectedCircle;
+
+    public GridCell OccupiedCell;
 
     private Transform _transform;
     private Quaternion _orientation;
@@ -55,9 +59,10 @@ public class Creature : MonoBehaviour
         MoveClass = moveClass;
         PortraitSprite = sprite;
         IsEnemy = isEnemy;
-        SetPosition(cell.X, cell.Y);
+        OccupiedCell = cell;
+        //SetPosition(cell.X, cell.Y);
 
-        cell.SetOccupied();
+       // cell.SetOccupied();
     }
 
 
@@ -73,11 +78,11 @@ public class Creature : MonoBehaviour
         Head.GetComponent<Renderer>().material.color = c;
     }
 
-    public void SetPosition(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
+    //public void SetPosition(int x, int y)
+    //{
+    //    X = x;
+    //    Y = y;
+    //}
 
     public Vector3 GetPosition()
     {
@@ -108,7 +113,7 @@ public class Creature : MonoBehaviour
         {
             _transform.SetPositionAndRotation(TargetPosition, _orientation);
 
-            SetPosition(TargetX, TargetY);
+            //SetPosition(TargetX, TargetY);
             State = CreatureStatesEnum.IDLE;
         }
         

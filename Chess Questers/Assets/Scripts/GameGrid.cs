@@ -40,12 +40,9 @@ public class GameGrid : MonoBehaviour
         GridCellPrefab = Resources.Load("Prefabs/GridCell") as GameObject;
         ObstaclePrefab = Resources.Load("Prefabs/Obstacle") as GameObject;
 
-        //lightColor = new Color(212, 212, 212, 0);
-        //darkColor = new Color(26, 75, 140, 0);
-
     }
 
-    public IEnumerator CreateGameGrid(BattleSystem battleSystem)
+    public IEnumerator CreateGameGridCoroutine(BattleSystem battleSystem)
     {
         BattleSystem = battleSystem;
         Grid = new GameObject[Height, Width];
@@ -126,7 +123,7 @@ public class GameGrid : MonoBehaviour
                 randX = Random.Range(0, Width);
                 randY = Random.Range(0, Height);
                 cell = GetCell(randX, randY);
-            } while (cell.IsOccupied);
+            } while (cell.IsOccupiedNew());
 
             Vector3 cellPos = GetGridCellWorldPosition(cell);
             _ = Instantiate(ObstaclePrefab, cellPos, Quaternion.identity);
@@ -136,6 +133,80 @@ public class GameGrid : MonoBehaviour
 
         }
     }
+
+    public void GetMovesForPlayerNew(MoveClass moveClass, GridCell playerCell)
+    {
+        ClearGrid();
+        Debug.Log("Hero located x:" + playerCell.X + ", y:" + playerCell.Y);
+
+        int startDirIndex = 0;
+        int endDirIndex = 8;
+
+        if (moveClass.IsJumpingPiece)
+        {
+            if (moveClass.MoveType == MoveTypeEnum.Knight)
+            {
+                foreach (var jumpMove in knightOffsets)
+                {
+                    int squareX = playerCell.X + jumpMove.Item1;
+                    int squareY = playerCell.Y + jumpMove.Item2;
+                    if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
+                    {
+                        GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+                        if (!cell.IsOccupiedNew())
+                        {
+                            cell.SetAsValidMove();
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            int playerSquare = (playerCell.Y * Width) + playerCell.X;
+
+            switch (moveClass.MoveType)
+            {
+                case MoveTypeEnum.Queen:
+                    Debug.Log("King/Queen - consider all directions!");
+                    break;
+                case MoveTypeEnum.Bishop:
+                    startDirIndex = 4;
+                    break;
+                case MoveTypeEnum.Rook:
+                    endDirIndex = 4;
+                    break;
+                default:
+                    Debug.LogFormat("Unrecognised move type, defaulting to all directions!");
+                    break;
+            }
+
+            for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++)
+            {
+                var currentDirOffset = slideOffsets[dirIndex];
+
+                int maxDistance = Math.Min(moveClass.MoveLimit, numSquaresToEdge[playerSquare][dirIndex]);
+
+                for (int n = 0; n < maxDistance; n++)
+                {
+                    Debug.Log(currentDirOffset + " " + (n + 1));
+                    int squareX = playerCell.X + currentDirOffset.Item1 * (n + 1);
+                    int squareY = playerCell.Y + currentDirOffset.Item2 * (n + 1);
+                    GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+                    if (cell.IsOccupiedNew())
+                    {
+                        break;
+                    }
+
+                    cell.SetAsValidMove();
+                }
+
+            }
+        }
+
+
+    }
+
 
     public void GetMovesForPlayer(MoveClass moveClass, int x, int y)
     {
@@ -156,7 +227,7 @@ public class GameGrid : MonoBehaviour
                     if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
                     {
                         GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                        if (!cell.IsOccupied)
+                        if (!cell.IsOccupiedNew())
                         {
                             cell.SetAsValidMove();
                         }
@@ -196,7 +267,7 @@ public class GameGrid : MonoBehaviour
                     int squareX = x + currentDirOffset.Item1 * (n + 1);
                     int squareY = y + currentDirOffset.Item2 * (n + 1);
                     GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                    if (cell.IsOccupied)
+                    if (cell.IsOccupiedNew())
                     {
                         break;
                     }
@@ -208,6 +279,72 @@ public class GameGrid : MonoBehaviour
         }
 
 
+    }
+
+    public List<GridCell> GetBaseAttack(GridCell playerCell)
+    {
+        ClearGrid();
+        List<GridCell> AttackCells = new();
+
+        foreach (var attack in baseAttack)
+        {
+            int squareX = playerCell.X + attack.Item1;
+            int squareY = playerCell.Y + attack.Item2;
+            if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
+            {
+                GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+               // Debug.Log(Vector3.Distance(GetGridCellWorldPosition(cell), GetGridCellWorldPosition(playerCell)));
+
+                if (cell.IsOccupiedNew())
+                {
+                    cell.SetAsValidAttack();
+                    AttackCells.Add(cell);
+                }
+            }
+        }
+
+        return AttackCells;
+    }
+
+    public List<GridCell> GetFireballAttack(GridCell playerCell)
+    {
+        ClearGrid();
+        List<GridCell> AttackCells = new();
+
+        Vector3 playerPos = GetGridCellWorldPosition(playerCell);
+
+        Debug.Log($"Fireball {playerCell.X},{playerCell.Y}");
+
+        int minRange = 2;
+        int maxRange = 3;
+
+        for (int i = playerCell.X - maxRange; i <= playerCell.X + maxRange; i++)
+        {
+            for (int j = playerCell.Y - maxRange; j <= playerCell.Y + maxRange; j++)
+            {
+                if (0 <= i && i < Width && 0 <= j && j < Height)
+                {
+
+                    GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                    int cellChebyshevDistance = CalculateChebyshevDistance(playerCell.X, i, playerCell.Y, j);
+                    Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+
+                    if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange && !cell.IsOccupiedNew())
+                    {
+                        cell.SetAsValidAttack();
+                        AttackCells.Add(cell);
+                    }                  
+                }
+
+            }
+        }
+
+        return AttackCells;
+    }
+
+    private int CalculateChebyshevDistance(int x1, int x2, int y1, int y2)
+    {
+        return Math.Max(Math.Abs(x2 - x1), Math.Abs(y2 - y1));
     }
 
     public List<GridCell> GetAttacksForPlayer(int x, int y)
@@ -222,7 +359,7 @@ public class GameGrid : MonoBehaviour
             if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
             {
                 GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                if (cell.IsOccupied)
+                if (cell.IsOccupiedNew())
                 {
                     cell.SetAsValidAttack();
                     AttackCells.Add(cell);
@@ -233,20 +370,20 @@ public class GameGrid : MonoBehaviour
         return AttackCells;
     }
 
-    public List<GridCell> TestAttacksForPlayer(int x, int y, int range)
+    public List<GridCell> TestAttacksForPlayer(GridCell playerCell, int range)
     {
         List<GridCell> AttackCells = new List<GridCell>();
 
         foreach (var neighbourDirection in _cellNeighbourDirections)
         {
-            int squareX = x + neighbourDirection.Item1;
-            int squareY = y + neighbourDirection.Item2;
+            int squareX = playerCell.X + neighbourDirection.Item1;
+            int squareY = playerCell.Y + neighbourDirection.Item2;
             if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
             {
                 GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                 if (!AttackCells.Contains(cell))
                 {
-                    if (cell.IsOccupied)
+                    if (cell.IsOccupiedNew())
                     {
                         cell.SetAsValidAttack();
                         AttackCells.Add(cell);
@@ -259,11 +396,12 @@ public class GameGrid : MonoBehaviour
     }
 
 
-    public void UpdateGridOfMove(int startX, int startY, int finishX, int finishY)
-    {
-        GetCell(startX, startY).IsOccupied = false;
-        GetCell(finishX, finishY).IsOccupied = true;
-    }
+    //public void UpdateGridOfMove(int startX, int startY, int finishX, int finishY)
+    //{
+    //    GetCell(startX, startY).IsOccupied = false;
+    //    GetCell(finishX, finishY).IsOccupied = true;
+    //}
+
     public void ClearGrid()
     {
         for (int y = 0; y < Height; y++)
@@ -331,7 +469,7 @@ public class GameGrid : MonoBehaviour
             randX = Random.Range(0, Width);
             randY = Random.Range(0, Height);
             cell = GetCell(randX, randY);
-        } while (cell.IsOccupied);
+        } while (cell.OccupiedUnit != null);
 
         return cell;
     }

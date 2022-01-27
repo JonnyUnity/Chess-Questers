@@ -242,7 +242,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 162406738}
-  m_LocalRotation: {x: 0.13984689, y: -0.04156501, z: 0.0058757085, w: 0.9892829}
+  m_LocalRotation: {x: 0.13984688, y: -0.041565046, z: 0.0058757123, w: 0.9892829}
   m_LocalPosition: {x: -29.938925, y: 6.2727213, z: -34.496758}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -598,7 +598,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 369887568}
-  m_LocalRotation: {x: 0.13984689, y: -0.04156501, z: 0.0058757085, w: 0.9892829}
+  m_LocalRotation: {x: 0.13984688, y: -0.041565046, z: 0.0058757123, w: 0.9892829}
   m_LocalPosition: {x: -29.938925, y: 6.2727213, z: -34.496758}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -618,7 +618,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b623024e17d724fb494a5581a48fd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultTransform: {fileID: 369887571}
+  MovementTime: 0
+  MoveSpeed: 0
+  ZoomScrollSpeed: 0
+  RotateSpeed: 0
+  RotationAmount: 0
+  ZoomAmount: {x: 0, y: 0, z: 0}
+  MouseZoomAmount: {x: 0, y: 0, z: 0}
+  CameraTransform: {fileID: 0}
 --- !u!114 &369887573
 MonoBehaviour:
   m_ObjectHideFlags: 0

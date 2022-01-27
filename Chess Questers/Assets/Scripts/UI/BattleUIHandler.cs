@@ -38,7 +38,10 @@ public class BattleUIHandler : MonoBehaviour
         var btnText = Attack1Button.GetComponentInChildren<TextMeshProUGUI>();
         btnText.text = "ATTACK!";
 
-        Attack2Button.SetActive(false);
+        btnText = Attack2Button.GetComponentInChildren<TextMeshProUGUI>();
+        btnText.text = "FIREBALL";
+
+        //Attack2Button.SetActive(false);
         Attack3Button.SetActive(false);
         Attack4Button.SetActive(false);
 

@@ -72,14 +72,15 @@ public class CameraHandler : MonoBehaviour
         if (CreatureTransform != null)
         {
             // set default zoom, rotation etc...
-            StartCoroutine(MoveToCharacterCoroutine());
+            //StartCoroutine(MoveToCharacterCoroutine());
+            _transform.position = CreatureTransform.position;
         }
 
     }
 
     private IEnumerator MoveToCharacterCoroutine()
     {
-        NewPosition = transform.position;
+        NewPosition = _transform.position;
         var t = 0f;
         var cameraMovementDuration = 1f;
 
@@ -268,7 +269,15 @@ public class CameraHandler : MonoBehaviour
     {
         CreatureTransform = creatureTransform;
 
-        RecenterOnActiveCharacter();
+        //RecenterOnActiveCharacter();
+        _transform.position = creatureTransform.position;
+    }
+
+    public void SwapToCharacter(Transform creatureTransform)
+    {
+        CreatureTransform = creatureTransform;
+
+        StartCoroutine(MoveToCharacterCoroutine());
     }
 
 

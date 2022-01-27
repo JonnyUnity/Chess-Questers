@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
-public class BattleSystem : MonoBehaviour
+public class BattleSystem : Singleton<BattleSystem>
 {
 
     public BattleStatesEnum State;
@@ -41,18 +41,18 @@ public class BattleSystem : MonoBehaviour
 
         CameraHandler = CameraRig.GetComponent<CameraHandler>();
 
+        InitiativeManager = GetComponent<InitiativeManager>();
+
     }
 
 
-    public IEnumerator Setup(InitiativeManager initiativeManager)
+    public IEnumerator SetupCoroutine()
     {
 
         // setup grid
-        yield return StartCoroutine(Grid.CreateGameGrid(this));
+        yield return StartCoroutine(Grid.CreateGameGridCoroutine(this));
 
-        InitiativeManager = initiativeManager;
-
-        
+       
         UIHandler.UpdateStateText("BATTLE START");
 
         // Spawn adventurers!
@@ -69,6 +69,8 @@ public class BattleSystem : MonoBehaviour
             tmp.SetColour(Color.green);
 
             tmp.Init(advName, 100, GameManager.Instance.GetRandomMoveClass(), GameManager.Instance.GetRandomSprite(), false, cell);
+
+            cell.SetUnit(tmp);
 
             PartyManager.Instance.Heroes.Add(tmp);
 
@@ -88,6 +90,9 @@ public class BattleSystem : MonoBehaviour
             c.SetColour(Color.red);
             
             c.Init("Enemy " + (i + 1), 100, GameManager.Instance.GetRandomMoveClass(), GameManager.Instance.GetRandomSprite(), true, cell);
+
+            cell.SetUnit(c);
+
             creatures.Add(c);
         }
 
@@ -95,19 +100,15 @@ public class BattleSystem : MonoBehaviour
        
         c = InitiativeManager.StartInitiative();
 
-        CameraHandler.LookAtCreature(c.transform);
+        CameraHandler.SwapToCharacter(c.transform);
 
-        //VirtualCamera.Follow = c.transform;
-        //VirtualCamera.LookAt = c.transform;
-        //FreeLookCamera.Follow = c.transform;
-        //FreeLookCamera.LookAt = c.transform;
 
         UIHandler.UpdateCharacterText(c.CreatureName);
 
         if (c.IsEnemy)
         {
             State = BattleStatesEnum.ENEMY_MOVE;
-            StartCoroutine(EnemyMove());
+            StartCoroutine(EnemyMoveCoroutine());
         }
         else
         {
@@ -122,13 +123,13 @@ public class BattleSystem : MonoBehaviour
         if (State == BattleStatesEnum.PLAYER_MOVE)
         {
             // do move...
-            StartCoroutine(PlayerMove(x, y));
+            StartCoroutine(PlayerMoveCoroutine(x, y));
 
         }
         else if (State == BattleStatesEnum.PLAYER_ATTACK)
         {
             // do attack
-            StartCoroutine(PlayerAttack());
+            StartCoroutine(PlayerAttackCoroutine());
 
         }
     }
@@ -138,7 +139,8 @@ public class BattleSystem : MonoBehaviour
         UIHandler.UpdateStateText("CALC PLAYER MOVES");
         Creature adv = InitiativeManager.GetCurrentCreature();
 
-        Grid.GetMovesForPlayer(adv.MoveClass, adv.X, adv.Y);
+        //Grid.GetMovesForPlayer(adv.MoveClass, adv.X, adv.Y);
+        Grid.GetMovesForPlayerNew(adv.MoveClass, adv.OccupiedCell);
         adv.ToggleSelected(true);
 
         UIHandler.UpdateCharacterText(adv.CreatureName);
@@ -154,7 +156,7 @@ public class BattleSystem : MonoBehaviour
         adv.LookAtCell(cellPos);
     }
 
-    IEnumerator PlayerMove(int x, int y)
+    IEnumerator PlayerMoveCoroutine(int x, int y)
     {
         Grid.ClearGrid();
 
@@ -164,16 +166,16 @@ public class BattleSystem : MonoBehaviour
         Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
 
         Creature adv = InitiativeManager.GetCurrentCreature();
-        int startX = adv.X;
-        int startY = adv.Y;
-        adv.DoMove(cellPos, x, y);
+        adv.OccupiedCell.ResetCell();
 
+        adv.DoMove(cellPos, x, y);
+        
         do
         {
             yield return null;
         } while (adv.State == CreatureStatesEnum.MOVING);
 
-        Grid.UpdateGridOfMove(startX, startY, x, y);
+        cell.SetUnit(adv);
 
         yield return new WaitForSeconds(0.1f);
 
@@ -189,7 +191,8 @@ public class BattleSystem : MonoBehaviour
         UIHandler.UpdateStateText("CALC PLAYER ATTACKS");
         Creature adv = InitiativeManager.GetCurrentCreature();
 
-        var attacks = Grid.GetAttacksForPlayer(adv.X, adv.Y);
+        //var attacks = Grid.GetAttacksForPlayer(adv.X, adv.Y);
+        var attacks = Grid.GetBaseAttack(adv.OccupiedCell);
         if (attacks.Count == 0)
         {
             // only show pass option...
@@ -202,7 +205,24 @@ public class BattleSystem : MonoBehaviour
         UIHandler.UpdateStateText("WAITING FOR PLAYER ATTACK");
     }
 
-    IEnumerator PlayerAttack()
+
+    void TestSetupFireball()
+    {
+        UIHandler.UpdateStateText("CALC PLAYER ATTACKS");
+        Creature adv = InitiativeManager.GetCurrentCreature();
+
+        //var attacks = Grid.GetAttacksForPlayer(adv.X, adv.Y);
+        var attacks = Grid.GetFireballAttack(adv.OccupiedCell);
+        if (attacks.Count == 0)
+        {
+            // only show pass option...
+        }
+
+        UIHandler.UpdateCharacterText(adv.CreatureName);
+        UIHandler.UpdateStateText("WAITING FOR PLAYER ATTACK");
+    }
+
+    IEnumerator PlayerAttackCoroutine()
     {
         Grid.ClearGrid();
 
@@ -229,12 +249,12 @@ public class BattleSystem : MonoBehaviour
 
         Creature c = InitiativeManager.GetCurrentCreature();
 
-        CameraHandler.LookAtCreature(c.transform);
+        CameraHandler.SwapToCharacter(c.transform);
         
         if (InitiativeManager.IsEnemyTurn())
         {
             State = BattleStatesEnum.ENEMY_MOVE;
-            StartCoroutine(EnemyMove());
+            StartCoroutine(EnemyMoveCoroutine());
         }
         else
         {
@@ -249,6 +269,11 @@ public class BattleSystem : MonoBehaviour
         SetupPlayerAttack();
     }
 
+    public void OnAttack2()
+    {
+        TestSetupFireball();
+    }
+
     public void PassButton()
     {
         // No attacks (or maybe no moves?) so go to next turn...
@@ -258,19 +283,19 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    private IEnumerator EnemyMove()
+    private IEnumerator EnemyMoveCoroutine()
     {
         // calculate move...
         UIHandler.UpdateStateText("ENEMY MOVE");
 
         yield return new WaitForSeconds(2f);
         State = BattleStatesEnum.ENEMY_ATTACK;
-        StartCoroutine(EnemyAttack());
+        StartCoroutine(EnemyAttackCoroutine());
 
     }
 
 
-    private IEnumerator EnemyAttack()
+    private IEnumerator EnemyAttackCoroutine()
     {
         // do attack
         UIHandler.UpdateStateText("ENEMY ATTACK");

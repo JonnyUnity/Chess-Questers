@@ -11,17 +11,23 @@ public class GridCell : MonoBehaviour
 
     private Color initColour = Color.white;
     private Color colour = Color.white;
-    [SerializeField]
-    private Color highlightColour;
+
+    [SerializeField] GameObject _highlight;
+
+    [SerializeField] private Color _highlightColour;
+    [SerializeField] private Color _moveColour;
+    [SerializeField] private Color _attackColur;
 
     // Saves a reference to the gameobject that gets placed on this cell.
-    public GameObject objectInThisGridSpace = null;
+    public Creature OccupiedUnit = null;
 
-    public bool IsOccupied;
+    //public bool IsOccupied;
     public bool IsMove;
     public bool IsAttack;
 
-    private Renderer Renderer;
+    private Renderer _renderer;
+    private Renderer _highlightRenderer;
+    private Material _highlightMaterial;
 
     private BattleSystem BattleSystem;
 
@@ -32,7 +38,9 @@ public class GridCell : MonoBehaviour
 
     public void Awake()
     {
-        Renderer = GetComponent<Renderer>();
+        _renderer = GetComponent<Renderer>();
+        _highlightRenderer = _highlight.GetComponent<Renderer>();
+        _highlightMaterial = _highlight.GetComponent<Renderer>().GetComponent<Material>();
     }
 
     public void Setup(BattleSystem battleSystem, int x, int y, Color color)
@@ -40,10 +48,9 @@ public class GridCell : MonoBehaviour
         BattleSystem = battleSystem;
         X = x;
         Y = y;
-        initColour = color;
-        colour = color;
 
-        UpdateCellColour(colour);
+        InitColour(color);
+
     }
 
     public void InitColour(Color newColour)
@@ -53,28 +60,34 @@ public class GridCell : MonoBehaviour
         UpdateCellColour(colour);
     }
 
+
+    public void SetUnit(Creature c)
+    {
+        if (c.OccupiedCell != null)
+        {
+            c.OccupiedCell.OccupiedUnit = null;
+        }
+
+        OccupiedUnit = c;
+        c.OccupiedCell = this;
+    }
+
     public void SetCellNumber(int num)
     {
         CellNumber = num;
         CellNumberText.text = num.ToString();
     }
 
-    public void AddCreature(Creature c)
-    {
-        objectInThisGridSpace = c.gameObject;
-    }
-
     //public bool IsOccupied() => objectInThisGridSpace != null;
 
-    public void SetOccupied()
-    {
-        IsOccupied = true;
-    }
+    //public void SetOccupied()
+    //{
+    //    IsOccupied = true;
+    //}
 
-    public void SetMoveText(string text)
-    {
-        MoveText.text = text;
-    }
+    public bool IsOccupiedNew() => OccupiedUnit != null;
+
+
 
     public void SetPosition(int x, int y)
     {
@@ -92,11 +105,34 @@ public class GridCell : MonoBehaviour
 
     public void OnMouseEnter()
     {
+        
         if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
         {
-            UpdateCellColour(highlightColour);
+            //UpdateCellColour(_highlightColour);
+            //_highlight.SetActive(true);
+            HighlightMove();
             BattleSystem.CharacterLook(X, Y);
         }
+        else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
+        {
+            HightlightAttack();
+            BattleSystem.CharacterLook(X, Y);
+        }
+
+    }
+
+    private void HighlightMove()
+    {
+        _highlight.SetActive(true);
+        //_highlightMaterial.color = _moveColour;
+        _highlightRenderer.material.color = _moveColour;
+    }
+
+    private void HightlightAttack()
+    {
+        _highlight.SetActive(true);
+        //_highlightMaterial.color = _attackColur;
+        _highlightRenderer.material.color = _attackColur;
     }
 
     public void OnMouseDown()
@@ -109,15 +145,23 @@ public class GridCell : MonoBehaviour
 
     public void OnMouseExit()
     {
+
+        
+
         if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
         {
-            UpdateCellColour(colour);
+            //   UpdateCellColour(colour);
+            _highlight.SetActive(false);
+        }
+        else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
+        {
+            _highlight.SetActive(false);
         }
     }
 
     private void UpdateCellColour(Color newColor)
     {
-        Renderer.material.color = newColor;
+        _renderer.material.color = newColor;
     }
 
 
@@ -141,6 +185,17 @@ public class GridCell : MonoBehaviour
         IsAttack = false;
         colour = initColour;
         UpdateCellColour(colour);
+        _highlight.SetActive(false);
     }
+
+
+    #region Testing
+
+    public void SetMoveText(string text)
+    {
+        MoveText.text = text;
+    }
+
+    #endregion
 
 }

@@ -8,8 +8,6 @@ using UnityEngine.UI;
 public class InitiativeManager : MonoBehaviour
 {
 
-    private Initiative TurnOrder;
-
     private GameObject TrackerObject;
 
     private GameObject CanvasObject;
@@ -18,8 +16,12 @@ public class InitiativeManager : MonoBehaviour
 
     private List<GameObject> Portraits;
 
+    private List<Creature> Creatures;
+
     public void Awake()
     {
+        Creatures = new List<Creature>();
+
         PortraitPrefab = Resources.Load("Prefabs/Portrait") as GameObject;
         GameObject canvas = GameObject.Find("Canvas");
         if (canvas != null)
@@ -33,9 +35,22 @@ public class InitiativeManager : MonoBehaviour
     public void Setup(List<Creature> adventurers, List<Creature> enemies)
     {
         Portraits = new List<GameObject>();
-        TurnOrder = new Initiative(adventurers, enemies);
 
-        foreach (var c in TurnOrder.Creatures)
+        foreach (Creature a in adventurers)
+        {
+            a.RollInitiative();
+            Creatures.Add(a);
+        }
+
+        foreach (Creature e in enemies)
+        {
+            e.RollInitiative();
+            Creatures.Add(e);
+        }
+
+        Creatures = Creatures.OrderByDescending(o => o.Initiative).ThenBy(o => o.name).ToList();
+
+        foreach (var c in Creatures)
         {
             GameObject portraitObj = Instantiate(PortraitPrefab, CanvasObject.transform);
             Portrait portrait = portraitObj.GetComponent<Portrait>();
@@ -44,16 +59,16 @@ public class InitiativeManager : MonoBehaviour
             Portraits.Add(portraitObj);
         }
 
-        TurnText.text = TurnOrder.GetCurrentCreature().CreatureName;
+        TurnText.text = GetCurrentCreature().CreatureName;
 
     }
 
     public Creature StartInitiative()
     {
-        Creature c = TurnOrder.GetCurrentCreature();
+        Creature c = GetCurrentCreature();
         c.ToggleSelected(true);
 
-        Debug.Log(c.CreatureName + " - " + c.Initiative + " - Enemy? " + c.IsEnemy);
+        Debug.Log(c.CreatureName + " - " + c.Initiative + " - Enemy? " + c.IsEnemy, this);
         TurnText.text = c.CreatureName;
 
         return c;
@@ -61,58 +76,67 @@ public class InitiativeManager : MonoBehaviour
 
     public void NextTurn()
     {
-        Creature c = TurnOrder.GetCurrentCreature();
+        Creature c = GetCurrentCreature();
         Destroy(CanvasObject.transform.GetChild(0).gameObject);
 
         GameObject portraitObj = Instantiate(PortraitPrefab, CanvasObject.transform);
         Portrait portrait = portraitObj.GetComponent<Portrait>();
         portrait.SetupPortrait(c);
 
-        c = TurnOrder.GetNextCreature();
+        c = GetNextCreature();
 
-        Debug.Log(c.name + " - " + c.Initiative + " - Enemy? " + c.IsEnemy);
+
+        Debug.Log(c.name + " - " + c.Initiative + " - Enemy? " + c.IsEnemy, this);
         TurnText.text = c.name;
 
     }
 
 
-    public bool AllEnemiesDead()
-    {
-        return TurnOrder.AllEnemiesDead();
-    }
+    public bool AreAllEnemiesDead() => !Creatures.Where(w => w.IsEnemy).Any();
 
-    public bool AllAdventurersDead()
-    {
-        return TurnOrder.AllAdventurersDead();
-    }
+
+    public bool AreAllHeroesDead() => !Creatures.Where(w => !w.IsEnemy).Any();
+
 
     public Creature GetCurrentCreature()
     {
-        return TurnOrder.GetCurrentCreature();
+        return Creatures.FirstOrDefault();
     }
 
     public bool IsEnemyTurn()
     {
-        Creature c = TurnOrder.GetCurrentCreature();
+        Creature c = GetCurrentCreature();
         return c.IsEnemy;
     }
 
     public void RemoveCreature(Creature c)
     {
-        int index = TurnOrder.RemoveCreature(c);
+        int index = Creatures.IndexOf(c);
+        Creatures.RemoveAt(index);
         if (index >= 0)
         {
             Destroy(CanvasObject.transform.GetChild(index).gameObject);
         }
-        
+
     }
 
     public void RemoveCreatureAtIndex()
     {
         int i = CanvasObject.transform.childCount - 1;
 
-        TurnOrder.RemoveCreatureAtIndex(i);
+        Creatures.RemoveAt(i);
         Destroy(CanvasObject.transform.GetChild(i).gameObject);
+    }
+
+    private Creature GetNextCreature()
+    {
+        Creature c = Creatures.First();
+        c.ToggleSelected(false);
+        Creatures.RemoveAt(0);
+        Creatures.Add(c);
+        Creatures.First().ToggleSelected(true);
+
+        return GetCurrentCreature();
     }
 
 }
