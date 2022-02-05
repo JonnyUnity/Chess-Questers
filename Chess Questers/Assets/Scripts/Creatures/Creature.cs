@@ -65,6 +65,7 @@ public class Creature : MonoBehaviour
     public void CreatureDied()
     {
         OnDeath.Invoke(this);
+        Destroy(gameObject, 5f);
         
     }
 

@@ -71,8 +71,11 @@ public class GameManager : Singleton<GameManager>
 
         if (State == GameStatesEnum.Battle_Victory)
         {
-            _uiManager.ShowDefeatScreen(); // testing
-
+            _uiManager.ShowVictoryScreen();
+        }
+        else if (State == GameStatesEnum.Battle_Defeat)
+        {
+            _uiManager.ShowDefeatScreen();
         }
 
     }
