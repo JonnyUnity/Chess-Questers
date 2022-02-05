@@ -8,6 +8,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
     public BattleStatesEnum State;
 
+    private GameManager _gameManager;
     private InitiativeManager InitiativeManager;
     public GameGrid Grid;
 
@@ -46,8 +47,9 @@ public class BattleSystem : Singleton<BattleSystem>
     }
 
 
-    public IEnumerator SetupCoroutine()
+    public IEnumerator SetupCoroutine(GameManager gameManager)
     {
+        _gameManager = gameManager;
 
         // setup grid
         yield return StartCoroutine(Grid.CreateGameGridCoroutine(this));
@@ -129,7 +131,7 @@ public class BattleSystem : Singleton<BattleSystem>
         else if (State == BattleStatesEnum.PLAYER_ATTACK)
         {
             // do attack
-            StartCoroutine(PlayerAttackCoroutine());
+            StartCoroutine(PlayerAttackCoroutine(x, y));
 
         }
     }
@@ -222,7 +224,7 @@ public class BattleSystem : Singleton<BattleSystem>
         UIHandler.UpdateStateText("WAITING FOR PLAYER ATTACK");
     }
 
-    IEnumerator PlayerAttackCoroutine()
+    IEnumerator PlayerAttackCoroutine(int x, int y)
     {
         Grid.ClearGrid();
 
@@ -232,11 +234,19 @@ public class BattleSystem : Singleton<BattleSystem>
         Creature adv = InitiativeManager.GetCurrentCreature();
         adv.ToggleSelected(false);
 
+        GridCell cell = Grid.GetCell(x, y);
+        int damage = adv.GetAttackDamage(null);
+        List<Creature> attackedCreatures = Grid.GetAttackedCreatures(cell, null, Vector2.up);
+
+        foreach (Creature c in attackedCreatures)
+        {
+            if (c.TryGetComponent(out HealthSystem health))
+            {
+                health.ChangeHealth(-damage);
+            }
+        }
+
         yield return new WaitForSeconds(2f);
-
-
-        
-
 
         CheckBattleState();
     }
@@ -244,6 +254,18 @@ public class BattleSystem : Singleton<BattleSystem>
     void CheckBattleState()
     {
         // change state based on what happened...
+        if (InitiativeManager.AreAllEnemiesDead())
+        {
+            Victory();            
+            return;
+        }
+        if (InitiativeManager.AreAllHeroesDead())
+        {
+            
+            Defeat();
+            return;
+        }
+
         // if all enemies dead, then victory, else next combatant
         InitiativeManager.NextTurn();
 
@@ -308,14 +330,21 @@ public class BattleSystem : Singleton<BattleSystem>
 
     public void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        int layerMask = 1 << 6;
-
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, layerMask))
+        if (Input.GetMouseButtonDown(0))
         {
-            GameObject hitObject = hitInfo.transform.gameObject;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+            int layerMask = 1 << 6;
+
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, layerMask))
+            {
+                GameObject hitObject = hitInfo.transform.gameObject;
+                if (hitObject.TryGetComponent(out GridCell selectedCell))
+                {
+                    Debug.Log(selectedCell.name, this);
+                }
+            }
         }
 
         Creature c = InitiativeManager.GetCurrentCreature();
@@ -325,6 +354,22 @@ public class BattleSystem : Singleton<BattleSystem>
             CameraHandler.LookAtCreature(InitiativeManager.GetCurrentCreature().transform);
         }
 
+    }
+
+    private void Victory()
+    {
+        UIHandler.UpdateStateText("VICTORY!");
+        _gameManager.UpdateState(GameManager.GameStatesEnum.Battle_Victory);
+
+    }
+
+    private void Defeat()
+    {
+
+        UIHandler.UpdateStateText("DEFEAT!");
+
+
+        // go to post-run score screen...
     }
 
     #region Creature Panel UI

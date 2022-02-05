@@ -1,20 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
-public class UIManager : Singleton<UIManager>
+public class UIManager : MonoBehaviour
 {
 
-    [SerializeField]
-    private TextMeshProUGUI AdventurerText;
+    [SerializeField] private GameObject BattleOverlay;
+    [SerializeField] private GameObject DefeatScreen;
+    [SerializeField] private GameObject VictoryScreen;  // not set yet!
 
 
-    public void SetAdventurerText(string text)
+
+    public void ShowDefeatScreen()
     {
-        AdventurerText.text = text;
+
+        BattleOverlay.SetActive(false);
+        DefeatScreen.SetActive(true);
+
     }
-
-
 
 }

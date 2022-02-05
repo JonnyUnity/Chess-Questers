@@ -155,7 +155,7 @@ public class CameraHandler : MonoBehaviour
         {
             Debug.Log(NewRotation);
             NewRotation *= Quaternion.Euler(rotateDirection * RotationAmount * Vector3.up);
-            transform.rotation = Quaternion.Lerp(_transform.rotation, NewRotation, 1/(Time.deltaTime * MovementTime));
+            _transform.rotation = Quaternion.Lerp(_transform.rotation, NewRotation, 1/(Time.deltaTime * MovementTime));
             yield return null;
         }
     }
@@ -209,6 +209,8 @@ public class CameraHandler : MonoBehaviour
 
     private void KeyPan(Vector2 direction)
     {
+        NewPosition = _transform.position;
+
         if (direction.x > 0)
         {
             NewPosition += _transform.right * MoveSpeed;
@@ -226,7 +228,7 @@ public class CameraHandler : MonoBehaviour
             NewPosition += _transform.forward * -MoveSpeed;
         }
 
-        transform.position = Vector3.Lerp(_transform.position, NewPosition, 1/(Time.deltaTime * MovementTime));
+        _transform.position = Vector3.Lerp(_transform.position, NewPosition, 1/(Time.deltaTime * MovementTime));
     }
 
 

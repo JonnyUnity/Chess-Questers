@@ -396,11 +396,26 @@ public class GameGrid : MonoBehaviour
     }
 
 
-    //public void UpdateGridOfMove(int startX, int startY, int finishX, int finishY)
-    //{
-    //    GetCell(startX, startY).IsOccupied = false;
-    //    GetCell(finishX, finishY).IsOccupied = true;
-    //}
+    public List<Creature> GetAttackedCreatures(GridCell targetCell, AttackClass attack, Vector2 direction)
+    {
+        List<Creature> attackedCreatures = new List<Creature>();
+        List<GridCell> attackedCells = new List<GridCell>();
+
+        // get attacked cells by attack
+        attackedCells.Add(targetCell);
+
+
+        // check each of these cells for creatures
+        foreach (GridCell cell in attackedCells)
+        {
+            if (cell.OccupiedUnit != null)
+            {
+                attackedCreatures.Add(cell.OccupiedUnit);
+            }    
+        }
+
+        return attackedCreatures;
+    }
 
     public void ClearGrid()
     {

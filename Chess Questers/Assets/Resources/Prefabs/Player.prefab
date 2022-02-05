@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 1694538411215306278}
   - component: {fileID: 2968012200793862396}
   - component: {fileID: -5936610518422675181}
+  - component: {fileID: 8911015144137382716}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -132,9 +133,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   State: 0
-  TargetX: 0
-  TargetY: 0
+  TargetCell: {fileID: 0}
   SelectedCircle: {fileID: 2824250524917877991}
+  OccupiedCell: {fileID: 0}
 --- !u!65 &-5936610518422675181
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -148,6 +149,29 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &8911015144137382716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694538411215306276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91313447a214e1f4cbb2057280d57575, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onInit:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  MaxHealth: 0
+  CurrentHealth: 0
 --- !u!1 &2824250524917877991
 GameObject:
   m_ObjectHideFlags: 0

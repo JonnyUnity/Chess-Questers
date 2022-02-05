@@ -24,19 +24,28 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private GameObject InitiativeTracker;
     private InitiativeManager InitiativeManager;
-    
+
+    [SerializeField] private UIManager _uiManager;
+
+    public GameStatesEnum State { get; private set; }
 
     // Start is called before the first frame update
     public void Awake()
     {
         AllMoveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
         Sprites = Resources.LoadAll<Sprite>("Sprites/");
+
+        _uiManager = GetComponent<UIManager>();
     }
 
     private void Start()
     {
-        StartCoroutine(BattleSystem.Instance.SetupCoroutine());
+        State = GameStatesEnum.Battle_Start;
+        StartCoroutine(BattleSystem.Instance.SetupCoroutine(this));
     }
+
+
+
 
     public MoveClass GetRandomMoveClass()
     {
@@ -53,6 +62,19 @@ public class GameManager : Singleton<GameManager>
     {
         int index = Random.Range(0, Sprites.Length);
         return Sprites[index];
+    }
+
+
+    public void UpdateState(GameStatesEnum state)
+    {
+        State = state;
+
+        if (State == GameStatesEnum.Battle_Victory)
+        {
+            _uiManager.ShowDefeatScreen(); // testing
+
+        }
+
     }
 
     //private void SpawnObstacles()
@@ -131,5 +153,17 @@ public class GameManager : Singleton<GameManager>
     //    UIManager.Instance.SetAdventurerText(adv.name);
     //    Grid.SetPossibleMovesForPlayer(adv);
     //}
+
+    public enum GameStatesEnum
+    {
+        Start,
+        World,
+        Battle_Start,
+        Battle_Victory,
+        Battle_Defeat,
+        Shop,
+        Campsite,
+        Game_Over
+    }
 
 }

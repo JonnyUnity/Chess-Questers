@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Creature : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class Creature : MonoBehaviour
     public MoveClass MoveClass { get; private set; }
 
     public Sprite PortraitSprite { get; private set; }
+
+    public HealthSystem HealthSystem { get; private set; }
 
     // Grid variables
     public int X { private set; get; }
@@ -41,12 +44,28 @@ public class Creature : MonoBehaviour
     private Transform _transform;
     private Quaternion _orientation;
 
+    public UnityEvent<Creature> OnDeath = new UnityEvent<Creature>();
+
     public void Awake()
     {
         Body = GameObject.Find("Body");
         Head = GameObject.Find("Head");
         _transform = transform;
         _orientation = transform.rotation;
+
+        HealthSystem = GetComponent<HealthSystem>();
+    }
+
+    private void Start()
+    {
+        HealthSystem.OnDeath.AddListener(CreatureDied);
+    }
+
+
+    public void CreatureDied()
+    {
+        OnDeath.Invoke(this);
+        
     }
 
     public void Init(string name, int hp, MoveClass moveClass, Sprite sprite, bool isEnemy, GridCell cell)
@@ -87,6 +106,11 @@ public class Creature : MonoBehaviour
     public Vector3 GetPosition()
     {
         return new Vector3(X, 0.1f, Y);
+    }
+
+    public int GetAttackDamage(AttackClass attack)
+    {
+        return 10;
     }
 
 

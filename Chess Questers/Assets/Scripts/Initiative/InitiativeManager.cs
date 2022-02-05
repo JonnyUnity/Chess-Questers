@@ -38,12 +38,15 @@ public class InitiativeManager : MonoBehaviour
 
         foreach (Creature a in adventurers)
         {
+            a.OnDeath.AddListener(RemoveCreature);
+
             a.RollInitiative();
             Creatures.Add(a);
         }
 
         foreach (Creature e in enemies)
         {
+            e.OnDeath.AddListener(RemoveCreature);
             e.RollInitiative();
             Creatures.Add(e);
         }
