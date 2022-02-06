@@ -135,13 +135,13 @@ public class GridCell : MonoBehaviour
         _highlightRenderer.material.color = _attackColur;
     }
 
-    public void OnMouseDown()
-    {
-        if ((IsMove && BattleSystem.State == BattleStatesEnum.PLAYER_MOVE) || (IsAttack && BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK))
-        {
-            BattleSystem.OnGridSelection(X, Y);
-        }
-    }
+    //public void OnMouseDown()
+    //{
+    //    if ((IsMove && BattleSystem.State == BattleStatesEnum.PLAYER_MOVE) || (IsAttack && BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK))
+    //    {
+    //        BattleSystem.OnGridSelection(X, Y);
+    //    }
+    //}
 
     public void OnMouseExit()
     {

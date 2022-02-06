@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.EventSystems;
 
 public class BattleSystem : Singleton<BattleSystem>
 {
@@ -120,19 +121,31 @@ public class BattleSystem : Singleton<BattleSystem>
     }
 
 
-    public void OnGridSelection(int x, int y)
+    //public void OnGridSelection(int x, int y)
+    //{
+    //    if (State == BattleStatesEnum.PLAYER_MOVE)
+    //    {
+    //        // do move...
+    //        StartCoroutine(PlayerMoveCoroutine(x, y));
+
+    //    }
+    //    else if (State == BattleStatesEnum.PLAYER_ATTACK)
+    //    {
+    //        // do attack
+    //        StartCoroutine(PlayerAttackCoroutine(x, y));
+
+    //    }
+    //}
+
+    public void OnGridCellClick(GridCell cell)
     {
-        if (State == BattleStatesEnum.PLAYER_MOVE)
+        if (State == BattleStatesEnum.PLAYER_MOVE && cell.IsMove)
         {
-            // do move...
-            StartCoroutine(PlayerMoveCoroutine(x, y));
-
+            StartCoroutine(PlayerMoveCoroutine(cell.X, cell.Y));
         }
-        else if (State == BattleStatesEnum.PLAYER_ATTACK)
+        else if (State == BattleStatesEnum.PLAYER_ATTACK && cell.IsAttack)
         {
-            // do attack
-            StartCoroutine(PlayerAttackCoroutine(x, y));
-
+            StartCoroutine(PlayerAttackCoroutine(cell.X, cell.Y));
         }
     }
 
@@ -333,18 +346,24 @@ public class BattleSystem : Singleton<BattleSystem>
 
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            int layerMask = 1 << 6;
-
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, layerMask))
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                GameObject hitObject = hitInfo.transform.gameObject;
-                if (hitObject.TryGetComponent(out GridCell selectedCell))
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                int layerMask = 1 << 6;
+
+                if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
                 {
-                    Debug.Log(selectedCell.name, this);
+                    GameObject hitObject = hitInfo.transform.gameObject;
+                    if (hitObject.TryGetComponent(out GridCell selectedCell))
+                    {
+                        Debug.Log(selectedCell.name, this);
+                        OnGridCellClick(selectedCell);
+                    }
                 }
             }
+
+            
         }
 
         Creature c = InitiativeManager.GetCurrentCreature();
