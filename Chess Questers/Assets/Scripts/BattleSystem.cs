@@ -28,6 +28,8 @@ public class BattleSystem : Singleton<BattleSystem>
     private GameObject CameraRig;
     private CameraHandler CameraHandler;
 
+    private Camera _camera;
+
     //[SerializeField]
     //private CinemachineVirtualCamera VirtualCamera;
 
@@ -38,6 +40,8 @@ public class BattleSystem : Singleton<BattleSystem>
     // Start is called before the first frame update
     public void Awake()
     {
+        _camera = Camera.main;
+
         State = BattleStatesEnum.START;
         UIHandler = CreaturePanel.GetComponent<BattleUIHandler>();
 
@@ -346,9 +350,9 @@ public class BattleSystem : Singleton<BattleSystem>
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //if (!EventSystem.current.IsPointerOverGameObject())
+            //{
+                Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 
                 int layerMask = 1 << 6;
 
@@ -361,7 +365,7 @@ public class BattleSystem : Singleton<BattleSystem>
                         OnGridCellClick(selectedCell);
                     }
                 }
-            }
+            //}
 
             
         }
@@ -386,7 +390,7 @@ public class BattleSystem : Singleton<BattleSystem>
     {
 
         UIHandler.UpdateStateText("DEFEAT!");
-
+        _gameManager.UpdateState(GameManager.GameStatesEnum.Battle_Defeat);
 
         // go to post-run score screen...
     }

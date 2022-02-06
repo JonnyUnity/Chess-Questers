@@ -154,6 +154,12 @@ public class Creature : MonoBehaviour
         State = CreatureStatesEnum.MOVING;
     }
 
+    private void OnMouseEnter()
+    {
+        // show creature stats!
+        Debug.Log(name, this);
+    }
+
 }
 
 public enum CreatureStatesEnum

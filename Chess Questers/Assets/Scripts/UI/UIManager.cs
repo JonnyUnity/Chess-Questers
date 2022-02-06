@@ -13,16 +13,16 @@ public class UIManager : MonoBehaviour
 
     public void ShowVictoryScreen()
     {
-        BattleOverlay.SetActive(false);
-        VictoryScreen.SetActive(true);
+        //BattleOverlay.SetActive(false);
+        //VictoryScreen.SetActive(true);
         StartCoroutine(FadeToBlackAnimation());
     }
 
     public void ShowDefeatScreen()
     {
-        BattleOverlay.SetActive(false);
-        DefeatScreen.SetActive(true);
-        StartCoroutine(FadeToBlackAnimation());
+        //BattleOverlay.SetActive(false);
+        //DefeatScreen.SetActive(true);
+        //StartCoroutine(FadeToBlackAnimation());
     }
 
     private IEnumerator FadeToBlackAnimation()
