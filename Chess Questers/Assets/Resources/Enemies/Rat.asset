@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f39767ac5df3f4946b78114124172735, type: 3}
+  m_Name: Rat
+  m_EditorClassIdentifier: 
+  ID: 1001
+  Name: Rat
+  Health: 5
+  CharacterModel: 1001
+  MoveClass: {fileID: 11400000, guid: 4d62f00f94d59b6428f7a3f79408043a, type: 2}
+  Actions:
+  - {fileID: 11400000, guid: 8c99152c553542847a5eef937891818b, type: 2}

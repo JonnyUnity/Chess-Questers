@@ -69,7 +69,6 @@ public class InitiativeManager : MonoBehaviour
     public Creature StartInitiative()
     {
         Creature c = GetCurrentCreature();
-        c.ToggleSelected(true);
 
         Debug.Log(c.CreatureName + " - " + c.Initiative + " - Enemy? " + c.IsEnemy, this);
         TurnText.text = c.CreatureName;
@@ -134,10 +133,8 @@ public class InitiativeManager : MonoBehaviour
     private Creature GetNextCreature()
     {
         Creature c = Creatures.First();
-        c.ToggleSelected(false);
         Creatures.RemoveAt(0);
         Creatures.Add(c);
-        Creatures.First().ToggleSelected(true);
 
         return GetCurrentCreature();
     }

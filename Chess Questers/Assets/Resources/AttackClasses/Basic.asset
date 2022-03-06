@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a60cf0c8a218774b8a42e05642b26dc, type: 3}
   m_Name: Basic
   m_EditorClassIdentifier: 
-  Name: 
+  ID: 1
+  Name: Melee
   Size: 1
-  Range: 0
+  Range: 1
   Shape: 0
   MoveTarget: 0
   ForPlayer: 1
   ForEnemy: 1
+  additionalAttackedCellOffsets: []

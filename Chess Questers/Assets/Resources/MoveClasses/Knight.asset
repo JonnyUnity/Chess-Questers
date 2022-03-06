@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88178c384e2113e47acb7abbae586705, type: 3}
   m_Name: Knight
   m_EditorClassIdentifier: 
+  ID: 4
   MoveType: 3
+  DebugColor: {r: 0.04685831, g: 0.3679245, b: 0.087456085, a: 0}
   MoveLimit: 2147483647
   IsJumpingPiece: 1
   CanRam: 0

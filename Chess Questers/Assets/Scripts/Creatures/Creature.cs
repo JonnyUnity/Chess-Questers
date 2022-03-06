@@ -37,12 +37,15 @@ public class Creature : MonoBehaviour
     private int TargetY;
     private float MoveSpeed = 10f;
 
-    [SerializeField] private GameObject SelectedCircle;
-
     public GridCell OccupiedCell;
 
     private Transform _transform;
     private Quaternion _orientation;
+
+    [SerializeField] private AttackClass[] _attacks;
+    private AttackClass _selectedAttack;
+    private int _selectedAttackIndex;
+
 
     public UnityEvent<Creature> OnDeath = new UnityEvent<Creature>();
 
@@ -65,18 +68,21 @@ public class Creature : MonoBehaviour
     public void CreatureDied()
     {
         OnDeath.Invoke(this);
-        Destroy(gameObject, 5f);
+        Destroy(gameObject, 2f);
         
     }
 
-    public void Init(string name, int hp, MoveClass moveClass, Sprite sprite, bool isEnemy, GridCell cell)
+    public void Init(string name, int hp, MoveClass moveClass, AttackClass[] attackClasses, Sprite sprite, bool isEnemy, GridCell cell)
     {
         State = CreatureStatesEnum.IDLE;
 
         CreatureName = name;
         MaxHP = hp;
         CurrentHP = hp;
+        
         MoveClass = moveClass;
+        _attacks = attackClasses;
+
         PortraitSprite = sprite;
         IsEnemy = isEnemy;
         OccupiedCell = cell;
@@ -98,16 +104,37 @@ public class Creature : MonoBehaviour
         Head.GetComponent<Renderer>().material.color = c;
     }
 
-    //public void SetPosition(int x, int y)
-    //{
-    //    X = x;
-    //    Y = y;
-    //}
 
     public Vector3 GetPosition()
     {
         return new Vector3(X, 0.1f, Y);
     }
+
+
+    #region Attacks
+
+
+    public AttackClass[] GetAttacks()
+    {
+        return _attacks;
+    }
+
+    public void SetSelectedAttack(AttackClass selectedAttack)
+    {
+        _selectedAttack = selectedAttack;
+    }
+
+    public void SetSelectedAttack(int index)
+    {
+        _selectedAttack = _attacks[index];
+    }
+
+
+    public AttackClass GetSelectedAttack()
+    {
+        return _selectedAttack;
+    }
+
 
     public int GetAttackDamage(AttackClass attack)
     {
@@ -115,10 +142,9 @@ public class Creature : MonoBehaviour
     }
 
 
-    public void ToggleSelected(bool toggle)
-    {
-        SelectedCircle.SetActive(toggle);
-    }
+
+    #endregion
+
 
     public void LookAtCell(Vector3 pos)
     {

@@ -47,7 +47,7 @@ public class GameGrid : MonoBehaviour
         BattleSystem = battleSystem;
         Grid = new GameObject[Height, Width];
 
-        yield return new WaitForSeconds(1f);
+        //yield return new WaitForSeconds(1f);
 
         if (GridCellPrefab == null)
         {
@@ -55,9 +55,24 @@ public class GameGrid : MonoBehaviour
         }
 
         // Make Grid
-        for (int y = 0; y < Height; y++)
+        //for (int y = 0; y < Height; y++)
+        //{
+        //    for (int x = 0; x < Width; x++)
+        //    {
+        //        Grid[x, y] = Instantiate(GridCellPrefab, new Vector3(x * GridSpacesize, 0.1f, y * GridSpacesize), Quaternion.identity);
+
+        //        bool isLightSquare = (x + y) % 2 != 0;
+        //        var squareColour = isLightSquare ? lightColor : darkColor;
+        //        GridCell cell = GetCell(x, y);
+        //        cell.Setup(BattleSystem, x, y, squareColour);
+        //        cell.transform.parent = transform;
+        //        cell.name = $"Grid Space (x:{x}, y:{y})";
+        //    }
+        //}
+
+        for (int x = 0; x < Height; x++)
         {
-            for (int x = 0; x < Width; x++)
+            for (int y = 0; y < Width; y++)
             {
                 Grid[x, y] = Instantiate(GridCellPrefab, new Vector3(x * GridSpacesize, 0.1f, y * GridSpacesize), Quaternion.identity);
 
@@ -69,6 +84,7 @@ public class GameGrid : MonoBehaviour
                 cell.name = $"Grid Space (x:{x}, y:{y})";
             }
         }
+
         yield return new WaitForSeconds(0.1f);
 
         ComputeMoveData();
@@ -396,14 +412,26 @@ public class GameGrid : MonoBehaviour
     }
 
 
-    public List<Creature> GetAttackedCreatures(GridCell targetCell, AttackClass attack, Vector2 direction)
+    public List<Creature> GetAttackedCreatures(GridCell targetCell, AttackClass attack)
     {
         List<Creature> attackedCreatures = new List<Creature>();
         List<GridCell> attackedCells = new List<GridCell>();
 
         // get attacked cells by attack
         attackedCells.Add(targetCell);
+        int origX = targetCell.X;
+        int origY = targetCell.Y;
 
+        foreach (Vector2 offset in attack.additionalAttackedCellOffsets)
+        {
+            int newX = origX + (int)offset.x;
+            int newY = origY + (int)offset.y;
+
+            if (CellExists(newX, newY))
+            {
+                attackedCells.Add(GetCell(newX, newY));
+            }
+        }
 
         // check each of these cells for creatures
         foreach (GridCell cell in attackedCells)

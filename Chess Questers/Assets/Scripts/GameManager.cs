@@ -20,6 +20,7 @@ public class GameManager : Singleton<GameManager>
     private GameObject AdventurerObj;
 
     private MoveClass[] AllMoveClasses;
+    private AttackClass[] AllAttackClasses;
     private Sprite[] Sprites;
 
     [SerializeField] private GameObject InitiativeTracker;
@@ -33,6 +34,7 @@ public class GameManager : Singleton<GameManager>
     public void Awake()
     {
         AllMoveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
+        AllAttackClasses = Resources.LoadAll<AttackClass>("AttackClasses/");
         Sprites = Resources.LoadAll<Sprite>("Sprites/");
 
         _uiManager = GetComponent<UIManager>();
@@ -41,7 +43,7 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         State = GameStatesEnum.Battle_Start;
-        StartCoroutine(BattleSystem.Instance.SetupCoroutine(this));
+        //StartCoroutine(BattleSystem.Instance.SetupCoroutine(this));
     }
 
 
@@ -57,6 +59,12 @@ public class GameManager : Singleton<GameManager>
         int index = Random.Range(0, playerMoveClasses.Length);
         return playerMoveClasses[index];
     }
+
+    public AttackClass[] GetAttacks()
+    {
+        return AllAttackClasses.Where(w => w.name == "Fireball").ToArray();
+    }
+
 
     public Sprite GetRandomSprite()
     {

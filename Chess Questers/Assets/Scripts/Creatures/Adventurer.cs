@@ -14,10 +14,10 @@ public class Adventurer : Creature
     //public int CellY { private set; get; }
     
 
-    public new void Init(string name, int hp, MoveClass moveClass, Sprite sprite, bool isEnemy, GridCell cell)
+    public new void Init(string name, int hp, MoveClass moveClass, AttackClass[] attacks, Sprite sprite, bool isEnemy, GridCell cell)
     {
         // Other setup stuff...
-        base.Init(name, hp, moveClass, sprite, isEnemy, cell);
+        base.Init(name, hp, moveClass, attacks, sprite, isEnemy, cell);
     }
 
 }

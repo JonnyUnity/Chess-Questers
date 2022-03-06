@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88178c384e2113e47acb7abbae586705, type: 3}
   m_Name: Checker
   m_EditorClassIdentifier: 
+  ID: 5
   MoveType: 3
   MoveLimit: 2147483647
   IsJumpingPiece: 1

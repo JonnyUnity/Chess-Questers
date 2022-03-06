@@ -34,6 +34,7 @@ public class CameraHandler : MonoBehaviour
     private Transform CreatureTransform;
 
     private Transform _transform;
+    private Vector3 CreaturePosition;
 
     private void Awake()
     {
@@ -69,11 +70,16 @@ public class CameraHandler : MonoBehaviour
 
     private void RecenterOnActiveCharacter()
     {
-        if (CreatureTransform != null)
+        //if (CreatureTransform != null)
+        //{
+        //    // set default zoom, rotation etc...
+        //    //StartCoroutine(MoveToCharacterCoroutine());
+        //    _transform.position = CreatureTransform.position;
+        //}
+
+        if (CreaturePosition != null)
         {
-            // set default zoom, rotation etc...
-            //StartCoroutine(MoveToCharacterCoroutine());
-            _transform.position = CreatureTransform.position;
+            _transform.position = CreaturePosition;
         }
 
     }
@@ -81,6 +87,7 @@ public class CameraHandler : MonoBehaviour
     private IEnumerator MoveToCharacterCoroutine()
     {
         NewPosition = _transform.position;
+        
         var t = 0f;
         var cameraMovementDuration = 1f;
 
@@ -88,7 +95,7 @@ public class CameraHandler : MonoBehaviour
         {
             // variable
             t += Time.deltaTime / cameraMovementDuration;
-            _transform.position = Vector3.Lerp(NewPosition, CreatureTransform.position, t);
+            _transform.position = Vector3.Lerp(NewPosition, CreaturePosition, t);
 
             yield return null;
         }
@@ -153,7 +160,7 @@ public class CameraHandler : MonoBehaviour
     {
         while (IsRotating)
         {
-            Debug.Log(NewRotation);
+            //Debug.Log(NewRotation);
             NewRotation *= Quaternion.Euler(rotateDirection * RotationAmount * Vector3.up);
             _transform.rotation = Quaternion.Lerp(_transform.rotation, NewRotation, 1/(Time.deltaTime * MovementTime));
             yield return null;
@@ -282,5 +289,10 @@ public class CameraHandler : MonoBehaviour
         StartCoroutine(MoveToCharacterCoroutine());
     }
 
+    public void SwapToCharacter(Vector3 creaturePosition)
+    {
+        CreaturePosition = creaturePosition;
+        StartCoroutine(MoveToCharacterCoroutine());
+    }
 
 }
