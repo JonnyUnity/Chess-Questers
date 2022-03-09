@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public class NewInitiative
+public class InitiativeData
 {
     public int TurnNumber;
     public CharacterTurn[] TurnOrder;

@@ -66,6 +66,7 @@ public class CameraHandler : MonoBehaviour
         Controls.Battle.RecenterOnActiveCharacter.performed += ctx => RecenterOnActiveCharacter();
 
         Controls.Enable();
+
     }
 
     private void RecenterOnActiveCharacter()
@@ -294,5 +295,6 @@ public class CameraHandler : MonoBehaviour
         CreaturePosition = creaturePosition;
         StartCoroutine(MoveToCharacterCoroutine());
     }
+
 
 }

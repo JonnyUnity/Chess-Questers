@@ -19,17 +19,21 @@ public class QuestStartManager : Singleton<QuestStartManager>
     [SerializeField] private CharacterSelectManager _character2Manager;
     [SerializeField] private CharacterSelectManager _character3Manager;
 
-    private QuestData _questData;
+    //private QuestData _questData;
+    private QuestJsonData _newData;
 
-    private ImprovedCharacter[] Characters;
+    //private ImprovedCharacter[] Characters;
+    private CharacterJsonData[] NewChars;
+
 
     void Start()
     {
-
-        Characters = new ImprovedCharacter[3];
+        NewChars = new CharacterJsonData[3];
+        //Characters = new ImprovedCharacter[3];
         _characterNames = _namesText.Split(" ");
 
-        _questData = NewGameManager.Instance.InitQuestData();
+        //_questData = GameManager.Instance.InitQuestData();
+        _newData = GameManager.Instance.InitNewQuestData();
 
         _character1Manager.SetCharacterModel(_character1GameObject);
         _character2Manager.SetCharacterModel(_character2GameObject);
@@ -42,7 +46,7 @@ public class QuestStartManager : Singleton<QuestStartManager>
     }
 
 
-    public ImprovedCharacter RandomiseCharacter(int characterSlot)
+    public CharacterJsonData RandomiseCharacter(int characterSlot)
     {
         // generate random name..
 
@@ -51,21 +55,18 @@ public class QuestStartManager : Singleton<QuestStartManager>
         // select actions (weighted based on move class)
 
         // select random character model...
-        MoveClass mc = NewGameManager.Instance.GetRandomMoveClass();
-        AttackClass[] actions = NewGameManager.Instance.GetAttacks(mc);
+        MoveClass mc = GameManager.Instance.GetRandomMoveClass();
+        int[] actions = GameManager.Instance.GetActionIDs(mc);
 
         int nameIndex = Random.Range(0, _characterNames.Length);
         string charName = _characterNames[nameIndex];
 
-        ImprovedCharacter newCharacter = new ImprovedCharacter(charName, 1, mc, actions, 10);
+        //ImprovedCharacter newCharacter = new ImprovedCharacter(charName, 1, mc, actions, 10);
+        CharacterJsonData newChar = new CharacterJsonData(charName, 1, mc.ID, actions, 10);
 
-
-        Characters[characterSlot] = newCharacter;
-
-
-        // put these details somewhere ready for saving...
-
-        return newCharacter;
+        NewChars[characterSlot] = newChar;
+        
+        return newChar;
 
     }
 
@@ -75,10 +76,12 @@ public class QuestStartManager : Singleton<QuestStartManager>
     {
 
         // create save file with character data
-        _questData.PartyMembers = new List<ImprovedCharacter>(Characters);
+        //_questData.PartyMembers = new List<ImprovedCharacter>(Characters);
 
-        SaveDataManager.Save(_questData);
+        //SaveDataManager.Save(_questData);
 
+        _newData.PartyMembers = NewChars;
+        SaveDataManager.SaveNew(_newData);
 
         // randomise world map?
 

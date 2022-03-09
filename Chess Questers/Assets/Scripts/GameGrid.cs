@@ -12,15 +12,14 @@ public class GameGrid : MonoBehaviour
 
     private int NumObstacles;
 
-    [SerializeField]
-    private GameObject GridCellPrefab;
+    [SerializeField] private GameObject GridCellPrefab;
     private GameObject ObstaclePrefab;
     private GameObject[,] Grid;
 
-    [SerializeField]
-    private Color lightColor;
-    [SerializeField]
-    private Color darkColor;
+    [SerializeField] private Color lightColor;
+    [SerializeField] private Color darkColor;
+
+    [SerializeField] private GameObject _attackTemplatePrefab;
 
     private BattleSystem BattleSystem;
 
@@ -40,6 +39,81 @@ public class GameGrid : MonoBehaviour
         GridCellPrefab = Resources.Load("Prefabs/GridCell") as GameObject;
         ObstaclePrefab = Resources.Load("Prefabs/Obstacle") as GameObject;
 
+        BattleEvents.OnPlayerActionSelected += ShowActionOnGrid;
+
+    }
+
+
+    private void OnDisable()
+    {
+        BattleEvents.OnPlayerActionSelected -= ShowActionOnGrid;
+    }
+
+
+    private void ShowActionOnGrid(int characterID, ActionClass action, int x, int y)
+    {
+
+        ClearGrid();
+
+        // get attack template from action
+        Debug.Log("Action: " + action.Name + " selected!");
+
+        int minRange = action.MinRange;
+        int maxRange = action.MaxRange;
+
+        for (int i = x - maxRange; i <= x + maxRange; i++)
+        {
+            for (int j = y - maxRange; j <= y + maxRange; j++)
+            {
+                if (0 <= i && i < Width && 0 <= j && j < Height)
+                {
+
+                    GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                    int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+                    //Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+
+                    if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                    {
+                        cell.SetAsValidAttack();
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    public void CreateGameGrid(BattleSystem battleSystem)
+    {
+        BattleSystem = battleSystem;
+        Grid = new GameObject[Height, Width];
+
+        //yield return new WaitForSeconds(1f);
+
+        if (GridCellPrefab == null)
+        {
+            Debug.Log("ERROR: Grid cell prefab not set!");
+        }
+
+        for (int x = 0; x < Height; x++)
+        {
+            for (int y = 0; y < Width; y++)
+            {
+                Grid[x, y] = Instantiate(GridCellPrefab, new Vector3(x * GridSpacesize, 0.1f, y * GridSpacesize), Quaternion.identity);
+
+                bool isLightSquare = (x + y) % 2 != 0;
+                var squareColour = isLightSquare ? lightColor : darkColor;
+                GridCell cell = GetCell(x, y);
+                cell.Setup(BattleSystem, x, y, squareColour);
+                cell.transform.parent = transform;
+                cell.name = $"Grid Space (x:{x}, y:{y})";
+            }
+        }
+
+        ComputeMoveData();
+        SpawnObstacles();
+
+
     }
 
     public IEnumerator CreateGameGridCoroutine(BattleSystem battleSystem)
@@ -53,22 +127,6 @@ public class GameGrid : MonoBehaviour
         {
             Debug.Log("ERROR: Grid cell prefab not set!");
         }
-
-        // Make Grid
-        //for (int y = 0; y < Height; y++)
-        //{
-        //    for (int x = 0; x < Width; x++)
-        //    {
-        //        Grid[x, y] = Instantiate(GridCellPrefab, new Vector3(x * GridSpacesize, 0.1f, y * GridSpacesize), Quaternion.identity);
-
-        //        bool isLightSquare = (x + y) % 2 != 0;
-        //        var squareColour = isLightSquare ? lightColor : darkColor;
-        //        GridCell cell = GetCell(x, y);
-        //        cell.Setup(BattleSystem, x, y, squareColour);
-        //        cell.transform.parent = transform;
-        //        cell.name = $"Grid Space (x:{x}, y:{y})";
-        //    }
-        //}
 
         for (int x = 0; x < Height; x++)
         {
@@ -96,7 +154,7 @@ public class GameGrid : MonoBehaviour
 
         // First 4 are orthogonal, last 4 are diagonals (N, S, W, E, NW, SE, NE, SW)
         slideOffsets = new List<(int, int)>() { (0, 1), (0, -1), (-1, 0), (1, 0), (-1, 1), (1, -1), (1, 1), (-1, -1) };
-        knightOffsets = new List<(int, int)>() { (2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1) };
+        knightOffsets = new List<(int, int)>() { (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2) };
 
         int totalSquares = Width * Height;
         numSquaresToEdge = new int[totalSquares][];
@@ -104,26 +162,28 @@ public class GameGrid : MonoBehaviour
         // First 4 are orthogonal, last 4 are diagonals (N, S, W, E, NW, SE, NE, SW)
         for (int squareIndex = 0; squareIndex < totalSquares; squareIndex++)
         {
-            int y = squareIndex / Width;
-            int x = squareIndex - y * Width;
+            int x = squareIndex / Width;
+            int y = squareIndex - x * Width;
 
-            int north = Height - y - 1;
-            int south = y;
-            int west = x;
-            int east = Width - x - 1;
+            int north = Height - x - 1;
+            int south = x;
+            int west = y;
+            int east = Width - y - 1;
             numSquaresToEdge[squareIndex] = new int[8];
             numSquaresToEdge[squareIndex][0] = north;
             numSquaresToEdge[squareIndex][1] = south;
             numSquaresToEdge[squareIndex][2] = west;
             numSquaresToEdge[squareIndex][3] = east;
-            numSquaresToEdge[squareIndex][4] = System.Math.Min(north, west);
-            numSquaresToEdge[squareIndex][5] = System.Math.Min(south, east);
-            numSquaresToEdge[squareIndex][6] = System.Math.Min(north, east);
-            numSquaresToEdge[squareIndex][7] = System.Math.Min(south, west);
+            numSquaresToEdge[squareIndex][4] = Math.Min(north, west);
+            numSquaresToEdge[squareIndex][5] = Math.Min(south, east);
+            numSquaresToEdge[squareIndex][6] = Math.Min(north, east);
+            numSquaresToEdge[squareIndex][7] = Math.Min(south, west);
 
+            //Debug.Log(squareIndex + " - " + string.Join(",", numSquaresToEdge[squareIndex]));
         }
 
-        Debug.Log("Move data done!");
+        
+       // Debug.Log("Move data done!");
 
     }
 
@@ -150,10 +210,10 @@ public class GameGrid : MonoBehaviour
         }
     }
 
-    public void GetMovesForPlayerNew(MoveClass moveClass, GridCell playerCell)
+    public void GetMovesForPlayerNew(MoveClass moveClass, int playerX, int playerY)
     {
         ClearGrid();
-        Debug.Log("Hero located x:" + playerCell.X + ", y:" + playerCell.Y);
+        Debug.Log("Hero located x:" + playerX + ", y:" + playerY);
 
         int startDirIndex = 0;
         int endDirIndex = 8;
@@ -164,8 +224,8 @@ public class GameGrid : MonoBehaviour
             {
                 foreach (var jumpMove in knightOffsets)
                 {
-                    int squareX = playerCell.X + jumpMove.Item1;
-                    int squareY = playerCell.Y + jumpMove.Item2;
+                    int squareX = playerX + jumpMove.Item1;
+                    int squareY = playerY + jumpMove.Item2;
                     if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
                     {
                         GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
@@ -179,7 +239,8 @@ public class GameGrid : MonoBehaviour
         }
         else
         {
-            int playerSquare = (playerCell.Y * Width) + playerCell.X;
+            int playerSquare = (playerY * Height) + playerX;
+            Debug.Log("Character is in: " + playerSquare);
 
             switch (moveClass.MoveType)
             {
@@ -205,9 +266,10 @@ public class GameGrid : MonoBehaviour
 
                 for (int n = 0; n < maxDistance; n++)
                 {
-                    Debug.Log(currentDirOffset + " " + (n + 1));
-                    int squareX = playerCell.X + currentDirOffset.Item1 * (n + 1);
-                    int squareY = playerCell.Y + currentDirOffset.Item2 * (n + 1);
+                    //Debug.Log(currentDirOffset + " " + (n + 1));
+                    int squareX = playerX + currentDirOffset.Item1 * (n + 1);
+                    int squareY = playerY + currentDirOffset.Item2 * (n + 1);
+                    Debug.Log(squareX + ", " + squareY);
                     GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                     if (cell.IsOccupiedNew())
                     {
@@ -223,6 +285,11 @@ public class GameGrid : MonoBehaviour
 
     }
 
+
+    private void GetAttacksForPlayer(ActionClass action, int x, int y)
+    {
+
+    }
 
     public void GetMovesForPlayer(MoveClass moveClass, int x, int y)
     {
@@ -412,9 +479,9 @@ public class GameGrid : MonoBehaviour
     }
 
 
-    public List<Creature> GetAttackedCreatures(GridCell targetCell, AttackClass attack)
+    public List<ImprovedCharacter> GetAttackedCreatures(GridCell targetCell, ActionClass action)
     {
-        List<Creature> attackedCreatures = new List<Creature>();
+        List<ImprovedCharacter> attackedCreatures = new List<ImprovedCharacter>();
         List<GridCell> attackedCells = new List<GridCell>();
 
         // get attacked cells by attack
@@ -422,7 +489,7 @@ public class GameGrid : MonoBehaviour
         int origX = targetCell.X;
         int origY = targetCell.Y;
 
-        foreach (Vector2 offset in attack.additionalAttackedCellOffsets)
+        foreach (Vector2 offset in action.additionalAttackedCellOffsets)
         {
             int newX = origX + (int)offset.x;
             int newY = origY + (int)offset.y;
@@ -438,7 +505,7 @@ public class GameGrid : MonoBehaviour
         {
             if (cell.OccupiedUnit != null)
             {
-                attackedCreatures.Add(cell.OccupiedUnit);
+               attackedCreatures.Add(cell.OccupiedUnit);
             }    
         }
 
@@ -517,15 +584,15 @@ public class GameGrid : MonoBehaviour
         return cell;
     }
 
-    public void AddToCell(Creature c, int x, int y)
-    {
-        GridCell cell = GetCell(x, y);
+    //public void AddToCell(Creature c, int x, int y)
+    //{
+    //    GridCell cell = GetCell(x, y);
 
-    }
+    //}
 
     private bool CellExists(int x, int y)
     {
-        return ((0 <= x) && (x <= Height) && (0 <= y) && (y <= Height));
+        return ((0 <= x) && (x < Height) && (0 <= y) && (y < Width));
     }
 
 }

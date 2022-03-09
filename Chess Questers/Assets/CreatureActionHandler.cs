@@ -6,17 +6,17 @@ using UnityEngine;
 public class CreatureActionHandler : MonoBehaviour
 {
 
-    [SerializeField] private AttackClass[] _actions;
-    private AttackClass _selectedAction;
+    [SerializeField] private ActionClass[] _actions;
+    private ActionClass _selectedAction;
 
 
-    public AttackClass[] GetActions()
+    public ActionClass[] GetActions()
     {
         return _actions;
     }
 
 
-    public void SetSelectedAction(AttackClass selectedAction)
+    public void SetSelectedAction(ActionClass selectedAction)
     {
         // only set it as selected if it exists amongst the list of attacks.
         if (Array.IndexOf(_actions, selectedAction) > 0)
@@ -25,7 +25,7 @@ public class CreatureActionHandler : MonoBehaviour
         }
     }
 
-    public AttackClass GetSelectedAction()
+    public ActionClass GetSelectedAction()
     {
         return _selectedAction;
     }

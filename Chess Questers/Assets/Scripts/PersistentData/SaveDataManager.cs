@@ -8,7 +8,26 @@ public class SaveDataManager
     public static string directory = "/SaveData/";
     public static string filename = "ChessQuesters.json";
 
-    public static bool Save(QuestData questData)
+    //public static bool Save(QuestData questData)
+    //{
+
+    //    string dir = Application.persistentDataPath + directory;
+    //    if (!Directory.Exists(dir))
+    //    {
+    //        Directory.CreateDirectory(dir);
+    //    }
+
+    //    QuestJsonData jsonData = new QuestJsonData(questData);
+
+    //    string saveData = JsonUtility.ToJson(jsonData);
+
+    //    Debug.Log(saveData);
+    //    File.WriteAllText(dir + filename, saveData);
+
+    //    return true;
+    //}
+
+    public static bool SaveNew(QuestJsonData questData)
     {
 
         string dir = Application.persistentDataPath + directory;
@@ -17,9 +36,7 @@ public class SaveDataManager
             Directory.CreateDirectory(dir);
         }
 
-        QuestJsonData jsonData = new QuestJsonData(questData);
-
-        string saveData = JsonUtility.ToJson(jsonData);
+        string saveData = JsonUtility.ToJson(questData);
 
         Debug.Log(saveData);
         File.WriteAllText(dir + filename, saveData);
@@ -28,9 +45,29 @@ public class SaveDataManager
     }
 
 
-    public static QuestData Load()
+    //public static QuestData Load()
+    //{
+    //    QuestData questData = new QuestData();
+    //    QuestJsonData jsonData = new QuestJsonData();
+
+    //    if (QuestDataExists())
+    //    {
+    //        string json = File.ReadAllText(Filename());
+    //        jsonData = JsonUtility.FromJson<QuestJsonData>(json);
+
+    //        questData = new QuestData(jsonData);
+
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("Save file could not be found!");
+    //    }
+
+    //    return questData;
+    //}
+
+    public static QuestJsonData LoadNew()
     {
-        QuestData questData = new QuestData();
         QuestJsonData jsonData = new QuestJsonData();
 
         if (QuestDataExists())
@@ -38,15 +75,13 @@ public class SaveDataManager
             string json = File.ReadAllText(Filename());
             jsonData = JsonUtility.FromJson<QuestJsonData>(json);
 
-            questData = new QuestData(jsonData);
-
         }
         else
         {
             Debug.Log("Save file could not be found!");
         }
 
-        return questData;
+        return jsonData;
     }
 
 
@@ -77,7 +112,7 @@ public class SaveDataManager
         List<ImprovedCharacter> characters = new List<ImprovedCharacter>();
         foreach (CharacterJsonData c in data)
         {
-            characters.Add(new ImprovedCharacter(c, isFriendly));
+            //characters.Add(new ImprovedCharacter(c));
         }
 
         return characters;

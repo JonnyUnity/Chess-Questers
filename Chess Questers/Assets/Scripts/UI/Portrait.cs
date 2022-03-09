@@ -10,24 +10,24 @@ public class Portrait : MonoBehaviour
     [SerializeField] private Image BackgroundColour;
     [SerializeField] private Image CharacterImage;
 
-    private Creature Creature;
+    private ImprovedCharacter Creature;
 
-    public void SetupPortrait(Creature creature)
+    public void SetupPortrait(ImprovedCharacter creature)
     {
         Creature = creature;
 
-        if (creature.IsEnemy)
-        {
-            BorderImage.color = Color.red;
-            BackgroundColour.color = Color.red;
-        } 
-        else
-        {
-            BorderImage.color = Color.blue;
-            BackgroundColour.color = Color.blue;
-        }
+        //if (creature.IsEnemy)
+        //{
+        //    BorderImage.color = Color.red;
+        //    BackgroundColour.color = Color.red;
+        //} 
+        //else
+        //{
+        //    BorderImage.color = Color.blue;
+        //    BackgroundColour.color = Color.blue;
+        //}
 
-        CharacterImage.sprite = creature.PortraitSprite;
+        //CharacterImage.sprite = creature.PortraitSprite;
     }
 
 

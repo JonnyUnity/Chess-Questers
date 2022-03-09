@@ -16,7 +16,7 @@ public class QuestData
 
     public int Battle_ID;
     public int Battle_Layout;
-    public NewInitiative Initiative; // will this save to json...
+    public InitiativeData Initiative; // will this save to json...
 
 
     public QuestData()
@@ -31,20 +31,20 @@ public class QuestData
 
 
     // convert json data to objects used in game
-    public QuestData(QuestJsonData jsonData)
-    {
-        MapSeed = jsonData.MapSeed;
-        Floor = jsonData.Floor;
-        CurrentEncounterType = jsonData.CurrentEncounterType;
+    //public QuestData(QuestJsonData jsonData)
+    //{
+    //    MapSeed = jsonData.MapSeed;
+    //    Floor = jsonData.Floor;
+    //    CurrentEncounterType = jsonData.CurrentEncounterType;
         
-        // characterData => ImprovedCharacter
-        PartyMembers = SaveDataManager.DeserializeCharacterData(jsonData.PartyMembers, true);
+    //    // characterData => ImprovedCharacter
+    //    PartyMembers = SaveDataManager.DeserializeCharacterData(jsonData.PartyMembers, true);
 
-        Battle_ID = jsonData.Battle_ID;
-        Battle_Layout = jsonData.Battle_Layout;
-        Initiative = jsonData.Initiative;
-        Enemies = SaveDataManager.DeserializeCharacterData(jsonData.Enemies, false);
-    }
+    //    Battle_ID = jsonData.Battle_ID;
+    //    Battle_Layout = jsonData.Battle_Layout;
+    //    Initiative = jsonData.Initiative;
+    //    Enemies = SaveDataManager.DeserializeCharacterData(jsonData.Enemies, false);
+    //}
 
 
 
@@ -52,11 +52,3 @@ public class QuestData
 
 }
 
-public enum EncounterTypesEnum
-{
-    Map,
-    Battle,
-    Rest,
-    Shop,
-    Boss
-}

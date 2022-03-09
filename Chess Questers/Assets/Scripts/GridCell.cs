@@ -19,7 +19,7 @@ public class GridCell : MonoBehaviour
     [SerializeField] private Color _attackColur;
 
     // Saves a reference to the gameobject that gets placed on this cell.
-    public Creature OccupiedUnit = null;
+    public ImprovedCharacter OccupiedUnit = null;
 
     //public bool IsOccupied;
     public bool IsMove;
@@ -61,12 +61,12 @@ public class GridCell : MonoBehaviour
     }
 
 
-    public void SetUnit(Creature c)
+    public void SetUnit(ImprovedCharacter c)
     {
-        if (c.OccupiedCell != null)
-        {
-            c.OccupiedCell.OccupiedUnit = null;
-        }
+        //if (c.OccupiedCell != null)
+        //{
+        //    c.OccupiedCell.OccupiedUnit = null;
+        //}
 
         OccupiedUnit = c;
         c.OccupiedCell = this;
@@ -108,32 +108,26 @@ public class GridCell : MonoBehaviour
         
         if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
         {
-            //UpdateCellColour(_highlightColour);
-            //_highlight.SetActive(true);
-            HighlightMove();
-            BattleSystem.CharacterLook(X, Y);
+            BattleEvents.CellMoveHighlighted(this);
         }
         else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
         {
-            HightlightAttack();
-            BattleSystem.CharacterLook(X, Y);
+            BattleEvents.CellAttackHighlighted(this);
         }
 
     }
 
-    private void HighlightMove()
-    {
-        _highlight.SetActive(true);
-        //_highlightMaterial.color = _moveColour;
-        _highlightRenderer.material.color = _moveColour;
-    }
+    //private void HighlightMove()
+    //{
+    //    _highlight.SetActive(true);
+    //    _highlightRenderer.material.color = _moveColour;
+    //}
 
-    private void HightlightAttack()
-    {
-        _highlight.SetActive(true);
-        //_highlightMaterial.color = _attackColur;
-        _highlightRenderer.material.color = _attackColur;
-    }
+    //private void HightlightAttack()
+    //{
+    //    _highlight.SetActive(true);
+    //    _highlightRenderer.material.color = _attackColur;
+    //}
 
     //public void OnMouseDown()
     //{
@@ -151,13 +145,32 @@ public class GridCell : MonoBehaviour
         if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
         {
             //   UpdateCellColour(colour);
-            _highlight.SetActive(false);
+            //_highlight.SetActive(false);
+            BattleEvents.CellMoveUnhighlighted();
         }
         else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
         {
-            _highlight.SetActive(false);
+            //_highlight.SetActive(false);
+            //BattleEvents.CellMoveUnhighlighted();
+            BattleEvents.CellAttackUnhighlighted();
         }
     }
+
+
+    public void OnMouseDown()
+    {
+        if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
+        {
+            BattleEvents.CellMoveSelected(this);
+        }
+        else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
+        {
+            BattleEvents.CellAttackSelected(this);
+        }
+               
+
+    }
+
 
     private void UpdateCellColour(Color newColor)
     {
@@ -175,7 +188,7 @@ public class GridCell : MonoBehaviour
     public void SetAsValidAttack()
     {
         IsAttack = true;
-        colour = Color.red;
+        colour = Color.green;
         UpdateCellColour(colour);
     }
 

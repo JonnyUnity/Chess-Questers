@@ -1,51 +1,106 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class BattleUIHandler : MonoBehaviour
 {
 
-    [SerializeField] private TextMeshProUGUI StateText;
-    [SerializeField] private TextMeshProUGUI CharacterText;
+    [SerializeField] private TextMeshProUGUI _stateText;
+    [SerializeField] private TextMeshProUGUI _characterText;
 
 
-    [SerializeField] private GameObject AttackList;
-    [SerializeField] private GameObject Attack1Button;
-    [SerializeField] private GameObject Attack2Button;
-    [SerializeField] private GameObject Attack3Button;
-    [SerializeField] private GameObject Attack4Button;
+    [SerializeField] private GameObject _attackList;
+    [SerializeField] private GameObject[] _attackButtons;
+    [SerializeField] private GameObject PassButton;
 
+    private int _currentCharacterID;
+    private ActionClass[] _currentActions;
+    private int _characterX;
+    private int _characterY;
+
+
+    private void Awake()
+    {
+        BattleEvents.OnCellAttackSelected += AttackSelected;
+    }
+
+    private void AttackSelected(GridCell cell)
+    {
+        HideActions();
+    }
+
+    private void OnDestroy()
+    {
+        BattleEvents.OnCellAttackSelected -= AttackSelected;
+    }
 
     public void UpdateStateText(string text)
     {
-        StateText.text = text;
+        _stateText.text = text;
     }
 
     public void UpdateCharacterText(string text)
     {
-        CharacterText.text = text;
+        _characterText.text = text;
     }
 
-    public void BuildAttackList(Creature adv)
+
+    public void ShowActions(int characterID, ActionClass[] actions, int x, int y)
     {
-        // Update Attack buttons based on adventurer's attacks...
+        _currentCharacterID = characterID;
+        _currentActions = actions;
+        _characterX = x;
+        _characterY = y;
 
-        Attack1Button.SetActive(true);
+        HideActions();
 
-        var btn = Attack1Button.GetComponent<Button>();
-        var btnText = Attack1Button.GetComponentInChildren<TextMeshProUGUI>();
-        btnText.text = "ATTACK!";
+        for (int i = 0; i < actions.Length; i++)
+        {
+            var buttonText = _attackButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+            buttonText.text = actions[i].Name;
+            _attackButtons[i].SetActive(true);
+        }
 
-        btnText = Attack2Button.GetComponentInChildren<TextMeshProUGUI>();
-        btnText.text = "FIREBALL";
+        _attackList.SetActive(true);
+        PassButton.SetActive(true);
 
-        //Attack2Button.SetActive(false);
-        Attack3Button.SetActive(false);
-        Attack4Button.SetActive(false);
+    }
 
-        AttackList.SetActive(true);
+    public void SelectAttack()
+    {
+        var go = EventSystem.current.currentSelectedGameObject;
+        //Debug.Log(go.name + " clicked!");
+
+        // Extract action index
+        if (int.TryParse(go.name.Substring(0, 1), out int actionIndex))
+        {
+            ActionClass action = _currentActions[actionIndex];
+
+            BattleEvents.ActionSelected(_currentCharacterID, action, _characterX, _characterY);
+
+        }
+    }
+
+    public void SkipAction()
+    {
+
+        Debug.Log("Skipped action!");
+        HideActions();
+
+        BattleEvents.TurnOver();
+    }
+
+
+    private void HideActions()
+    {
+        foreach (var attackButton in _attackButtons)
+        {
+            attackButton.SetActive(false);
+        }
 
     }
 

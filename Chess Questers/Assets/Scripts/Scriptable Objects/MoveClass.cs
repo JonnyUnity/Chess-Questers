@@ -16,3 +16,13 @@ public class MoveClass : ScriptableObject
     public bool ForEnemy;
 
 }
+
+public enum MoveTypeEnum
+{
+    King,
+    Queen,
+    Bishop,
+    Rook,
+    Knight,
+    Checker
+}

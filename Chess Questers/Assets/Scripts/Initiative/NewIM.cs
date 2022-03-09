@@ -6,16 +6,31 @@ using UnityEngine;
 public class NewIM : MonoBehaviour
 {
 
-    public NewInitiative _init { get; private set; }
+    public InitiativeData _init { get; private set; }
+
+    public int ActiveCharacterID
+    {
+        get
+        {
+            return _init.TurnOrder[_init.TurnPointer].CharacterID;
+        }
+    }
 
     private void Awake()
     {
-        _init = new NewInitiative();
-        EventSystem.OnRollInitiative += Roll;
-        EventSystem.OnTurnOver += NextTurn;
-        EventSystem.OnDeath += UpdateTurnOrder;
+        _init = new InitiativeData();
+        BattleEvents.OnRollInitiative += Roll;
+        BattleEvents.OnTurnOver += NextTurn;
+        BattleEvents.OnDeath += CharacterDied;
     }
 
+    private void OnDisable()
+    {
+        BattleEvents.OnRollInitiative -= Roll;
+        BattleEvents.OnTurnOver -= NextTurn;
+        BattleEvents.OnDeath -= CharacterDied;
+
+    }
 
     public bool HasCombatStarted()
     {
@@ -33,7 +48,7 @@ public class NewIM : MonoBehaviour
     }
 
 
-    public void SetInitiative(NewInitiative current)
+    public void SetInitiative(InitiativeData current)
     {
         _init = current;
     }
@@ -62,15 +77,15 @@ public class NewIM : MonoBehaviour
 
         // Initiative all done so start battle!
         Debug.Log("Initiative - Start Battle!");
-        EventSystem.TurnStarted(_init.TurnOrder[0].CharacterID);
+        BattleEvents.TurnStarted(_init.TurnOrder[0].CharacterID);
 
     }
 
 
-    public int GetActiveCharacterID()
-    {
-        return _init.TurnOrder[_init.TurnPointer].CharacterID;
-    }
+    //public int GetActiveCharacterID()
+    //{
+    //    return _init.TurnOrder[_init.TurnPointer].CharacterID;
+    //}
 
 
     private void NextTurn()
@@ -85,23 +100,28 @@ public class NewIM : MonoBehaviour
 
         }
 
+        BattleEvents.TurnStarted(ActiveCharacterID);
     }
 
 
-    private void UpdateTurnOrder()
+    private void CharacterDied(int characterID)
     {
         Debug.Log("Someone died! Update the turn order!");
+
+        //CharacterTurn deadChar = _init.TurnOrder.Where(w => w.CharacterID == characterID).Single();
+
+        _init.TurnOrder = _init.TurnOrder.Where(w => w.CharacterID != characterID).ToArray();
 
         // If all enemies are dead...
         if (!_init.TurnOrder.Where(w => !w.IsFriendly).Any())
         {
-            EventSystem.Victory();
+            BattleEvents.Victory();
         }
 
         // if all party members are dead..
         if (!_init.TurnOrder.Where(w => w.IsFriendly).Any())
         {
-            EventSystem.Loss();
+            BattleEvents.Loss();
         }
 
 

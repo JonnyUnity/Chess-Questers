@@ -2,15 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Attack", menuName = "Chess Questers/Attack Class")]
-public class AttackClass : ScriptableObject
+[CreateAssetMenu(fileName = "New Action", menuName = "Chess Questers/Action Class")]
+public class ActionClass : ScriptableObject
 {
     public int ID;
     public string Name;
 
-    public int Size;
-    public int Range;
-    public AttackShapesEnum Shape;
+    public int Damage;
+    public int MinRange;
+    public int MaxRange;
+
+    public GameObject AttackTemplatePrefab;
+
+    public ActionShapesEnum Shape;
 
     public bool MoveTarget;
 
@@ -21,7 +25,7 @@ public class AttackClass : ScriptableObject
 
 }
 
-public enum AttackTypesEnum
+public enum ActionTypesEnum
 {
     ADJACENT,
     LINE,
@@ -29,7 +33,7 @@ public enum AttackTypesEnum
 
 }
 
-public enum AttackShapesEnum
+public enum ActionShapesEnum
 {
     POINT,
     LINE,

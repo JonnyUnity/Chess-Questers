@@ -11,7 +11,7 @@ public class CharacterSelectManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _moveClassText;
     [SerializeField] private TextMeshProUGUI _actionsText;
 
-    private ImprovedCharacter _characterData;
+    private CharacterJsonData _character;
     private GameObject _characterGameObject;
     private Renderer _renderer;
 
@@ -28,22 +28,27 @@ public class CharacterSelectManager : MonoBehaviour
 
     public void SetCharacterDetails()
     {
-        if (_characterData == null)
+        if (_character == null)
             return;
 
 
-        _nameText.text = _characterData.Name;
-        _moveClassText.text = _characterData.MoveClassText;
-        _actionsText.text = "ACTIONS: " + _characterData.ActionsText;
+        _nameText.text = _character.Name;
 
-        _renderer.material.color = _characterData.MoveClassColor;
+        MoveClass moveClass = GameManager.Instance.GetMoveClassWithID(_character.MoveClassID);
+        string moveClassText = moveClass.name;
+        string actionsText = GameManager.Instance.GetActionNamesFromIDs(_character.Actions);
+
+        _moveClassText.text = moveClassText;
+        _actionsText.text = "ACTIONS: " + actionsText;
+
+        _renderer.material.color = moveClass.DebugColor;
 
     }
 
 
     public void RerollCharacter()
     {
-        _characterData = QuestStartManager.Instance.RandomiseCharacter(_characterSlot);
+        _character = QuestStartManager.Instance.RandomiseCharacter(_characterSlot);
         SetCharacterDetails();
 
     }

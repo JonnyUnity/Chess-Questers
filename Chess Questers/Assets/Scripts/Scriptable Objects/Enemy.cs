@@ -11,6 +11,6 @@ public class Enemy : ScriptableObject
     public int CharacterModel;
 
     public MoveClass MoveClass;
-    public AttackClass[] Actions;
+    public ActionClass[] Actions;
 
 }

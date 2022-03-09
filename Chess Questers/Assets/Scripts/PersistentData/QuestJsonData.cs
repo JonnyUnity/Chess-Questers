@@ -18,7 +18,7 @@ public class QuestJsonData
     public int Battle_ID;
     public int Battle_Layout;
     public CharacterJsonData[] Enemies;
-    public NewInitiative Initiative;
+    public InitiativeData Initiative;
 
 
     public QuestJsonData()
@@ -49,4 +49,13 @@ public class QuestJsonData
     }
 
 
+}
+
+public enum EncounterTypesEnum
+{
+    Map,
+    Battle,
+    Rest,
+    Shop,
+    Boss
 }

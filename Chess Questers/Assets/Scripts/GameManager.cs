@@ -1,169 +1,212 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
 
-    private GameGrid Grid;
-    [SerializeField]
-    private GameObject AdventurerPrefab;
-
-    [SerializeField]
-    private GameObject ObstaclePrefab;
-    [SerializeField]
-    private int numObstacles;
-
-    private GameObject AdventurerObj;
-
-    private MoveClass[] AllMoveClasses;
-    private AttackClass[] AllAttackClasses;
-    private Sprite[] Sprites;
-
-    [SerializeField] private GameObject InitiativeTracker;
-    private InitiativeManager InitiativeManager;
-
-    [SerializeField] private UIManager _uiManager;
-
     public GameStatesEnum State { get; private set; }
 
-    // Start is called before the first frame update
+    private MoveClass[] _moveClasses;
+    private ActionClass[] _actionClasses;
+    private Enemy[] _enemies;
+    private Encounter[] _encounters;
+    private Sprite[] _debugPortraitSprites;
+
+
+    //private QuestData _questData;
+    private QuestJsonData _questData;
+
     public void Awake()
     {
-        AllMoveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
-        AllAttackClasses = Resources.LoadAll<AttackClass>("AttackClasses/");
-        Sprites = Resources.LoadAll<Sprite>("Sprites/");
+        _moveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
+        _actionClasses = Resources.LoadAll<ActionClass>("ActionClasses/");
+        _debugPortraitSprites = Resources.LoadAll<Sprite>("Sprites/");
+        _enemies = Resources.LoadAll<Enemy>("Enemies/");
+        _encounters = Resources.LoadAll<Encounter>("BattleEncounters/");
 
-        _uiManager = GetComponent<UIManager>();
+        SceneManager.sceneLoaded += LoadScene;
+        //EventSystem.OnBattleLoss += LostBattle;
+        //EventSystem.OnBattleVictory += WonBattle;
+
+        DontDestroyOnLoad(gameObject);
     }
 
-    private void Start()
+
+    private void LoadScene(Scene scene, LoadSceneMode mode)
     {
-        State = GameStatesEnum.Battle_Start;
-        //StartCoroutine(BattleSystem.Instance.SetupCoroutine(this));
+        // based on what the scene is, load various things...
+        if (scene.buildIndex == 2)
+        {
+            // battle encounter, find battlemanager and init?
+
+
+            Debug.Log("Loading Battle scene!");
+            //EventSystem.BattleStarted();
+
+        }
+
     }
 
 
+    //public QuestData InitQuestData()
+    //{
+    //    Encounter testEncounter = GetEncounter(1);
 
+    //    List<ImprovedCharacter> Enemies = testEncounter.GetEnemies();
+
+    //    QuestData qd = new QuestData()
+    //    {
+    //        Floor = 1,
+    //        CurrentEncounterType = EncounterTypesEnum.Battle,
+    //        Battle_ID = testEncounter.ID,
+    //        Battle_Layout = testEncounter.Layout,
+    //        Enemies = Enemies,
+    //    };
+
+    //    // other things to initialize can go here...
+        
+
+    //    return qd;
+
+    //}
+
+    public QuestJsonData InitNewQuestData()
+    {
+        Encounter testEncounter = GetEncounter(1);
+
+        CharacterJsonData[] Enemies = testEncounter.GetEnemiesJson();
+
+        QuestJsonData qd = new QuestJsonData()
+        {
+            Floor = 1,
+            CurrentEncounterType = EncounterTypesEnum.Battle,
+            Battle_ID = testEncounter.ID,
+            Battle_Layout = testEncounter.Layout,
+            Enemies = Enemies,
+        };
+
+        // other things to initialize can go here...
+
+
+        return qd;
+
+    }
+
+    public QuestJsonData GetQuestData()
+    {
+        _questData = SaveDataManager.LoadNew();
+        return _questData;
+    }
+
+
+    public void ContinueQuest()
+    {
+        _questData = SaveDataManager.LoadNew();
+        
+
+        // depending on where the player is on the quest, load the relevant scene...
+        switch (_questData.CurrentEncounterType)
+        {
+            case EncounterTypesEnum.Battle:
+                SceneManager.LoadScene(2);
+                break;
+            default:
+                Debug.Log($"Encounter Type {_questData.CurrentEncounterType.ToString()} ({_questData.CurrentEncounterType}) not implemented!");
+                break;
+        }
+
+        
+
+    }
+
+    public QuestJsonData LoadQuest(List<ImprovedCharacter> adventurers, List<ImprovedCharacter> enemies)
+    {
+        _questData = SaveDataManager.LoadNew();
+        adventurers = SaveDataManager.DeserializeCharacterData(_questData.PartyMembers, true);
+        enemies = SaveDataManager.DeserializeCharacterData(_questData.Enemies, false);
+
+        return _questData;
+    }
+
+    public void SaveQuest(QuestJsonData questData, List<ImprovedCharacter> adventurers, List<ImprovedCharacter> enemies)
+    {
+        questData.PartyMembers = SaveDataManager.SerializeCharacterData(adventurers);
+        questData.Enemies = SaveDataManager.SerializeCharacterData(enemies);
+
+        SaveDataManager.SaveNew(questData);
+    }
+
+
+    public Encounter GetEncounter(int encounterID)
+    {
+        return _encounters.Where(w => w.ID == encounterID).Single();
+    }
+
+    #region Battle Encounters
+
+    public void LostBattle()
+    {
+
+    }
+
+
+    public void WonBattle()
+    {
+
+    }
+
+    #endregion
+
+    #region Character
 
     public MoveClass GetRandomMoveClass()
     {
-        if (AllMoveClasses.Length == 0)
+        if (_moveClasses.Length == 0)
             return null;
 
-        var playerMoveClasses = AllMoveClasses.Where(w => w.ForPlayer).ToArray();
+        var playerMoveClasses = _moveClasses.Where(w => w.ForPlayer).ToArray();
 
         int index = Random.Range(0, playerMoveClasses.Length);
         return playerMoveClasses[index];
+
     }
 
-    public AttackClass[] GetAttacks()
+    public MoveClass GetMoveClassWithID(int id)
     {
-        return AllAttackClasses.Where(w => w.name == "Fireball").ToArray();
+        return _moveClasses.Where(w => w.ID == id).Single();
     }
 
 
-    public Sprite GetRandomSprite()
+    public ActionClass[] GetAttacks(MoveClass moveClass)
     {
-        int index = Random.Range(0, Sprites.Length);
-        return Sprites[index];
+        // Attacks might be limited to certain move classes...
+
+        return _actionClasses;
+
     }
 
-
-    public void UpdateState(GameStatesEnum state)
+    public int[] GetActionIDs(MoveClass moveClass)
     {
-        State = state;
-
-        if (State == GameStatesEnum.Battle_Victory)
-        {
-            _uiManager.ShowVictoryScreen();
-        }
-        else if (State == GameStatesEnum.Battle_Defeat)
-        {
-            _uiManager.ShowDefeatScreen();
-        }
-
+        return _actionClasses.Select(s => s.ID).ToArray();
     }
 
-    //private void SpawnObstacles()
-    //{
-    //    for (int i = 0; i < numObstacles; i++)
-    //    {
-    //        GridCell cell;
-    //        int randX, randY;
-    //        do
-    //        {
-    //            //todo : set spawn area where obstacles cannot be spawned...
-    //            randX = Random.Range(0, Grid.Width);
-    //            randY = Random.Range(0, Grid.Height);
-    //            cell = Grid.GetCell(randX, randY);
-    //        } while (cell.IsOccupied);
-            
-    //        Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
-    //        _ = Instantiate(ObstaclePrefab, cellPos, Quaternion.identity);
-    //        cell.IsOccupied = true;
 
-    //        Debug.Log($"Obstacle added at x:{randX}, y:{randY}");
+    public ActionClass[] GetActionsWithIDs(int[] ids)
+    {
+        return _actionClasses.Where(w => ids.Contains(w.ID)).ToArray();
+    }
 
-    //    }
-    //}
-
-    //private void SpawnPlayer()
-    //{
-    //    // pick random coords
-    //    GridCell cell = Grid.GetRandomUnoccupiedCell();
-    //    Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
-
-    //    AdventurerObj = Instantiate(AdventurerPrefab, cellPos, Quaternion.identity);
-    //    Adventurer adv = AdventurerObj.GetComponent<Adventurer>();
-
-    //    //adv.SetMoveClass(GetRandomMoveClass());
-    //    //adv.SetMoveClass(AllMoveClasses.Where(w => w.name == "Knight").Single());
-    //    adv.SetPosition(cell.X, cell.Y);
-
-    //   // UpdateAdventurerMoves(adv);
-
-    //}
-
-    //private void SpawnPlayers()
-    //{
-    //    foreach (Adventurer adv in PartyManager.Instance.Heroes)
-    //    {
-    //        // pick random coords
-    //        GridCell cell = Grid.GetRandomUnoccupiedCell();
-    //        Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
-
-    //        AdventurerObj = Instantiate(AdventurerPrefab, cellPos, Quaternion.identity);
-    //        AdventurerObj.name = adv.name;
-    //        Adventurer tmp = AdventurerObj.GetComponent<Adventurer>();
-
-    //        // copy values
-    //        tmp.name = adv.name;
-    //        //tmp.moveClass = adv.moveClass;
-
-    //        tmp.SetPosition(cell.X, cell.Y);
-
-    //        //UpdateAdventurerMoves(tmp);
-
-    //    }
-
-    //    PartyManager.Instance.CurrHero = PartyManager.Instance.Heroes.First();
-    //    UpdateAdventurerMoves();
-
-    //}
+    public string GetActionNamesFromIDs(int[] ids)
+    {
+        var list = _actionClasses.Where(w => ids.Contains(w.ID)).Select(s => s.Name).ToArray();
+        return string.Join(",", list);
+    }
 
 
-    //private void UpdateAdventurerMoves()
-    //{
-    //    //adv.SetPosition(0, 0);
-    //    //adv.name = "Hello there!";
-    //    var adv = PartyManager.Instance.CurrHero;
-    //    UIManager.Instance.SetAdventurerText(adv.name);
-    //    Grid.SetPossibleMovesForPlayer(adv);
-    //}
+    #endregion
 
     public enum GameStatesEnum
     {

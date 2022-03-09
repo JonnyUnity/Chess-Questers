@@ -30,16 +30,16 @@ public class Encounter : ScriptableObject
 
     }
 
-    public List<ImprovedCharacter> GetEnemies()
-    {
-        List<ImprovedCharacter> toReturn = new List<ImprovedCharacter>();
+    //public List<ImprovedCharacter> GetEnemies()
+    //{
+    //    List<ImprovedCharacter> toReturn = new List<ImprovedCharacter>();
 
-        foreach (var e in Enemies)
-        {
-            toReturn.Add(new ImprovedCharacter(e));
-        }
+    //    foreach (var e in Enemies)
+    //    {
+    //        toReturn.Add(new ImprovedCharacter(e));
+    //    }
 
-        return toReturn;
-    }
+    //    return toReturn;
+    //}
 
 }

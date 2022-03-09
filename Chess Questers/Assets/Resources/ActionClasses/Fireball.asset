@@ -9,17 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a60cf0c8a218774b8a42e05642b26dc, type: 3}
+  m_Script: {fileID: 11500000, guid: 81596462cce937e47b7d3a9c808244a7, type: 3}
   m_Name: Fireball
   m_EditorClassIdentifier: 
   ID: 2
   Name: Fireball
-  Size: 0
-  Range: 0
-  Shape: 2
+  Damage: 8
+  MinRange: 3
+  MaxRange: 5
+  AttackTemplatePrefab: {fileID: 733881962699316142, guid: 2861ff0ce9ee6dc4899aeae1f7c039bd, type: 3}
+  Shape: 0
   MoveTarget: 0
   ForPlayer: 1
-  ForEnemy: 1
+  ForEnemy: 0
   additionalAttackedCellOffsets:
   - {x: 2, y: 0}
   - {x: 1, y: 0}
@@ -29,7 +31,7 @@ MonoBehaviour:
   - {x: 0, y: -1}
   - {x: 0, y: 1}
   - {x: 0, y: 2}
-  - {x: -1, y: -1}
   - {x: 1, y: -1}
   - {x: 1, y: 1}
+  - {x: -1, y: -1}
   - {x: -1, y: 1}

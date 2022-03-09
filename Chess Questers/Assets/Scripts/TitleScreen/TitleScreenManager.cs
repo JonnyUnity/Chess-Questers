@@ -30,7 +30,7 @@ public class TitleScreenManager : MonoBehaviour
     public void ContinueRun()
     {
         Debug.Log("Continue Run!");
-        NewGameManager.Instance.ContinueQuest();
+        GameManager.Instance.ContinueQuest();
     }
 
 
