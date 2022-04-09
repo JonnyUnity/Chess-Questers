@@ -6,6 +6,8 @@ using UnityEngine;
 public class ImprovedCharacter : MonoBehaviour
 {
     public int ID;
+    public int EnemyID;
+
     public string Name { get; private set; }
     public bool IsFriendly { get; private set; }
 
@@ -47,8 +49,14 @@ public class ImprovedCharacter : MonoBehaviour
 
     public CharacterStatesEnum State;
 
+
+    private Camera _cam;
+    [SerializeField] private GameObject _characterInfo;
+    [SerializeField] private TMPro.TextMeshProUGUI _nameText;
+
     private void Awake()
     {
+        _cam = Camera.main;
         Transform = transform;
         _orientation = transform.rotation;
 
@@ -67,6 +75,7 @@ public class ImprovedCharacter : MonoBehaviour
     public void Init(string name, int characterModel, MoveClass moveClass, ActionClass[] actions, int maxHealth)
     {
         Name = name;
+        _nameText.text = Name;
         IsFriendly = true;
 
         CharacterModel = characterModel;
@@ -83,6 +92,28 @@ public class ImprovedCharacter : MonoBehaviour
     {
         ID = data.ID;
         Name = data.Name;
+        _nameText.text = Name;
+        IsFriendly = data.IsFriendly;
+        CharacterModel = data.CharacterModel;
+        MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
+        MoveClassText = MoveClass.name;
+
+        Actions = GameManager.Instance.GetActionsWithIDs(data.Actions);
+        Health = data.Health;
+        MaxHealth = data.MaxHealth;
+
+        CellX = data.CellX;
+        CellY = data.CellY;
+        Position = data.Position;
+        CurrentFacing = data.CurrentFacing;
+    }
+
+    public void InitFromEnemyData(EnemyJsonData data)
+    {
+        ID = data.ID;
+        EnemyID = data.EnemyID;
+        Name = data.Name;
+        _nameText.text = Name;
         IsFriendly = data.IsFriendly;
         CharacterModel = data.CharacterModel;
         MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
@@ -99,19 +130,19 @@ public class ImprovedCharacter : MonoBehaviour
     }
 
 
-    public void InitFromEnemyData(Enemy data)
-    {
-        ID = data.ID;
-        Name = data.Name;
-        IsFriendly = false;
-        CharacterModel = data.CharacterModel;
-        MoveClass = data.MoveClass;
-        MoveClassText = MoveClass.name;
+    //public void InitFromEnemyData(Enemy data)
+    //{
+    //    ID = data.ID;
+    //    Name = data.Name;
+    //    IsFriendly = false;
+    //    CharacterModel = data.CharacterModel;
+    //    MoveClass = data.MoveClass;
+    //    MoveClassText = MoveClass.name;
 
-        Actions = data.Actions;
-        Health = data.Health;
-        MaxHealth = data.Health;
-    }
+    //    Actions = data.Actions;
+    //    Health = data.Health;
+    //    MaxHealth = data.Health;
+    //}
     
 
 
@@ -166,6 +197,9 @@ public class ImprovedCharacter : MonoBehaviour
 
     public void Update()
     {
+
+        _characterInfo.transform.LookAt(_cam.transform);
+        _characterInfo.transform.rotation = _cam.transform.rotation;
 
         if (State != CharacterStatesEnum.MOVING) return;
 

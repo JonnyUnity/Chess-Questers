@@ -81,7 +81,7 @@ public class QuestStartManager : Singleton<QuestStartManager>
         //SaveDataManager.Save(_questData);
 
         _newData.PartyMembers = NewChars;
-        SaveDataManager.SaveNew(_newData);
+        SaveDataManager.Save(_newData);
 
         // randomise world map?
 

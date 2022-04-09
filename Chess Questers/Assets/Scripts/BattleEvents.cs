@@ -37,6 +37,9 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnCellAttackUnhighlighted;
     public static event Action<GridCell> OnCellAttackSelected;
 
+    public static event Action<int> OnEnemySelectMove;
+    public static event Action<int> OnEnemySelectAttack;
+
     public static void BattleStarted()
     {
         OnBattleStarted?.Invoke();

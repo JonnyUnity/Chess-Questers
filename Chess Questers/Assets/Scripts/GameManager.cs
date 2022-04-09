@@ -14,6 +14,7 @@ public class GameManager : Singleton<GameManager>
     private Enemy[] _enemies;
     private Encounter[] _encounters;
     private Sprite[] _debugPortraitSprites;
+    private CreatureModel[] _creatureModels;
 
 
     //private QuestData _questData;
@@ -26,6 +27,7 @@ public class GameManager : Singleton<GameManager>
         _debugPortraitSprites = Resources.LoadAll<Sprite>("Sprites/");
         _enemies = Resources.LoadAll<Enemy>("Enemies/");
         _encounters = Resources.LoadAll<Encounter>("BattleEncounters/");
+        _creatureModels = Resources.LoadAll<CreatureModel>("Creatures/");
 
         SceneManager.sceneLoaded += LoadScene;
         //EventSystem.OnBattleLoss += LostBattle;
@@ -77,7 +79,8 @@ public class GameManager : Singleton<GameManager>
     {
         Encounter testEncounter = GetEncounter(1);
 
-        CharacterJsonData[] Enemies = testEncounter.GetEnemiesJson();
+        //CharacterJsonData[] Enemies = testEncounter.GetEnemiesJson();
+        EnemyJsonData[] Enemies = testEncounter.GetEnemiesJsonNew();
 
         QuestJsonData qd = new QuestJsonData()
         {
@@ -97,14 +100,14 @@ public class GameManager : Singleton<GameManager>
 
     public QuestJsonData GetQuestData()
     {
-        _questData = SaveDataManager.LoadNew();
+        _questData = SaveDataManager.Load();
         return _questData;
     }
 
 
     public void ContinueQuest()
     {
-        _questData = SaveDataManager.LoadNew();
+        _questData = SaveDataManager.Load();
         
 
         // depending on where the player is on the quest, load the relevant scene...
@@ -124,7 +127,7 @@ public class GameManager : Singleton<GameManager>
 
     public QuestJsonData LoadQuest(List<ImprovedCharacter> adventurers, List<ImprovedCharacter> enemies)
     {
-        _questData = SaveDataManager.LoadNew();
+        _questData = SaveDataManager.Load();
         adventurers = SaveDataManager.DeserializeCharacterData(_questData.PartyMembers, true);
         enemies = SaveDataManager.DeserializeCharacterData(_questData.Enemies, false);
 
@@ -134,9 +137,9 @@ public class GameManager : Singleton<GameManager>
     public void SaveQuest(QuestJsonData questData, List<ImprovedCharacter> adventurers, List<ImprovedCharacter> enemies)
     {
         questData.PartyMembers = SaveDataManager.SerializeCharacterData(adventurers);
-        questData.Enemies = SaveDataManager.SerializeCharacterData(enemies);
+        questData.Enemies = SaveDataManager.SerializeEnemyData(enemies);
 
-        SaveDataManager.SaveNew(questData);
+        SaveDataManager.Save(questData);
     }
 
 

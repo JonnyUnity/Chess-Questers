@@ -56,6 +56,9 @@ public class BattleSystem : Singleton<BattleSystem>
 
     [SerializeField] private NewIM IM;
 
+    private Dictionary<int, GameObject> _creaturePrefabs;
+
+
 
     // Start is called before the first frame update
     public void Awake()
@@ -190,6 +193,7 @@ public class BattleSystem : Singleton<BattleSystem>
         }
 
         SpawnCharacters();
+        SpawnEnemies();
         
         if (IM.HasCombatStarted())
         {
@@ -265,8 +269,14 @@ public class BattleSystem : Singleton<BattleSystem>
 
         }
 
+
+
+    }
+
+    private void SpawnEnemies()
+    {
         // init enemies...
-        foreach (CharacterJsonData c in _questData.Enemies)
+        foreach (EnemyJsonData c in _questData.Enemies)
         {
             GridCell cell = Grid.GetCell(c.CellX, c.CellY);
             Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
@@ -276,7 +286,7 @@ public class BattleSystem : Singleton<BattleSystem>
             CharacterObj = Instantiate(CharacterPrefab, cellPos, Quaternion.identity * rot);
             CharacterObj.name = c.Name;
             ImprovedCharacter ic = CharacterObj.GetComponent<ImprovedCharacter>();
-            ic.InitFromCharacterData(c);
+            ic.InitFromEnemyData(c);
 
             NewEnemies.Add(ic);
             Combatants.Add(ic);

@@ -30,6 +30,20 @@ public class Encounter : ScriptableObject
 
     }
 
+    public EnemyJsonData[] GetEnemiesJsonNew()
+    {
+        EnemyJsonData[] toReturn = new EnemyJsonData[Enemies.Length];
+
+        for (int i = 0; i < Enemies.Length; i++)
+        {
+            toReturn[i] = new EnemyJsonData(Enemies[i]);
+        }
+
+        return toReturn;
+
+    }
+
+
     //public List<ImprovedCharacter> GetEnemies()
     //{
     //    List<ImprovedCharacter> toReturn = new List<ImprovedCharacter>();

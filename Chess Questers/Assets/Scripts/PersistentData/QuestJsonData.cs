@@ -17,7 +17,7 @@ public class QuestJsonData
     // Battle Encounter data
     public int Battle_ID;
     public int Battle_Layout;
-    public CharacterJsonData[] Enemies;
+    public EnemyJsonData[] Enemies;
     public InitiativeData Initiative;
 
 
@@ -43,7 +43,8 @@ public class QuestJsonData
 
         Battle_ID = data.Battle_ID;
         Battle_Layout = data.Battle_Layout;
-        Enemies = SaveDataManager.SerializeCharacterData(data.Enemies);
+        Enemies = SaveDataManager.SerializeEnemyData(data.Enemies);
+        //Enemies = SaveDataManager.SerializeEnemyData(data.Enemies);
         Initiative = data.Initiative;
 
     }
