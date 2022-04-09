@@ -33,7 +33,8 @@ public class QuestStartManager : Singleton<QuestStartManager>
         _characterNames = _namesText.Split(" ");
 
         //_questData = GameManager.Instance.InitQuestData();
-        _newData = GameManager.Instance.InitNewQuestData();
+        //_newData = GameManager.Instance.InitNewQuestData();
+        _newData = new QuestJsonData();
 
         _character1Manager.SetCharacterModel(_character1GameObject);
         _character2Manager.SetCharacterModel(_character2GameObject);
@@ -81,6 +82,9 @@ public class QuestStartManager : Singleton<QuestStartManager>
         //SaveDataManager.Save(_questData);
 
         _newData.PartyMembers = NewChars;
+
+        GameManager.Instance.SetupTestEncounter(_newData);
+
         SaveDataManager.Save(_newData);
 
         // randomise world map?

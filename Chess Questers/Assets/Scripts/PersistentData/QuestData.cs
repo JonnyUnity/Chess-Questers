@@ -11,8 +11,8 @@ public class QuestData
 
     public EncounterTypesEnum CurrentEncounterType;
 
-    public List<ImprovedCharacter> PartyMembers;
-    public List<ImprovedCharacter> Enemies;
+    public List<PlayerCharacter> PartyMembers;
+    public List<Enemy> Enemies;
 
     public int Battle_ID;
     public int Battle_Layout;
@@ -25,7 +25,7 @@ public class QuestData
         Floor = 0;
         CurrentEncounterType = 0;
 
-        PartyMembers = new List<ImprovedCharacter>();
+        PartyMembers = new List<PlayerCharacter>();
 
     }
 

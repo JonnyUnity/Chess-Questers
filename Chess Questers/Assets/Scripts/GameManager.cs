@@ -11,7 +11,7 @@ public class GameManager : Singleton<GameManager>
 
     private MoveClass[] _moveClasses;
     private ActionClass[] _actionClasses;
-    private Enemy[] _enemies;
+    private EnemySO[] _enemies;
     private Encounter[] _encounters;
     private Sprite[] _debugPortraitSprites;
     private CreatureModel[] _creatureModels;
@@ -25,7 +25,7 @@ public class GameManager : Singleton<GameManager>
         _moveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
         _actionClasses = Resources.LoadAll<ActionClass>("ActionClasses/");
         _debugPortraitSprites = Resources.LoadAll<Sprite>("Sprites/");
-        _enemies = Resources.LoadAll<Enemy>("Enemies/");
+        _enemies = Resources.LoadAll<EnemySO>("Enemies/");
         _encounters = Resources.LoadAll<Encounter>("BattleEncounters/");
         _creatureModels = Resources.LoadAll<CreatureModel>("Creatures/");
 
@@ -75,28 +75,37 @@ public class GameManager : Singleton<GameManager>
 
     //}
 
-    public QuestJsonData InitNewQuestData()
+    //public QuestJsonData InitNewQuestData()
+    //{
+    //    Encounter testEncounter = GetEncounter(1);
+
+    //    //CharacterJsonData[] Enemies = testEncounter.GetEnemiesJson();
+    //    EnemyJsonData[] Enemies = testEncounter.GetEnemiesJsonNew();
+
+    //    QuestJsonData qd = new QuestJsonData()
+    //    {
+    //        Floor = 1,
+    //        CurrentEncounterType = EncounterTypesEnum.Battle,
+    //        Battle_ID = testEncounter.ID,
+    //        Battle_Layout = testEncounter.Layout,
+    //        Enemies = Enemies,
+    //    };
+
+    //    // other things to initialize can go here...
+
+
+    //    return qd;
+
+    //}
+
+
+    public void SetupTestEncounter(QuestJsonData data)
     {
         Encounter testEncounter = GetEncounter(1);
 
-        //CharacterJsonData[] Enemies = testEncounter.GetEnemiesJson();
-        EnemyJsonData[] Enemies = testEncounter.GetEnemiesJsonNew();
-
-        QuestJsonData qd = new QuestJsonData()
-        {
-            Floor = 1,
-            CurrentEncounterType = EncounterTypesEnum.Battle,
-            Battle_ID = testEncounter.ID,
-            Battle_Layout = testEncounter.Layout,
-            Enemies = Enemies,
-        };
-
-        // other things to initialize can go here...
-
-
-        return qd;
-
+        data.SetNextEncounter(testEncounter);    
     }
+
 
     public QuestJsonData GetQuestData()
     {
@@ -125,16 +134,16 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    public QuestJsonData LoadQuest(List<ImprovedCharacter> adventurers, List<ImprovedCharacter> enemies)
-    {
-        _questData = SaveDataManager.Load();
-        adventurers = SaveDataManager.DeserializeCharacterData(_questData.PartyMembers, true);
-        enemies = SaveDataManager.DeserializeCharacterData(_questData.Enemies, false);
+    //public QuestJsonData LoadQuest(List<ImprovedCharacter> adventurers, List<ImprovedCharacter> enemies)
+    //{
+    //    _questData = SaveDataManager.Load();
+    //    adventurers = SaveDataManager.DeserializeCharacterData(_questData.PartyMembers, true);
+    //    enemies = SaveDataManager.DeserializeCharacterData(_questData.Enemies, false);
 
-        return _questData;
-    }
+    //    return _questData;
+    //}
 
-    public void SaveQuest(QuestJsonData questData, List<ImprovedCharacter> adventurers, List<ImprovedCharacter> enemies)
+    public void SaveQuest(QuestJsonData questData, List<PlayerCharacter> adventurers, List<Enemy> enemies)
     {
         questData.PartyMembers = SaveDataManager.SerializeCharacterData(adventurers);
         questData.Enemies = SaveDataManager.SerializeEnemyData(enemies);
@@ -210,6 +219,29 @@ public class GameManager : Singleton<GameManager>
 
 
     #endregion
+
+
+    #region Enemies
+
+    public EnemySO GetEnemyObject(int enemyID)
+    {
+        return _enemies.Where(w => w.ID == enemyID).Single();
+    }
+
+    #endregion
+
+
+    #region Creature Models
+
+    public GameObject GetCreatureModelPrefab(int modelID)
+    {
+        var model = _creatureModels.Where(w => w.ID == modelID).Single();
+
+        return model.ModelPrefab;
+    }
+
+    #endregion
+
 
     public enum GameStatesEnum
     {

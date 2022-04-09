@@ -109,8 +109,8 @@ GameObject:
   - component: {fileID: 1694538411215306278}
   - component: {fileID: 8911015144137382716}
   - component: {fileID: 1359926351181923648}
-  - component: {fileID: 4203989233949966667}
   - component: {fileID: -6167475742733390479}
+  - component: {fileID: 4291791403182747284}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -172,29 +172,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.5, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &4203989233949966667
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1694538411215306276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb0873519dc7dd447b07f30320857f7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: 0
-  MoveClass: {fileID: 0}
-  OccupiedCell: {fileID: 0}
-  TargetCell: {fileID: 0}
-  Position: {x: 0, y: 0, z: 0}
-  CellX: 0
-  CellY: 0
-  CurrentFacing: 0
-  State: 0
-  _nameText: {fileID: 3734845952667973784}
-  _characterInfo: {fileID: 6319652059196713621}
 --- !u!114 &-6167475742733390479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,7 +184,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d63bd93f7d4fb4c8bd7054eeb78e26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _brain: {fileID: 0}
+--- !u!114 &4291791403182747284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694538411215306276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33beefa4b62af1c49be81638963ad7e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 0
+  MoveClass: {fileID: 0}
+  OccupiedCell: {fileID: 0}
+  TargetCell: {fileID: 0}
+  Position: {x: 0, y: 0, z: 0}
+  CellX: 0
+  CellY: 0
+  CurrentFacing: 0
+  _creatureInfo: {fileID: 6319652059196713621}
+  _nameText: {fileID: 3734845952667973784}
+  State: 0
+  EnemyID: 0
+  OccupiedCell: {fileID: 0}
+  TargetCell: {fileID: 0}
 --- !u!1 &1714345311226408478
 GameObject:
   m_ObjectHideFlags: 0

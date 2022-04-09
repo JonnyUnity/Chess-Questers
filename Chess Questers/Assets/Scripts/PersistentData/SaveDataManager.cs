@@ -79,7 +79,7 @@ public class SaveDataManager
     }
     
 
-    public static CharacterJsonData[] SerializeCharacterData(List<ImprovedCharacter> data)
+    public static CharacterJsonData[] SerializeCharacterData(List<PlayerCharacter> data)
     {
         CharacterJsonData[] characters = new CharacterJsonData[data.Count];
 
@@ -91,16 +91,16 @@ public class SaveDataManager
         return characters;
     }
 
-    public static EnemyJsonData[] SerializeEnemyData(List<ImprovedCharacter> data)
+    public static NewEnemyJsonData[] SerializeEnemyData(List<Enemy> data)
     {
-        EnemyJsonData[] characters = new EnemyJsonData[data.Count];
+        NewEnemyJsonData[] enemies = new NewEnemyJsonData[data.Count];
 
         for (int i = 0; i < data.Count; i++)
         {
-            characters[i] = new EnemyJsonData(data[i]);
+            enemies[i] = new NewEnemyJsonData(data[i]);
         }
 
-        return characters;
+        return enemies;
 
     }
 

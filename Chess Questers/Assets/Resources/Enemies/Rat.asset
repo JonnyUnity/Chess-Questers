@@ -16,6 +16,7 @@ MonoBehaviour:
   Name: Rat
   Health: 5
   CharacterModel: 1001
+  Brain: {fileID: 11400000, guid: aa95d10291c5d19498dbe6097b523013, type: 2}
   MoveClass: {fileID: 11400000, guid: 4d62f00f94d59b6428f7a3f79408043a, type: 2}
   Actions:
   - {fileID: 11400000, guid: 8c99152c553542847a5eef937891818b, type: 2}

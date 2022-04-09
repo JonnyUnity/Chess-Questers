@@ -7,10 +7,10 @@ public class Encounter : ScriptableObject
 {
     public int ID;
     public int Difficulty;
-    public int Type;
+    public EncounterTypesEnum Type;
 
     public int Layout;
-    public Enemy[] Enemies;
+    public EnemySO[] Enemies;
 
     public Vector2[] PlayerSpawns;
     public Vector2[] EnemySpawns;
@@ -30,13 +30,13 @@ public class Encounter : ScriptableObject
 
     }
 
-    public EnemyJsonData[] GetEnemiesJsonNew()
+    public NewEnemyJsonData[] GetEnemiesJsonNew()
     {
-        EnemyJsonData[] toReturn = new EnemyJsonData[Enemies.Length];
+        NewEnemyJsonData[] toReturn = new NewEnemyJsonData[Enemies.Length];
 
         for (int i = 0; i < Enemies.Length; i++)
         {
-            toReturn[i] = new EnemyJsonData(Enemies[i]);
+            toReturn[i] = new NewEnemyJsonData(Enemies[i]);
         }
 
         return toReturn;

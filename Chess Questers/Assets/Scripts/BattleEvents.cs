@@ -12,7 +12,7 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnBattleResumed;
 
 
-    public static event Action<List<ImprovedCharacter>> OnRollInitiative;
+    public static event Action<List<Creature>> OnRollInitiative;
 
     public static event Action<int> OnTurnStart;
     public static event Action OnPlayerStartTurn;
@@ -23,7 +23,7 @@ public class BattleEvents : MonoBehaviour
 
     public static event Action OnAttack;
     public static event Action<int, int> OnTakeDamage;
-    public static event Action<int> OnDeath;
+    public static event Action<int, bool> OnDeath;
 
     public static event Action OnBattleVictory;
     public static event Action OnBattleLoss;
@@ -46,7 +46,7 @@ public class BattleEvents : MonoBehaviour
     }
 
 
-    public static void RollInitiative(List<ImprovedCharacter> characters)
+    public static void RollInitiative(List<Creature> characters)
     {
         OnRollInitiative?.Invoke(characters);
     }
@@ -119,9 +119,9 @@ public class BattleEvents : MonoBehaviour
     }
 
 
-    public static void CharacterDied(int characterID)
+    public static void CharacterDied(int characterID, bool isFriendly)
     {
-        OnDeath?.Invoke(characterID);
+        OnDeath?.Invoke(characterID, isFriendly);
     }
 
 

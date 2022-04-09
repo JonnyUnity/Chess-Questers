@@ -479,9 +479,9 @@ public class GameGrid : MonoBehaviour
     }
 
 
-    public List<ImprovedCharacter> GetAttackedCreatures(GridCell targetCell, ActionClass action)
+    public List<Creature> GetAttackedCreatures(GridCell targetCell, ActionClass action)
     {
-        List<ImprovedCharacter> attackedCreatures = new List<ImprovedCharacter>();
+        List<Creature> attackedCreatures = new List<Creature>();
         List<GridCell> attackedCells = new List<GridCell>();
 
         // get attacked cells by attack

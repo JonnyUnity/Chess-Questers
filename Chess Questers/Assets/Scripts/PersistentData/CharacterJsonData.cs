@@ -33,7 +33,7 @@ public class CharacterJsonData
         CharacterModel = characterModel;
     }
 
-    public CharacterJsonData(ImprovedCharacter c)
+    public CharacterJsonData(PlayerCharacter c)
     {
         ID = c.ID;
         Name = c.Name;
@@ -50,7 +50,7 @@ public class CharacterJsonData
         CurrentFacing = c.CurrentFacing;
     }
 
-    public CharacterJsonData(Enemy enemy)
+    public CharacterJsonData(EnemySO enemy)
     {
         ID = enemy.ID;
         Name = enemy.Name;

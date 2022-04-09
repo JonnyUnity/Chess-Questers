@@ -108,26 +108,26 @@ public class ImprovedCharacter : MonoBehaviour
         CurrentFacing = data.CurrentFacing;
     }
 
-    public void InitFromEnemyData(EnemyJsonData data)
-    {
-        ID = data.ID;
-        EnemyID = data.EnemyID;
-        Name = data.Name;
-        _nameText.text = Name;
-        IsFriendly = data.IsFriendly;
-        CharacterModel = data.CharacterModel;
-        MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
-        MoveClassText = MoveClass.name;
+    //public void InitFromEnemyData(EnemyJsonData data)
+    //{
+    //    ID = data.ID;
+    //    EnemyID = data.EnemyID;
+    //    Name = data.Name;
+    //    _nameText.text = Name;
+    //    IsFriendly = data.IsFriendly;
+    //    CharacterModel = data.CharacterModel;
+    //    MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
+    //    MoveClassText = MoveClass.name;
 
-        Actions = GameManager.Instance.GetActionsWithIDs(data.Actions);
-        Health = data.Health;
-        MaxHealth = data.MaxHealth;
+    //    Actions = GameManager.Instance.GetActionsWithIDs(data.Actions);
+    //    Health = data.Health;
+    //    MaxHealth = data.MaxHealth;
 
-        CellX = data.CellX;
-        CellY = data.CellY;
-        Position = data.Position;
-        CurrentFacing = data.CurrentFacing;
-    }
+    //    CellX = data.CellX;
+    //    CellY = data.CellY;
+    //    Position = data.Position;
+    //    CurrentFacing = data.CurrentFacing;
+    //}
 
 
     //public void InitFromEnemyData(Enemy data)
@@ -171,8 +171,9 @@ public class ImprovedCharacter : MonoBehaviour
 
         if (Health <= 0)
         {
+            Health = 0;
             // audio, fx to be handled by those subscribed to the event.
-            BattleEvents.CharacterDied(ID);
+            BattleEvents.CharacterDied(ID, IsFriendly);
             Destroy(gameObject);
         }
 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 1
   Difficulty: 0
-  Type: 0
+  Type: 1
   Layout: 1
   Enemies:
   - {fileID: 11400000, guid: d3c7c1d819f222248bc32e59abf9f517, type: 2}

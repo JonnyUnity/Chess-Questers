@@ -19,8 +19,8 @@ public class BattleSystem : Singleton<BattleSystem>
     private InitiativeManager InitiativeManager;
     public GameGrid Grid;
 
-    [SerializeField] private GameObject HeroPrefab;
-    [SerializeField] private GameObject CharacterPrefab;
+    //[SerializeField] private GameObject HeroPrefab;
+    //[SerializeField] private GameObject CharacterPrefab;
 
     private GameObject HeroObj;
     private GameObject CharacterObj;
@@ -47,10 +47,10 @@ public class BattleSystem : Singleton<BattleSystem>
     //private CinemachineFreeLook FreeLookCamera;
 
     private QuestJsonData _questData;
-    private List<ImprovedCharacter> NewAdventurers = new List<ImprovedCharacter>();
-    private List<ImprovedCharacter> NewEnemies = new List<ImprovedCharacter>();
-    private List<ImprovedCharacter> Combatants = new List<ImprovedCharacter>();
-    private ImprovedCharacter _activeCharacter;
+    private List<PlayerCharacter> NewAdventurers = new List<PlayerCharacter>();
+    private List<Enemy> NewEnemies = new List<Enemy>();
+    private List<Creature> Combatants = new List<Creature>();
+    private Creature _activeCharacter;
 
     private ActionClass _currentAction;
 
@@ -64,6 +64,7 @@ public class BattleSystem : Singleton<BattleSystem>
     public void Awake()
     {
         _camera = Camera.main;
+        _creaturePrefabs = new Dictionary<int, GameObject>();
 
         State = BattleStatesEnum.START;
         UIHandler = CreaturePanel.GetComponent<BattleUIHandler>();
@@ -86,7 +87,11 @@ public class BattleSystem : Singleton<BattleSystem>
         BattleEvents.OnCellAttackHighlighted += HighlightAttackCell;
         BattleEvents.OnCellAttackUnhighlighted += UnhighlightAttackCell;
 
+        BattleEvents.OnDeath += CharacterDied;
+
     }
+
+
 
     private void OnDisable()
     {
@@ -102,6 +107,21 @@ public class BattleSystem : Singleton<BattleSystem>
 
         BattleEvents.OnCellAttackHighlighted -= HighlightAttackCell;
         BattleEvents.OnCellAttackUnhighlighted -= UnhighlightAttackCell;
+        
+        BattleEvents.OnDeath -= CharacterDied;
+
+    }
+
+    private void CharacterDied(int characterID, bool isFriendly)
+    {
+        if (isFriendly)
+        {
+            NewAdventurers = NewAdventurers.Where(w => w.ID != characterID).ToList();
+        }
+        else
+        {
+            NewEnemies = NewEnemies.Where(w => w.ID != characterID).ToList();
+        }
     }
 
     private void HighlightAttackCell(GridCell cell)
@@ -113,6 +133,8 @@ public class BattleSystem : Singleton<BattleSystem>
             _currentAttackTemplate.SetActive(true);
         }
     }
+
+
 
     private void HandleAttack(GridCell cell)
     {
@@ -233,7 +255,8 @@ public class BattleSystem : Singleton<BattleSystem>
             Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
 
             //ImprovedCharacter adv = NewEnemies[i];
-            CharacterJsonData adv = _questData.Enemies[i];
+            //CharacterJsonData adv = _questData.Enemies[i];
+            NewEnemyJsonData adv = _questData.Enemies[i];
 
             adv.SetPosition(cell.X, cell.Y, cellPos, 2);
 
@@ -248,17 +271,29 @@ public class BattleSystem : Singleton<BattleSystem>
     private void SpawnCharacters()
     {
 
+        GameObject currentPrefab = null;
+
         // set character positions
         foreach (CharacterJsonData c in _questData.PartyMembers)
         {
             GridCell cell = Grid.GetCell(c.CellX, c.CellY);
             Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
 
-            Quaternion rot = GetCharacterRotation(c);
+            Quaternion rot = GetCharacterRotation(c.CurrentFacing);
 
-            CharacterObj = Instantiate(CharacterPrefab, cellPos, Quaternion.identity * rot);
+            if (_creaturePrefabs.ContainsKey(c.CharacterModel))
+            {
+                currentPrefab = _creaturePrefabs[c.CharacterModel];
+            }
+            else
+            {
+                currentPrefab = GameManager.Instance.GetCreatureModelPrefab(c.CharacterModel);
+                _creaturePrefabs.Add(c.CharacterModel, currentPrefab);
+            }
+
+            CharacterObj = Instantiate(currentPrefab, cellPos, Quaternion.identity * rot);
             CharacterObj.name = c.Name;
-            ImprovedCharacter ic = CharacterObj.GetComponent<ImprovedCharacter>();
+            PlayerCharacter ic = CharacterObj.GetComponent<PlayerCharacter>();
             ic.InitFromCharacterData(c);
 
             NewAdventurers.Add(ic);
@@ -275,35 +310,80 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private void SpawnEnemies()
     {
+
+        GameObject currentPrefab = null;
+
         // init enemies...
-        foreach (EnemyJsonData c in _questData.Enemies)
+        foreach (NewEnemyJsonData c in _questData.Enemies)
         {
+
+            EnemySO enemyObject = GameManager.Instance.GetEnemyObject(c.EnemyID);
+
             GridCell cell = Grid.GetCell(c.CellX, c.CellY);
             Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
 
-            Quaternion rot = GetCharacterRotation(c);
+            Quaternion rot = GetCharacterRotation(c.CurrentFacing);
 
-            CharacterObj = Instantiate(CharacterPrefab, cellPos, Quaternion.identity * rot);
+            if (_creaturePrefabs.ContainsKey(enemyObject.CharacterModel))
+            {
+                currentPrefab = _creaturePrefabs[enemyObject.CharacterModel];
+            }
+            else
+            {
+                currentPrefab = GameManager.Instance.GetCreatureModelPrefab(enemyObject.CharacterModel);
+                _creaturePrefabs.Add(enemyObject.CharacterModel, currentPrefab);
+            }
+
+            CharacterObj = Instantiate(currentPrefab, cellPos, Quaternion.identity * rot);
             CharacterObj.name = c.Name;
-            ImprovedCharacter ic = CharacterObj.GetComponent<ImprovedCharacter>();
-            ic.InitFromEnemyData(c);
+            Enemy enemy = CharacterObj.GetComponent<Enemy>();
+            enemy.InitFromEnemyData(c, enemyObject);
 
-            NewEnemies.Add(ic);
-            Combatants.Add(ic);
+            //ImprovedCharacter ic = CharacterObj.GetComponent<ImprovedCharacter>();
+            //ic.InitFromEnemyData(c);
 
-            ic.OccupiedCell = cell;
-            cell.SetUnit(ic);
+            NewEnemies.Add(enemy);
+            Combatants.Add(enemy);
+
+            enemy.OccupiedCell = cell;
+            cell.SetUnit(enemy);
 
         }
 
     }
 
 
-    private Quaternion GetCharacterRotation(CharacterJsonData c)
+    //private Quaternion GetCharacterRotation(CharacterJsonData c)
+    //{
+    //    Quaternion rot = Quaternion.Euler(0, -90, 0);
+
+    //    switch (c.CurrentFacing)
+    //    {
+    //        case 0:
+    //            rot = Quaternion.Euler(0, -90, 0);
+    //            break;
+    //        case 1:
+    //            rot = Quaternion.Euler(0, 0, 0);
+    //            break;
+    //        case 2:
+    //            rot = Quaternion.Euler(0, 90, 0);
+    //            break;
+    //        case 3:
+    //            rot = Quaternion.Euler(0, 180, 0);
+    //            break;
+    //        default:
+    //            Debug.Log("Facing " + c.CurrentFacing + " not recognised!");
+    //            break;
+    //    }
+
+    //    return rot;
+    //}
+
+    private Quaternion GetCharacterRotation(int facing)
     {
         Quaternion rot = Quaternion.Euler(0, -90, 0);
 
-        switch (c.CurrentFacing)
+        switch (facing)
         {
             case 0:
                 rot = Quaternion.Euler(0, -90, 0);
@@ -318,7 +398,7 @@ public class BattleSystem : Singleton<BattleSystem>
                 rot = Quaternion.Euler(0, 180, 0);
                 break;
             default:
-                Debug.Log("Facing " + c.CurrentFacing + " not recognised!");
+                Debug.Log("Facing " + facing + " not recognised!");
                 break;
         }
 
@@ -383,7 +463,7 @@ public class BattleSystem : Singleton<BattleSystem>
     //    }
     //}
 
-    void SetupPlayerMove(ImprovedCharacter c)
+    void SetupPlayerMove(Creature c)
     {
         UIHandler.UpdateStateText("CALC PLAYER MOVES");
         //Creature adv = InitiativeManager.GetCurrentCreature();
@@ -485,9 +565,9 @@ public class BattleSystem : Singleton<BattleSystem>
 
 
         int damage = _activeCharacter.GetAttackDamage();
-        List<ImprovedCharacter> attackedCreatures = Grid.GetAttackedCreatures(cell, _currentAction);
+        List<Creature> attackedCreatures = Grid.GetAttackedCreatures(cell, _currentAction);
 
-        foreach (ImprovedCharacter c in attackedCreatures)
+        foreach (Creature c in attackedCreatures)
         {
             BattleEvents.TakeDamage(c.ID, damage);
         }

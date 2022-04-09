@@ -6,6 +6,9 @@ using UnityEngine;
 public class NewIM : MonoBehaviour
 {
 
+    //private List<ImprovedCharacter> _playerCharacters;
+    //private List<ImprovedCharacter> _enemies;
+
     public InitiativeData _init { get; private set; }
 
     public int ActiveCharacterID
@@ -53,7 +56,7 @@ public class NewIM : MonoBehaviour
         _init = current;
     }
 
-    private void Roll(List<ImprovedCharacter> characters)
+    private void Roll(List<Creature> characters)
     {
         List<CharacterTurn> combatants = new List<CharacterTurn>();
 
@@ -69,6 +72,16 @@ public class NewIM : MonoBehaviour
                 IsFriendly = a.IsFriendly,
                 Roll = Random.Range(1, 20)
             });
+
+            //if (a.IsFriendly)
+            //{
+            //    _playerCharacters.Add(a);
+            //}
+            //else
+            //{
+            //    _enemies.Add(a);
+            //}
+
         });
 
         _init.TurnOrder = combatants.OrderByDescending(o => o.Roll).ThenBy(t => t.CharacterID).ToArray();
@@ -104,13 +117,12 @@ public class NewIM : MonoBehaviour
     }
 
 
-    private void CharacterDied(int characterID)
+    private void CharacterDied(int characterID, bool isFriendly)
     {
         Debug.Log("Someone died! Update the turn order!");
 
-        //CharacterTurn deadChar = _init.TurnOrder.Where(w => w.CharacterID == characterID).Single();
-
         _init.TurnOrder = _init.TurnOrder.Where(w => w.CharacterID != characterID).ToArray();
+
 
         // If all enemies are dead...
         if (!_init.TurnOrder.Where(w => !w.IsFriendly).Any())

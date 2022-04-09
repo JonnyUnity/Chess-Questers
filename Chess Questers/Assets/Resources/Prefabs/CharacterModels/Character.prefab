@@ -109,8 +109,7 @@ GameObject:
   - component: {fileID: 1694538411215306278}
   - component: {fileID: 8911015144137382716}
   - component: {fileID: 1359926351181923648}
-  - component: {fileID: 3254998294728227924}
-  - component: {fileID: 4203989233949966667}
+  - component: {fileID: 5195726491139377161}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -172,7 +171,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.5, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &3254998294728227924
+--- !u!114 &5195726491139377161
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -181,20 +180,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1694538411215306276}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 125cb93f1685c5142b9a7e784d05b491, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _actions: []
---- !u!114 &4203989233949966667
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1694538411215306276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb0873519dc7dd447b07f30320857f7b, type: 3}
+  m_Script: {fileID: 11500000, guid: 4580df92fbae3014da545290daecc40a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
@@ -205,9 +191,9 @@ MonoBehaviour:
   CellX: 0
   CellY: 0
   CurrentFacing: 0
-  State: 0
-  _characterInfo: {fileID: 6319652059196713621}
+  _creatureInfo: {fileID: 6319652059196713621}
   _nameText: {fileID: 3734845952667973784}
+  State: 0
 --- !u!1 &1714345311226408478
 GameObject:
   m_ObjectHideFlags: 0

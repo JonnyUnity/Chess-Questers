@@ -17,7 +17,7 @@ public class QuestJsonData
     // Battle Encounter data
     public int Battle_ID;
     public int Battle_Layout;
-    public EnemyJsonData[] Enemies;
+    public NewEnemyJsonData[] Enemies;
     public InitiativeData Initiative;
 
 
@@ -48,6 +48,20 @@ public class QuestJsonData
         Initiative = data.Initiative;
 
     }
+
+    public void SetNextEncounter(Encounter encounter)
+    {
+        Floor++;
+        CurrentEncounterType = encounter.Type;
+        Battle_ID = encounter.ID;
+        Battle_Layout = encounter.Layout;
+
+        NewEnemyJsonData[] enemies = encounter.GetEnemiesJsonNew();
+
+        Enemies = enemies;
+
+    }
+
 
 
 }

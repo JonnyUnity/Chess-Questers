@@ -19,7 +19,7 @@ public class GridCell : MonoBehaviour
     [SerializeField] private Color _attackColur;
 
     // Saves a reference to the gameobject that gets placed on this cell.
-    public ImprovedCharacter OccupiedUnit = null;
+    public Creature OccupiedUnit = null;
 
     //public bool IsOccupied;
     public bool IsMove;
@@ -61,7 +61,7 @@ public class GridCell : MonoBehaviour
     }
 
 
-    public void SetUnit(ImprovedCharacter c)
+    public void SetUnit(Creature c)
     {
         //if (c.OccupiedCell != null)
         //{
