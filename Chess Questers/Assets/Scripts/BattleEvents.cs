@@ -16,6 +16,7 @@ public class BattleEvents : MonoBehaviour
 
     public static event Action<int> OnTurnStart;
     public static event Action OnPlayerStartTurn;
+    public static event Action OnPlayerEndTurn;
     public static event Action OnPlayerSelectMove;
     public static event Action OnPlayerSetupActions;
     public static event Action<int,ActionClass,int,int> OnPlayerActionSelected;
@@ -55,6 +56,16 @@ public class BattleEvents : MonoBehaviour
     public static void TurnStarted(int characterID)
     {
         OnTurnStart?.Invoke(characterID);
+    }
+
+    public static void StartPlayerTurn()
+    {
+        OnPlayerStartTurn?.Invoke();
+    }
+
+    public static void EndPlayerTurn()
+    {
+        OnPlayerEndTurn?.Invoke();
     }
 
     public static void TurnOver()

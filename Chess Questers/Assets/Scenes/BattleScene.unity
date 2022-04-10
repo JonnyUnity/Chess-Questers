@@ -4385,13 +4385,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   State: 0
   Grid: {fileID: 2101179607}
-  HeroPrefab: {fileID: 1694538411215306276, guid: 04b91967f1fe98a4e872b51b2f14ec37, type: 3}
-  CharacterPrefab: {fileID: 1694538411215306276, guid: f6074aaa598d9e34dadbbf2ec2b394c1, type: 3}
   CreaturePanel: {fileID: 2035768993}
   CameraRig: {fileID: 1498793301}
   _highlightMovePrefab: {fileID: 592661508}
   _attackPrefab: {fileID: 24391682}
   IM: {fileID: 324283639}
+  _gridLines: {fileID: 1607832117}
 --- !u!4 &2128089780
 Transform:
   m_ObjectHideFlags: 0

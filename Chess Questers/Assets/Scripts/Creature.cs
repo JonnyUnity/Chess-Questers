@@ -35,7 +35,7 @@ public class Creature : MonoBehaviour
     public int CurrentFacing;
 
     private Camera _cam;
-    private ActionClass _selectedAction;
+    //private ActionClass _selectedAction;
 
     public Transform Transform { get; protected set; }
     protected Quaternion _orientation;

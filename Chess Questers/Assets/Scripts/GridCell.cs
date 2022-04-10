@@ -36,6 +36,8 @@ public class GridCell : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI MoveText;
 
+    public bool IsSelectable => IsMove || IsAttack;
+
     public void Awake()
     {
         _renderer = GetComponent<Renderer>();
@@ -137,24 +139,24 @@ public class GridCell : MonoBehaviour
     //    }
     //}
 
-    public void OnMouseExit()
-    {
+    //public void OnMouseExit()
+    //{
 
         
 
-        if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
-        {
-            //   UpdateCellColour(colour);
-            //_highlight.SetActive(false);
-            BattleEvents.CellMoveUnhighlighted();
-        }
-        else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
-        {
-            //_highlight.SetActive(false);
-            //BattleEvents.CellMoveUnhighlighted();
-            BattleEvents.CellAttackUnhighlighted();
-        }
-    }
+    //    if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
+    //    {
+    //        //   UpdateCellColour(colour);
+    //        //_highlight.SetActive(false);
+    //        BattleEvents.CellMoveUnhighlighted();
+    //    }
+    //    else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
+    //    {
+    //        //_highlight.SetActive(false);
+    //        //BattleEvents.CellMoveUnhighlighted();
+    //        BattleEvents.CellAttackUnhighlighted();
+    //    }
+    //}
 
 
     public void OnMouseDown()
@@ -198,7 +200,7 @@ public class GridCell : MonoBehaviour
         IsAttack = false;
         colour = initColour;
         UpdateCellColour(colour);
-        _highlight.SetActive(false);
+        //_highlight.SetActive(false);
     }
 
 

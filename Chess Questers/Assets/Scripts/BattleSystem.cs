@@ -59,8 +59,11 @@ public class BattleSystem : Singleton<BattleSystem>
     private Dictionary<int, GameObject> _creaturePrefabs;
 
 
+    private readonly Vector3 _highlightOffset = new Vector3(0, 0.01f, 0);
 
-    // Start is called before the first frame update
+
+    [SerializeField] private GameObject _gridLines;
+    
     public void Awake()
     {
         _camera = Camera.main;
@@ -126,7 +129,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private void HighlightAttackCell(GridCell cell)
     {
-        _currentAttackTemplate.transform.position = cell.transform.position;
+        _currentAttackTemplate.transform.position = cell.transform.position + _highlightOffset;
         Debug.Log("Highlighting cell: (" + cell.X + ", " + cell.Y + ") for attack!");
         if (!_currentAttackTemplate.activeInHierarchy)
         {
@@ -162,7 +165,7 @@ public class BattleSystem : Singleton<BattleSystem>
     private void HighlightCell(GridCell cell)
     {
 
-        _highlightMovePrefab.transform.position = cell.transform.position;
+        _highlightMovePrefab.transform.position = cell.transform.position + _highlightOffset;
         Debug.Log("Highlighting cell: (" + cell.X + ", " + cell.Y + ")");
         if (!_highlightMovePrefab.activeInHierarchy)
         {
@@ -438,11 +441,14 @@ public class BattleSystem : Singleton<BattleSystem>
 
         if (_activeCharacter.IsFriendly)
         {
+            _gridLines.SetActive(true);
             State = BattleStatesEnum.PLAYER_MOVE;
             SetupPlayerMove(_activeCharacter);
+            
         }
         else
         {
+            _gridLines.SetActive(false);
             State = BattleStatesEnum.ENEMY_MOVE;
             StartCoroutine(EnemyMoveCoroutine());
         }
@@ -619,28 +625,48 @@ public class BattleSystem : Singleton<BattleSystem>
     public void Update()
     {
 
-        if (Input.GetMouseButtonDown(0))
+        if (_activeCharacter != null && _activeCharacter.State == CharacterStatesEnum.MOVING)
         {
-            //if (!EventSystem.current.IsPointerOverGameObject())
-            //{
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            CameraHandler.LookAtCreature(_activeCharacter.Transform);
+        }
 
-            int layerMask = 1 << 6;
-
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
+        if (State == BattleStatesEnum.PLAYER_MOVE || State == BattleStatesEnum.PLAYER_ATTACK)
+        {
+            if (Input.GetMouseButtonDown(0))
             {
-                GameObject hitObject = hitInfo.transform.gameObject;
-                if (hitObject.TryGetComponent(out GridCell selectedCell))
+                if (EventSystem.current.IsPointerOverGameObject())
+                    return;
+
+                //if (!EventSystem.current.IsPointerOverGameObject())
+                //{
+                Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+
+                int layerMask = 1 << 6;
+
+                if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
                 {
-                    Debug.Log(selectedCell.name, this);
-                //OnGridCellClick(selectedCell);
-                    //EventSystem.CellSelected(selectedCell);
+                    GameObject hitObject = hitInfo.transform.gameObject;
+                    if (hitObject.TryGetComponent(out GridCell selectedCell))
+                    {
+                        if (selectedCell.IsSelectable)
+                        {
+                            Debug.Log(selectedCell.name, this);
+
+                            if (State == BattleStatesEnum.PLAYER_MOVE)
+                            {
+                                BattleEvents.CellMoveSelected(selectedCell);
+                            }
+                            else
+                            {
+                                BattleEvents.CellAttackSelected(selectedCell);
+                            }
+                        }
+                    }
                 }
             }
-            //}
-
-            
         }
+
+
 
         //if (State == BattleStatesEnum.PLAYER_ATTACK)
         //{
@@ -673,10 +699,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         //Creature c = InitiativeManager.GetCurrentCreature();
 
-        if (_activeCharacter != null && _activeCharacter.State == CharacterStatesEnum.MOVING)
-        {
-            CameraHandler.LookAtCreature(_activeCharacter.Transform);
-        }
+
 
     }
 

@@ -36,7 +36,7 @@ public class GameGrid : MonoBehaviour
     public void Awake()
     {
 
-        GridCellPrefab = Resources.Load("Prefabs/GridCell") as GameObject;
+        GridCellPrefab = Resources.Load("Prefabs/NewGridCell") as GameObject;
         ObstaclePrefab = Resources.Load("Prefabs/Obstacle") as GameObject;
 
         BattleEvents.OnPlayerActionSelected += ShowActionOnGrid;
@@ -99,7 +99,7 @@ public class GameGrid : MonoBehaviour
         {
             for (int y = 0; y < Width; y++)
             {
-                Grid[x, y] = Instantiate(GridCellPrefab, new Vector3(x * GridSpacesize, 0.1f, y * GridSpacesize), Quaternion.identity);
+                Grid[x, y] = Instantiate(GridCellPrefab, new Vector3(x * GridSpacesize, 0.01f, y * GridSpacesize), Quaternion.Euler(90, 0, 0));
 
                 bool isLightSquare = (x + y) % 2 != 0;
                 var squareColour = isLightSquare ? lightColor : darkColor;
@@ -132,7 +132,7 @@ public class GameGrid : MonoBehaviour
         {
             for (int y = 0; y < Width; y++)
             {
-                Grid[x, y] = Instantiate(GridCellPrefab, new Vector3(x * GridSpacesize, 0.1f, y * GridSpacesize), Quaternion.identity);
+                Grid[x, y] = Instantiate(GridCellPrefab, new Vector3(x * GridSpacesize, 0.01f, y * GridSpacesize), Quaternion.Euler(90, 0, 0));
 
                 bool isLightSquare = (x + y) % 2 != 0;
                 var squareColour = isLightSquare ? lightColor : darkColor;
