@@ -18,7 +18,7 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnPlayerStartTurn;
     public static event Action OnPlayerEndTurn;
     public static event Action OnPlayerSelectMove;
-    public static event Action OnPlayerSetupActions;
+    public static event Action<Creature> OnCreatureMoved;
     public static event Action<int,ActionClass,int,int> OnPlayerActionSelected;
     public static event Action OnTurnOver;
 
@@ -40,6 +40,7 @@ public class BattleEvents : MonoBehaviour
 
     public static event Action<int> OnEnemySelectMove;
     public static event Action<int> OnEnemySelectAttack;
+
 
     public static void BattleStarted()
     {
@@ -90,9 +91,9 @@ public class BattleEvents : MonoBehaviour
     }
 
 
-    public static void CharacterFinishedMoving()
+    public static void CreatureMoved(Creature creature)
     {
-        OnPlayerSetupActions?.Invoke();
+        OnCreatureMoved?.Invoke(creature);
     }
 
 

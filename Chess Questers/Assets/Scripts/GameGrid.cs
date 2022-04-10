@@ -32,21 +32,27 @@ public class GameGrid : MonoBehaviour
     private List<(int, int)> _cellNeighbourDirections = new() { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
 
+    public Dictionary<int, Vector2> PlayerCharacterPositions { get; private set; }
+    public Dictionary<int, Vector2> EnemyPositions { get; private set; }
+
 
     public void Awake()
     {
+        PlayerCharacterPositions = new Dictionary<int, Vector2>();
+        EnemyPositions = new Dictionary<int, Vector2>();
 
         GridCellPrefab = Resources.Load("Prefabs/NewGridCell") as GameObject;
         ObstaclePrefab = Resources.Load("Prefabs/Obstacle") as GameObject;
 
         BattleEvents.OnPlayerActionSelected += ShowActionOnGrid;
-
+        BattleEvents.OnCreatureMoved += UpdateCreaturePosition;
     }
 
 
     private void OnDisable()
     {
         BattleEvents.OnPlayerActionSelected -= ShowActionOnGrid;
+        BattleEvents.OnCreatureMoved -= UpdateCreaturePosition;
     }
 
 
@@ -191,15 +197,17 @@ public class GameGrid : MonoBehaviour
     {
         for (int i = 0; i < NumObstacles; i++)
         {
-            GridCell cell;
+            //GridCell cell;
             int randX, randY;
             do
             {
                 //todo : set spawn area where obstacles cannot be spawned...
                 randX = Random.Range(0, Width);
                 randY = Random.Range(0, Height);
-                cell = GetCell(randX, randY);
-            } while (cell.IsOccupiedNew());
+                //cell = GetCell(randX, randY);
+            } while (IsCellOccupied(randX, randY));
+
+            GridCell cell = GetCell(randX, randY);
 
             Vector3 cellPos = GetGridCellWorldPosition(cell);
             _ = Instantiate(ObstaclePrefab, cellPos, Quaternion.identity);
@@ -209,6 +217,73 @@ public class GameGrid : MonoBehaviour
 
         }
     }
+
+    public void AddCreaturePosition(Creature creature)
+    {
+        //GridCell cell = GetCell(creature.CellX, creature.CellY);
+        Vector2 cellCoords = new Vector2(creature.CellX, creature.CellY);
+
+        if (creature.IsFriendly)
+        {
+            PlayerCharacterPositions.Add(creature.ID, cellCoords);
+        }
+        else
+        {
+            EnemyPositions.Add(creature.ID, cellCoords);
+        }
+    }
+
+    public void UpdateCreaturePosition(Creature creature)
+    {
+        Vector2 cellCoords = new Vector2(creature.CellX, creature.CellY);
+
+        if (creature.IsFriendly)
+        {
+            PlayerCharacterPositions[creature.ID] = cellCoords;
+        }
+        else
+        {
+            EnemyPositions[creature.ID] = cellCoords;
+        }
+
+    }
+
+
+
+    private bool IsCellOccupied(GridCell cell)
+    {
+
+        Vector2 cellCoords = new Vector2(cell.X, cell.Y);
+
+        if (PlayerCharacterPositions.ContainsValue(cellCoords))
+        {
+            return true;
+        }
+        else if (EnemyPositions.ContainsValue(cellCoords))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsCellOccupied(int cellX, int cellY)
+    {
+
+        Vector2 cellCoords = new Vector2(cellX, cellY);
+
+        if (PlayerCharacterPositions.ContainsValue(cellCoords))
+        {
+            return true;
+        }
+        else if (EnemyPositions.ContainsValue(cellCoords))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 
     public void GetMovesForPlayerNew(MoveClass moveClass, int playerX, int playerY)
     {
@@ -228,11 +303,17 @@ public class GameGrid : MonoBehaviour
                     int squareY = playerY + jumpMove.Item2;
                     if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
                     {
-                        GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                        if (!cell.IsOccupiedNew())
+                        if (!IsCellOccupied(squareX, squareY))
                         {
+                            GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                             cell.SetAsValidMove();
                         }
+
+                        //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+                        //if (!cell.IsOccupiedNew())
+                        //{
+                        //    cell.SetAsValidMove();
+                        //}
                     }
                 }
             }
@@ -270,13 +351,24 @@ public class GameGrid : MonoBehaviour
                     int squareX = playerX + currentDirOffset.Item1 * (n + 1);
                     int squareY = playerY + currentDirOffset.Item2 * (n + 1);
                     Debug.Log(squareX + ", " + squareY);
-                    GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                    if (cell.IsOccupiedNew())
+
+                    if (IsCellOccupied(squareX, squareY))
                     {
                         break;
                     }
 
+                    GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                     cell.SetAsValidMove();
+                    
+
+                    
+                    //if (cell.IsOccupiedNew())
+                    //{
+                    //    break;
+                    //}
+
+                    //cell.SetAsValidMove();
+                    //cell.gameObject.SetActive(true);
                 }
 
             }
@@ -286,10 +378,7 @@ public class GameGrid : MonoBehaviour
     }
 
 
-    private void GetAttacksForPlayer(ActionClass action, int x, int y)
-    {
 
-    }
 
     public void GetMovesForPlayer(MoveClass moveClass, int x, int y)
     {
@@ -309,11 +398,17 @@ public class GameGrid : MonoBehaviour
                     int squareY = y + jumpMove.Item2;
                     if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
                     {
-                        GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                        if (!cell.IsOccupiedNew())
+                        if (!IsCellOccupied(squareX, squareY))
                         {
+                            GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                             cell.SetAsValidMove();
                         }
+
+                        //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+                        //if (!cell.IsOccupiedNew())
+                        //{
+                        //    cell.SetAsValidMove();
+                        //}
                     }
                 }
             }
@@ -349,13 +444,22 @@ public class GameGrid : MonoBehaviour
                     Debug.Log(currentDirOffset + " " + (n + 1));
                     int squareX = x + currentDirOffset.Item1 * (n + 1);
                     int squareY = y + currentDirOffset.Item2 * (n + 1);
-                    GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                    if (cell.IsOccupiedNew())
+
+                    if (IsCellOccupied(squareX, squareY))
                     {
                         break;
                     }
 
+                    GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                     cell.SetAsValidMove();
+                    
+                    //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+                    //if (cell.IsOccupiedNew())
+                    //{
+                    //    break;
+                    //}
+
+                    //cell.SetAsValidMove();
                 }
 
             }
@@ -375,108 +479,115 @@ public class GameGrid : MonoBehaviour
             int squareY = playerCell.Y + attack.Item2;
             if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
             {
-                GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-               // Debug.Log(Vector3.Distance(GetGridCellWorldPosition(cell), GetGridCellWorldPosition(playerCell)));
+                //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+                // Debug.Log(Vector3.Distance(GetGridCellWorldPosition(cell), GetGridCellWorldPosition(playerCell)));
 
-                if (cell.IsOccupiedNew())
+                if (!IsCellOccupied(squareX, squareY))
                 {
+                    GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
                     cell.SetAsValidAttack();
                     AttackCells.Add(cell);
                 }
+
+                //if (cell.IsOccupiedNew())
+                //{
+                //    cell.SetAsValidAttack();
+                //    AttackCells.Add(cell);
+                //}
             }
         }
 
         return AttackCells;
     }
 
-    public List<GridCell> GetFireballAttack(GridCell playerCell)
-    {
-        ClearGrid();
-        List<GridCell> AttackCells = new();
+    //public List<GridCell> GetFireballAttack(GridCell playerCell)
+    //{
+    //    ClearGrid();
+    //    List<GridCell> AttackCells = new();
 
-        Vector3 playerPos = GetGridCellWorldPosition(playerCell);
+    //    Vector3 playerPos = GetGridCellWorldPosition(playerCell);
 
-        Debug.Log($"Fireball {playerCell.X},{playerCell.Y}");
+    //    Debug.Log($"Fireball {playerCell.X},{playerCell.Y}");
 
-        int minRange = 2;
-        int maxRange = 3;
+    //    int minRange = 2;
+    //    int maxRange = 3;
 
-        for (int i = playerCell.X - maxRange; i <= playerCell.X + maxRange; i++)
-        {
-            for (int j = playerCell.Y - maxRange; j <= playerCell.Y + maxRange; j++)
-            {
-                if (0 <= i && i < Width && 0 <= j && j < Height)
-                {
+    //    for (int i = playerCell.X - maxRange; i <= playerCell.X + maxRange; i++)
+    //    {
+    //        for (int j = playerCell.Y - maxRange; j <= playerCell.Y + maxRange; j++)
+    //        {
+    //            if (0 <= i && i < Width && 0 <= j && j < Height)
+    //            {
 
-                    GridCell cell = Grid[i, j].GetComponent<GridCell>();
-                    int cellChebyshevDistance = CalculateChebyshevDistance(playerCell.X, i, playerCell.Y, j);
-                    Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+    //                GridCell cell = Grid[i, j].GetComponent<GridCell>();
+    //                int cellChebyshevDistance = CalculateChebyshevDistance(playerCell.X, i, playerCell.Y, j);
+    //                Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
 
-                    if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange && !cell.IsOccupiedNew())
-                    {
-                        cell.SetAsValidAttack();
-                        AttackCells.Add(cell);
-                    }                  
-                }
+    //                if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange && !cell.IsOccupiedNew())
+    //                {
+    //                    cell.SetAsValidAttack();
+    //                    AttackCells.Add(cell);
+    //                }                  
+    //            }
 
-            }
-        }
+    //        }
+    //    }
 
-        return AttackCells;
-    }
+    //    return AttackCells;
+    //}
 
     private int CalculateChebyshevDistance(int x1, int x2, int y1, int y2)
     {
         return Math.Max(Math.Abs(x2 - x1), Math.Abs(y2 - y1));
     }
 
-    public List<GridCell> GetAttacksForPlayer(int x, int y)
-    {
-        ClearGrid();
-        List<GridCell> AttackCells = new List<GridCell>();
+    //public List<GridCell> GetAttacksForPlayer(int x, int y)
+    //{
+    //    ClearGrid();
+    //    List<GridCell> AttackCells = new List<GridCell>();
 
-        foreach (var attack in baseAttack)
-        {
-            int squareX = x + attack.Item1;
-            int squareY = y + attack.Item2;
-            if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
-            {
-                GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                if (cell.IsOccupiedNew())
-                {
-                    cell.SetAsValidAttack();
-                    AttackCells.Add(cell);
-                }
-            }
-        }
+    //    foreach (var attack in baseAttack)
+    //    {
+    //        int squareX = x + attack.Item1;
+    //        int squareY = y + attack.Item2;
+    //        if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
+    //        {
+    //            GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+    //            if (cell.IsOccupiedNew())
+    //            {
+    //                cell.SetAsValidAttack();
+    //                AttackCells.Add(cell);
+    //            }
+    //        }
+    //    }
 
-        return AttackCells;
-    }
+    //    return AttackCells;
+    //}
 
-    public List<GridCell> TestAttacksForPlayer(GridCell playerCell, int range)
-    {
-        List<GridCell> AttackCells = new List<GridCell>();
+    //public List<GridCell> TestAttacksForPlayer(GridCell playerCell, int range)
+    //{
+    //    List<GridCell> AttackCells = new List<GridCell>();
 
-        foreach (var neighbourDirection in _cellNeighbourDirections)
-        {
-            int squareX = playerCell.X + neighbourDirection.Item1;
-            int squareY = playerCell.Y + neighbourDirection.Item2;
-            if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
-            {
-                GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-                if (!AttackCells.Contains(cell))
-                {
-                    if (cell.IsOccupiedNew())
-                    {
-                        cell.SetAsValidAttack();
-                        AttackCells.Add(cell);
-                    }
-                }                
-            }
-        }
+    //    foreach (var neighbourDirection in _cellNeighbourDirections)
+    //    {
+    //        int squareX = playerCell.X + neighbourDirection.Item1;
+    //        int squareY = playerCell.Y + neighbourDirection.Item2;
+    //        if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
+    //        {
+    //            GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+    //            if (!AttackCells.Contains(cell))
+    //            {
+    //                if (cell.IsOccupiedNew())
+    //                {
+    //                    cell.SetAsValidAttack();
+    //                    AttackCells.Add(cell);
+    //                }
+    //            }                
+    //        }
+    //    }
 
-        return AttackCells;
-    }
+    //    return AttackCells;
+    //}
 
 
     public List<Creature> GetAttackedCreatures(GridCell targetCell, ActionClass action)
@@ -503,10 +614,16 @@ public class GameGrid : MonoBehaviour
         // check each of these cells for creatures
         foreach (GridCell cell in attackedCells)
         {
-            if (cell.OccupiedUnit != null)
+            if (IsCellOccupied(cell))
             {
-               attackedCreatures.Add(cell.OccupiedUnit);
-            }    
+                // Need more than just the id!
+                //attackedCreatures.Add()
+            }
+
+            //if (cell.OccupiedUnit != null)
+            //{
+            //   attackedCreatures.Add(cell.OccupiedUnit);
+            //}    
         }
 
         return attackedCreatures;
@@ -521,6 +638,7 @@ public class GameGrid : MonoBehaviour
                 GridCell cell = GetCell(x, y);
                 //cell.SetMoveText("");
                 cell.ResetCell();
+                //cell.gameObject.SetActive(false);
             }
         }
     }
@@ -571,15 +689,16 @@ public class GameGrid : MonoBehaviour
 
     public GridCell GetRandomUnoccupiedCell()
     {
-        GridCell cell;
+        
         int randX, randY;
         do
         {
             //todo : set spawn area where obstacles cannot be spawned...
             randX = Random.Range(0, Width);
             randY = Random.Range(0, Height);
-            cell = GetCell(randX, randY);
-        } while (cell.OccupiedUnit != null);
+        } while (IsCellOccupied(randX, randY));
+
+        GridCell cell = GetCell(randX, randY);
 
         return cell;
     }

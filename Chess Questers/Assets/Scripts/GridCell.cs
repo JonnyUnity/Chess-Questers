@@ -12,14 +12,14 @@ public class GridCell : MonoBehaviour
     private Color initColour = Color.white;
     private Color colour = Color.white;
 
-    [SerializeField] GameObject _highlight;
+    //[SerializeField] GameObject _highlight;
 
     [SerializeField] private Color _highlightColour;
     [SerializeField] private Color _moveColour;
     [SerializeField] private Color _attackColur;
 
     // Saves a reference to the gameobject that gets placed on this cell.
-    public Creature OccupiedUnit = null;
+    //public Creature OccupiedUnit = null;
 
     //public bool IsOccupied;
     public bool IsMove;
@@ -38,11 +38,12 @@ public class GridCell : MonoBehaviour
 
     public bool IsSelectable => IsMove || IsAttack;
 
+
     public void Awake()
     {
         _renderer = GetComponent<Renderer>();
-        _highlightRenderer = _highlight.GetComponent<Renderer>();
-        _highlightMaterial = _highlight.GetComponent<Renderer>().GetComponent<Material>();
+        //_highlightRenderer = _highlight.GetComponent<Renderer>();
+        //_highlightMaterial = _highlight.GetComponent<Renderer>().GetComponent<Material>();
     }
 
     public void Setup(BattleSystem battleSystem, int x, int y, Color color)
@@ -63,16 +64,16 @@ public class GridCell : MonoBehaviour
     }
 
 
-    public void SetUnit(Creature c)
-    {
-        //if (c.OccupiedCell != null)
-        //{
-        //    c.OccupiedCell.OccupiedUnit = null;
-        //}
+    //public void SetUnit(Creature c)
+    //{
+    //    //if (c.OccupiedCell != null)
+    //    //{
+    //    //    c.OccupiedCell.OccupiedUnit = null;
+    //    //}
 
-        OccupiedUnit = c;
-        c.OccupiedCell = this;
-    }
+    //    OccupiedUnit = c;
+    //    c.OccupiedCell = this;
+    //}
 
     public void SetCellNumber(int num)
     {
@@ -87,7 +88,7 @@ public class GridCell : MonoBehaviour
     //    IsOccupied = true;
     //}
 
-    public bool IsOccupiedNew() => OccupiedUnit != null;
+    //public bool IsOccupiedNew() => OccupiedUnit != null;
 
 
 
@@ -200,6 +201,7 @@ public class GridCell : MonoBehaviour
         IsAttack = false;
         colour = initColour;
         UpdateCellColour(colour);
+
         //_highlight.SetActive(false);
     }
 

@@ -56,18 +56,19 @@ public class BattleSystem : Singleton<BattleSystem>
 
     [SerializeField] private NewIM IM;
 
-    private Dictionary<int, GameObject> _creaturePrefabs;
+    private Dictionary<int, GameObject> _creaturePrefabs = new Dictionary<int, GameObject>();
 
 
     private readonly Vector3 _highlightOffset = new Vector3(0, 0.01f, 0);
 
 
     [SerializeField] private GameObject _gridLines;
-    
+
+    private Dictionary<int, Vector2> _creaturePositions = new Dictionary<int, Vector2>();
+
     public void Awake()
     {
         _camera = Camera.main;
-        _creaturePrefabs = new Dictionary<int, GameObject>();
 
         State = BattleStatesEnum.START;
         UIHandler = CreaturePanel.GetComponent<BattleUIHandler>();
@@ -83,7 +84,7 @@ public class BattleSystem : Singleton<BattleSystem>
         BattleEvents.OnCellMoveHighlighted += HighlightCell;
         BattleEvents.OnCellMoveUnhighlighted += UnhighlightCell;
         BattleEvents.OnCellMoveSelected += SelectCell;
-        BattleEvents.OnPlayerSetupActions += SetupPlayerAttack;
+        BattleEvents.OnCreatureMoved += SetupPlayerAttack;
         BattleEvents.OnPlayerActionSelected += SetupAttackTemplate;
         BattleEvents.OnCellAttackSelected += HandleAttack;
 
@@ -104,7 +105,7 @@ public class BattleSystem : Singleton<BattleSystem>
         BattleEvents.OnCellMoveHighlighted -= HighlightCell;
         BattleEvents.OnCellMoveUnhighlighted -= UnhighlightCell;
         BattleEvents.OnCellMoveSelected -= SelectCell;
-        BattleEvents.OnPlayerSetupActions -= SetupPlayerAttack;
+        BattleEvents.OnCreatureMoved -= SetupPlayerAttack;
         BattleEvents.OnPlayerActionSelected -= SetupAttackTemplate;
         BattleEvents.OnCellAttackSelected -= HandleAttack;
 
@@ -303,8 +304,10 @@ public class BattleSystem : Singleton<BattleSystem>
             Combatants.Add(ic);
 
             ic.OccupiedCell = cell;
-            cell.SetUnit(ic);
+            //cell.SetUnit(ic);
 
+            //_creaturePositions.Add(ic.ID, new Vector2(c.CellX, c.CellY));
+            Grid.AddCreaturePosition(ic);
         }
 
 
@@ -349,8 +352,10 @@ public class BattleSystem : Singleton<BattleSystem>
             Combatants.Add(enemy);
 
             enemy.OccupiedCell = cell;
-            cell.SetUnit(enemy);
+            //cell.SetUnit(enemy);
 
+            //_creaturePositions.Add(enemy.ID, new Vector2(c.CellX, c.CellY));
+            Grid.AddCreaturePosition(enemy);
         }
 
     }
@@ -509,10 +514,10 @@ public class BattleSystem : Singleton<BattleSystem>
             yield return null;
         } while (_activeCharacter.State == CharacterStatesEnum.MOVING);
 
-        cell.SetUnit(_activeCharacter);
+        //cell.SetUnit(_activeCharacter);
         _activeCharacter.UpdatePosition(cell.X, cell.Y, cellPos, _activeCharacter.CurrentFacing);
-
-        BattleEvents.CharacterFinishedMoving();
+        
+        BattleEvents.CreatureMoved(_activeCharacter);
 
         //yield return new WaitForSeconds(0.1f);
 
@@ -525,8 +530,12 @@ public class BattleSystem : Singleton<BattleSystem>
     }
 
 
-    void SetupPlayerAttack()
+    private void SetupPlayerAttack(Creature creature)
     {
+
+        if (!creature.IsFriendly)
+            return;
+
         UIHandler.UpdateStateText("CALC PLAYER ATTACKS");
 
         var actions = _activeCharacter.Actions;
@@ -590,6 +599,7 @@ public class BattleSystem : Singleton<BattleSystem>
         // No attacks (or maybe no moves?) so go to next turn...
         if (State == BattleStatesEnum.PLAYER_ATTACK)
         {
+            UnhighlightAttackCell();
             BattleEvents.TurnOver();
         }
     }
@@ -600,6 +610,9 @@ public class BattleSystem : Singleton<BattleSystem>
         UIHandler.UpdateStateText("ENEMY MOVE");
 
         yield return new WaitForSeconds(2f);
+
+        BattleEvents.CreatureMoved(_activeCharacter);
+
         State = BattleStatesEnum.ENEMY_ATTACK;
         StartCoroutine(EnemyAttackCoroutine());
 
@@ -612,7 +625,8 @@ public class BattleSystem : Singleton<BattleSystem>
         UIHandler.UpdateStateText("ENEMY ATTACK");
 
         yield return new WaitForSeconds(2f);
-
+        
+        
         BattleEvents.TurnOver();
 
         //CheckBattleState();
