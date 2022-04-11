@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Creature : MonoBehaviour
 {
@@ -41,6 +42,7 @@ public class Creature : MonoBehaviour
     protected Quaternion _orientation;
 
     [SerializeField] protected GameObject _creatureInfo;
+    [SerializeField] protected Slider _healthSlider;
     [SerializeField] protected TMPro.TextMeshProUGUI _nameText;
 
     public CharacterStatesEnum State;
@@ -56,11 +58,13 @@ public class Creature : MonoBehaviour
     protected virtual void OnEnable()
     {
         BattleEvents.OnTakeDamage += TakeDamage;
+        BattleEvents.OnCreatureMoved += UpdatePositionNew;
     }
 
     protected virtual void OnDisable()
     {
         BattleEvents.OnTakeDamage -= TakeDamage;
+        BattleEvents.OnCreatureMoved -= UpdatePositionNew;
     }
 
     private void TakeDamage(int enemyID, int healthChange)
@@ -69,6 +73,7 @@ public class Creature : MonoBehaviour
             return;
 
         Health -= healthChange; // assume no healing actions for now...
+        _healthSlider.value = Health;
 
         if (Health <= 0)
         {
@@ -88,6 +93,19 @@ public class Creature : MonoBehaviour
         CurrentFacing = currentFacing;
     }
 
+    public void UpdatePositionNew(Creature creature)
+    {
+        if (creature != this)
+            return;
+
+
+        CellX = TargetX;
+        CellY = TargetY;
+        Position = TargetPosition;
+        
+    }
+
+
 
     protected virtual void Update()
     {
@@ -95,22 +113,22 @@ public class Creature : MonoBehaviour
         _creatureInfo.transform.LookAt(_cam.transform);
         _creatureInfo.transform.rotation = _cam.transform.rotation;
 
-        //if (State != CharacterStatesEnum.MOVING) return;
+        if (State != CharacterStatesEnum.MOVING) return;
 
-        //Vector3 direction = (TargetPosition - Transform.position).normalized;
-        //Transform.position += MoveSpeed * Time.deltaTime * direction;
+        Vector3 direction = (TargetPosition - Transform.position).normalized;
+        Transform.position += MoveSpeed * Time.deltaTime * direction;
 
-        //if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
-        //{
-        //    Transform.SetPositionAndRotation(TargetPosition, _orientation);
+        if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
+        {
+            Transform.SetPositionAndRotation(TargetPosition, _orientation);
 
-        //    //SetPosition(TargetX, TargetY);
-        //    State = CharacterStatesEnum.IDLE;
-        //}
+            //SetPosition(TargetX, TargetY);
+            State = CharacterStatesEnum.IDLE;
+        }
 
     }
 
-    public void DoMove(Vector3 position, int x, int y)
+    public virtual void DoMove(Vector3 position, int x, int y)
     {
         TargetX = x;
         TargetY = y;
@@ -118,6 +136,7 @@ public class Creature : MonoBehaviour
         TargetPosition = position;
         State = CharacterStatesEnum.MOVING;
     }
+
 
     public virtual int GetAttackDamage()
     {

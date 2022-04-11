@@ -22,30 +22,40 @@ public class PlayerCharacter : Creature
         BattleEvents.OnPlayerActionSelected -= SetSelectedAction;
     }
 
-    // Start is called before the first frame update
+    
     void Start()
     {
         
     }
 
-    // Update is called once per frame
-    protected override void Update()
+
+    public void DoMove(Vector3 position, int x, int y)
     {
-        base.Update();
+        TargetX = x;
+        TargetY = y;
 
-        if (State != CharacterStatesEnum.MOVING) return;
-
-        Vector3 direction = (TargetPosition - Transform.position).normalized;
-        Transform.position += MoveSpeed * Time.deltaTime * direction;
-
-        if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
-        {
-            Transform.SetPositionAndRotation(TargetPosition, _orientation);
-
-            //SetPosition(TargetX, TargetY);
-            State = CharacterStatesEnum.IDLE;
-        }
+        TargetPosition = position;
+        State = CharacterStatesEnum.MOVING;
     }
+
+    
+    //protected override void Update()
+    //{
+    //    base.Update();
+
+    //    if (State != CharacterStatesEnum.MOVING) return;
+
+    //    Vector3 direction = (TargetPosition - Transform.position).normalized;
+    //    Transform.position += MoveSpeed * Time.deltaTime * direction;
+
+    //    if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
+    //    {
+    //        Transform.SetPositionAndRotation(TargetPosition, _orientation);
+
+    //        //SetPosition(TargetX, TargetY);
+    //        State = CharacterStatesEnum.IDLE;
+    //    }
+    //}
 
 
     public void InitFromCharacterData(CharacterJsonData data)
@@ -61,6 +71,9 @@ public class PlayerCharacter : Creature
         Actions = GameManager.Instance.GetActionsWithIDs(data.Actions);
         Health = data.Health;
         MaxHealth = data.MaxHealth;
+
+        _healthSlider.maxValue = MaxHealth;
+        _healthSlider.value = MaxHealth;
 
         CellX = data.CellX;
         CellY = data.CellY;

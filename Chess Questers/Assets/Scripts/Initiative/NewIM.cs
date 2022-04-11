@@ -60,11 +60,11 @@ public class NewIM : MonoBehaviour
     {
         List<CharacterTurn> combatants = new List<CharacterTurn>();
 
-        int id = 1;
+        //int id = 1;
         characters.ForEach(a =>
         {
-            a.ID = id;
-            id++;
+            //a.ID = id;
+            //id++;
             combatants.Add(new CharacterTurn()
             {
 

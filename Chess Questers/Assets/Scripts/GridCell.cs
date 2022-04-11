@@ -7,6 +7,8 @@ public class GridCell : MonoBehaviour
 {
     public int X { get; private set; }
     public int Y { get; private set; }
+    public Vector3 Position { get; private set; }
+
     private int CellNumber;
 
     private Color initColour = Color.white;
@@ -29,7 +31,7 @@ public class GridCell : MonoBehaviour
     private Renderer _highlightRenderer;
     private Material _highlightMaterial;
 
-    private BattleSystem BattleSystem;
+    //private BattleSystem BattleSystem;
 
     [SerializeField]
     private TextMeshProUGUI CellNumberText;
@@ -46,11 +48,11 @@ public class GridCell : MonoBehaviour
         //_highlightMaterial = _highlight.GetComponent<Renderer>().GetComponent<Material>();
     }
 
-    public void Setup(BattleSystem battleSystem, int x, int y, Color color)
+    public void Setup(int x, int y, Vector3 position, Color color)
     {
-        BattleSystem = battleSystem;
         X = x;
         Y = y;
+        Position = position;
 
         InitColour(color);
 
@@ -109,11 +111,20 @@ public class GridCell : MonoBehaviour
     public void OnMouseEnter()
     {
         
-        if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
+        //if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
+        //{
+        //    BattleEvents.CellMoveHighlighted(this);
+        //}
+        //else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
+        //{
+        //    BattleEvents.CellAttackHighlighted(this);
+        //}
+
+        if (IsMove)
         {
             BattleEvents.CellMoveHighlighted(this);
         }
-        else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
+        else if (IsAttack)
         {
             BattleEvents.CellAttackHighlighted(this);
         }
@@ -162,15 +173,23 @@ public class GridCell : MonoBehaviour
 
     public void OnMouseDown()
     {
-        if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
+        //if (BattleSystem.State == BattleStatesEnum.PLAYER_MOVE && IsMove)
+        //{
+        //    BattleEvents.CellMoveSelected(this);
+        //}
+        //else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
+        //{
+        //    BattleEvents.CellAttackSelected(this);
+        //}
+
+        if (IsMove)
         {
             BattleEvents.CellMoveSelected(this);
         }
-        else if (BattleSystem.State == BattleStatesEnum.PLAYER_ATTACK && IsAttack)
+        else if (IsAttack)
         {
             BattleEvents.CellAttackSelected(this);
         }
-               
 
     }
 

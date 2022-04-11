@@ -6,8 +6,10 @@ public class Enemy : Creature
 {
     public int EnemyID;
 
+    public Brain Brain { get; private set; }
 
-    public void InitFromEnemyData(NewEnemyJsonData data, EnemySO enemyObject)
+
+    public void Init(NewEnemyJsonData data, EnemySO enemyObject)
     {
         ID = data.ID;
         EnemyID = data.EnemyID;
@@ -24,28 +26,56 @@ public class Enemy : Creature
         Health = data.Health;
         MaxHealth = data.MaxHealth;
 
+        _healthSlider.maxValue = MaxHealth;
+        _healthSlider.value = MaxHealth;
+
+        Brain = enemyObject.Brain;
+
         CellX = data.CellX;
         CellY = data.CellY;
         Position = data.Position;
         CurrentFacing = data.CurrentFacing;
     }
 
-    // Update is called once per frame
-    protected override void Update()
+
+
+    public void CalcMove()
     {
-        base.Update();
 
-        if (State != CharacterStatesEnum.MOVING) return;
+        GridCell move = Brain.GetMove(this);
 
-        Vector3 direction = (TargetPosition - Transform.position).normalized;
-        Transform.position += MoveSpeed * Time.deltaTime * direction;
+        TargetX = move.X;
+        TargetY = move.Y;
+        TargetPosition = move.Position;
 
-        if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
-        {
-            Transform.SetPositionAndRotation(TargetPosition, _orientation);
+        State = CharacterStatesEnum.MOVING;
 
-            //SetPosition(TargetX, TargetY);
-            State = CharacterStatesEnum.IDLE;
-        }
     }
+
+
+    public void CalcAttack()
+    {
+
+    }
+
+
+
+    // Update is called once per frame
+    //protected override void Update()
+    //{
+    //    base.Update();
+
+    //    if (State != CharacterStatesEnum.MOVING) return;
+
+    //    Vector3 direction = (TargetPosition - Transform.position).normalized;
+    //    Transform.position += MoveSpeed * Time.deltaTime * direction;
+
+    //    if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
+    //    {
+    //        Transform.SetPositionAndRotation(TargetPosition, _orientation);
+
+    //        //SetPosition(TargetX, TargetY);
+    //        State = CharacterStatesEnum.IDLE;
+    //    }
+    //}
 }

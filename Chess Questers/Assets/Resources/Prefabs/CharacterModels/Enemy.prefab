@@ -109,7 +109,6 @@ GameObject:
   - component: {fileID: 1694538411215306278}
   - component: {fileID: 8911015144137382716}
   - component: {fileID: 1359926351181923648}
-  - component: {fileID: -6167475742733390479}
   - component: {fileID: 4291791403182747284}
   m_Layer: 0
   m_Name: Enemy
@@ -172,18 +171,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.5, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &-6167475742733390479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1694538411215306276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1d63bd93f7d4fb4c8bd7054eeb78e26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4291791403182747284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,11 +192,10 @@ MonoBehaviour:
   CellY: 0
   CurrentFacing: 0
   _creatureInfo: {fileID: 6319652059196713621}
+  _healthSlider: {fileID: 2675971632717134137}
   _nameText: {fileID: 3734845952667973784}
   State: 0
   EnemyID: 0
-  OccupiedCell: {fileID: 0}
-  TargetCell: {fileID: 0}
 --- !u!1 &1714345311226408478
 GameObject:
   m_ObjectHideFlags: 0
@@ -865,10 +851,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.4
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1

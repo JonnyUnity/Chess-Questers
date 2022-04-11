@@ -17,7 +17,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private GameManager _gameManager;
     private InitiativeManager InitiativeManager;
-    public GameGrid Grid;
+    //public GameGrid Grid;
 
     //[SerializeField] private GameObject HeroPrefab;
     //[SerializeField] private GameObject CharacterPrefab;
@@ -80,6 +80,7 @@ public class BattleSystem : Singleton<BattleSystem>
         //EventSystem.OnBattleStarted += BattleStarted;
         BattleEvents.OnBattleVictory += GoToVictory;
         BattleEvents.OnTurnStart += StartNextTurn;
+
 
         BattleEvents.OnCellMoveHighlighted += HighlightCell;
         BattleEvents.OnCellMoveUnhighlighted += UnhighlightCell;
@@ -185,7 +186,10 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private void UnhighlightAttackCell()
     {
-        _currentAttackTemplate.SetActive(false);
+        if (_currentAttackTemplate != null)
+        {
+            _currentAttackTemplate.SetActive(false);
+        }        
     }
 
 
@@ -207,7 +211,7 @@ public class BattleSystem : Singleton<BattleSystem>
         _id = _questData.Battle_ID;
         _layout = _questData.Battle_Layout;
 
-        Grid.CreateGameGrid(this);
+        GameGrid.Instance.CreateGameGrid(this);
 
         IM.SetInitiative(_questData.Initiative);
         
@@ -236,34 +240,38 @@ public class BattleSystem : Singleton<BattleSystem>
     {
 
         Debug.Log("Play opening animation");
-        Encounter encounter = GameManager.Instance.GetEncounter(_questData.Battle_ID);      
+        Encounter encounter = GameManager.Instance.GetEncounter(_questData.Battle_ID);
 
+        int id = 1;
         for (int i = 0; i < _questData.PartyMembers.Length; i++)
         {
             Vector2 spawn = encounter.PlayerSpawns[i];
 
             //ImprovedCharacter adv = NewAdventurers[i];
             CharacterJsonData adv = _questData.PartyMembers[i];
+            adv.ID = id;
 
-            GridCell cell = Grid.GetCell((int)spawn.x, (int)spawn.y);
-            Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
+            GridCell cell = GameGrid.Instance.GetCell((int)spawn.x, (int)spawn.y);
+            Vector3 cellPos = GameGrid.Instance.GetGridCellWorldPosition(cell);
 
             adv.SetPosition(cell.X, cell.Y, cellPos, 0);
 
+            id++;
         }
 
         for (int i = 0; i < _questData.Enemies.Length; i++)
         {
             Vector2 spawn = encounter.EnemySpawns[i];
-            GridCell cell = Grid.GetCell((int)spawn.x, (int)spawn.y);
-            Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
+            GridCell cell = GameGrid.Instance.GetCell((int)spawn.x, (int)spawn.y);
+            Vector3 cellPos = GameGrid.Instance.GetGridCellWorldPosition(cell);
 
             //ImprovedCharacter adv = NewEnemies[i];
             //CharacterJsonData adv = _questData.Enemies[i];
             NewEnemyJsonData adv = _questData.Enemies[i];
+            adv.ID = id;
 
             adv.SetPosition(cell.X, cell.Y, cellPos, 2);
-
+            id++;
         }
 
         //EventSystem.RollInitiative(Combatants);
@@ -280,8 +288,8 @@ public class BattleSystem : Singleton<BattleSystem>
         // set character positions
         foreach (CharacterJsonData c in _questData.PartyMembers)
         {
-            GridCell cell = Grid.GetCell(c.CellX, c.CellY);
-            Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
+            GridCell cell = GameGrid.Instance.GetCell(c.CellX, c.CellY);
+            Vector3 cellPos = GameGrid.Instance.GetGridCellWorldPosition(cell);
 
             Quaternion rot = GetCharacterRotation(c.CurrentFacing);
 
@@ -307,7 +315,7 @@ public class BattleSystem : Singleton<BattleSystem>
             //cell.SetUnit(ic);
 
             //_creaturePositions.Add(ic.ID, new Vector2(c.CellX, c.CellY));
-            Grid.AddCreaturePosition(ic);
+            GameGrid.Instance.AddCreaturePosition(ic);
         }
 
 
@@ -325,8 +333,8 @@ public class BattleSystem : Singleton<BattleSystem>
 
             EnemySO enemyObject = GameManager.Instance.GetEnemyObject(c.EnemyID);
 
-            GridCell cell = Grid.GetCell(c.CellX, c.CellY);
-            Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
+            GridCell cell = GameGrid.Instance.GetCell(c.CellX, c.CellY);
+            Vector3 cellPos = GameGrid.Instance.GetGridCellWorldPosition(cell);
 
             Quaternion rot = GetCharacterRotation(c.CurrentFacing);
 
@@ -343,7 +351,7 @@ public class BattleSystem : Singleton<BattleSystem>
             CharacterObj = Instantiate(currentPrefab, cellPos, Quaternion.identity * rot);
             CharacterObj.name = c.Name;
             Enemy enemy = CharacterObj.GetComponent<Enemy>();
-            enemy.InitFromEnemyData(c, enemyObject);
+            enemy.Init(c, enemyObject);
 
             //ImprovedCharacter ic = CharacterObj.GetComponent<ImprovedCharacter>();
             //ic.InitFromEnemyData(c);
@@ -355,37 +363,11 @@ public class BattleSystem : Singleton<BattleSystem>
             //cell.SetUnit(enemy);
 
             //_creaturePositions.Add(enemy.ID, new Vector2(c.CellX, c.CellY));
-            Grid.AddCreaturePosition(enemy);
+            GameGrid.Instance.AddCreaturePosition(enemy);
         }
 
     }
 
-
-    //private Quaternion GetCharacterRotation(CharacterJsonData c)
-    //{
-    //    Quaternion rot = Quaternion.Euler(0, -90, 0);
-
-    //    switch (c.CurrentFacing)
-    //    {
-    //        case 0:
-    //            rot = Quaternion.Euler(0, -90, 0);
-    //            break;
-    //        case 1:
-    //            rot = Quaternion.Euler(0, 0, 0);
-    //            break;
-    //        case 2:
-    //            rot = Quaternion.Euler(0, 90, 0);
-    //            break;
-    //        case 3:
-    //            rot = Quaternion.Euler(0, 180, 0);
-    //            break;
-    //        default:
-    //            Debug.Log("Facing " + c.CurrentFacing + " not recognised!");
-    //            break;
-    //    }
-
-    //    return rot;
-    //}
 
     private Quaternion GetCharacterRotation(int facing)
     {
@@ -448,8 +430,9 @@ public class BattleSystem : Singleton<BattleSystem>
         {
             _gridLines.SetActive(true);
             State = BattleStatesEnum.PLAYER_MOVE;
-            SetupPlayerMove(_activeCharacter);
-            
+            //SetupPlayerMove(_activeCharacter);
+            StartCoroutine(SetUpPlayerMoveCoroutine(_activeCharacter));
+
         }
         else
         {
@@ -480,10 +463,23 @@ public class BattleSystem : Singleton<BattleSystem>
         //Creature adv = InitiativeManager.GetCurrentCreature();
 
         //Grid.GetMovesForPlayer(adv.MoveClass, adv.X, adv.Y);
-        Grid.GetMovesForPlayerNew(c.MoveClass, c.CellX, c.CellY);
+        //Grid.GetMovesForPlayer(c.MoveClass, c.CellX, c.CellY);
+
+        GameGrid.Instance.ShowMovesForPlayer(c.MoveClass, c.CellX, c.CellY);
 
         UIHandler.UpdateStateText("WAITING FOR PLAYER MOVE");
         
+    }
+
+
+    private IEnumerator SetUpPlayerMoveCoroutine(Creature creature)
+    {
+        yield return new WaitForSeconds(1f);
+
+        UIHandler.UpdateStateText("CALC PLAYER MOVES");
+        GameGrid.Instance.ShowMovesForPlayer(creature.MoveClass, creature.CellX, creature.CellY);
+        UIHandler.UpdateStateText("WAITING FOR PLAYER MOVE");
+
     }
 
     public void CharacterLook(int x, int y)
@@ -498,11 +494,11 @@ public class BattleSystem : Singleton<BattleSystem>
 
     IEnumerator PlayerMoveCoroutine(GridCell cell)
     {
-        Grid.ClearGrid();
+        GameGrid.Instance.ClearGrid();
 
         UIHandler.UpdateStateText("PLAYER MOVE");
 
-        Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
+        Vector3 cellPos = GameGrid.Instance.GetGridCellWorldPosition(cell);
 
         //Creature adv = InitiativeManager.GetCurrentCreature();
         _activeCharacter.OccupiedCell.ResetCell();
@@ -569,7 +565,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
     IEnumerator PlayerAttackCoroutine(GridCell cell)
     {
-        Grid.ClearGrid();
+        GameGrid.Instance.ClearGrid();
 
         // do attack!
         UIHandler.UpdateStateText("PLAYER ATTACK");
@@ -577,14 +573,14 @@ public class BattleSystem : Singleton<BattleSystem>
         Debug.Log("PLAYER ATTACK!");
 
         //Creature adv = InitiativeManager.GetCurrentCreature();
+        PlayerCharacter pc = (PlayerCharacter)_activeCharacter;
 
+        int damage = pc.GetAttackDamage();
+        List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(cell, _currentAction);
 
-        int damage = _activeCharacter.GetAttackDamage();
-        List<Creature> attackedCreatures = Grid.GetAttackedCreatures(cell, _currentAction);
-
-        foreach (Creature c in attackedCreatures)
+        foreach (int creatureID in attackedCreatures)
         {
-            BattleEvents.TakeDamage(c.ID, damage);
+            BattleEvents.TakeDamage(creatureID, damage);
         }
 
         yield return new WaitForSeconds(1f);
@@ -601,15 +597,38 @@ public class BattleSystem : Singleton<BattleSystem>
         {
             UnhighlightAttackCell();
             BattleEvents.TurnOver();
+            GameGrid.Instance.ClearGrid();
         }
+
     }
 
     private IEnumerator EnemyMoveCoroutine()
     {
-        // calculate move...
+
         UIHandler.UpdateStateText("ENEMY MOVE");
 
         yield return new WaitForSeconds(2f);
+
+        // calculate move...
+        
+
+        Enemy thisEnemy = (Enemy)_activeCharacter;
+
+        thisEnemy.CalcMove();
+
+        do
+        {
+            yield return null;
+        } while (_activeCharacter.State == CharacterStatesEnum.MOVING);
+
+        //cell.SetUnit(_activeCharacter);
+        //_activeCharacter.UpdatePosition(cell.X, cell.Y, cellPos, _activeCharacter.CurrentFacing);
+
+        BattleEvents.CreatureMoved(_activeCharacter);
+
+        yield return new WaitForSeconds(2f);
+
+
 
         BattleEvents.CreatureMoved(_activeCharacter);
 
@@ -626,6 +645,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         yield return new WaitForSeconds(2f);
         
+
         
         BattleEvents.TurnOver();
 

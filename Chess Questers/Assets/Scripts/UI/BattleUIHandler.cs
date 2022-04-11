@@ -26,6 +26,7 @@ public class BattleUIHandler : MonoBehaviour
     private void Awake()
     {
         BattleEvents.OnCellAttackSelected += AttackSelected;
+        BattleEvents.OnTurnOver += HideActions;
     }
 
     private void AttackSelected(GridCell cell)
@@ -36,6 +37,7 @@ public class BattleUIHandler : MonoBehaviour
     private void OnDestroy()
     {
         BattleEvents.OnCellAttackSelected -= AttackSelected;
+        BattleEvents.OnTurnOver -= HideActions;
     }
 
     public void UpdateStateText(string text)
@@ -73,7 +75,6 @@ public class BattleUIHandler : MonoBehaviour
     public void SelectAttack()
     {
         var go = EventSystem.current.currentSelectedGameObject;
-        //Debug.Log(go.name + " clicked!");
 
         // Extract action index
         if (int.TryParse(go.name.Substring(0, 1), out int actionIndex))
@@ -83,15 +84,6 @@ public class BattleUIHandler : MonoBehaviour
             BattleEvents.ActionSelected(_currentCharacterID, action, _characterX, _characterY);
 
         }
-    }
-
-    public void SkipAction()
-    {
-
-        Debug.Log("Skipped action!");
-        HideActions();
-
-        BattleEvents.TurnOver();
     }
 
 

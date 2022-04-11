@@ -192,6 +192,7 @@ MonoBehaviour:
   CellY: 0
   CurrentFacing: 0
   _creatureInfo: {fileID: 6319652059196713621}
+  _healthSlider: {fileID: 2675971632717134137}
   _nameText: {fileID: 3734845952667973784}
   State: 0
 --- !u!1 &1714345311226408478
@@ -849,10 +850,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.4
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
