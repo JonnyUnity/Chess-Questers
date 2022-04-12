@@ -23,8 +23,8 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnTurnOver;
 
     public static event Action OnAttack;
-    public static event Action<int, int> OnTakeDamage;
-    public static event Action<int, bool> OnDeath;
+    public static event Action<Creature, int> OnTakeDamage;
+    public static event Action<Creature> OnDeath;
 
     public static event Action OnBattleVictory;
     public static event Action OnBattleLoss;
@@ -125,15 +125,15 @@ public class BattleEvents : MonoBehaviour
     }
 
 
-    public static void TakeDamage(int characterID, int damage)
+    public static void TakeDamage(Creature creature, int damage)
     {
-        OnTakeDamage?.Invoke(characterID, damage);
+        OnTakeDamage?.Invoke(creature, damage);
     }
 
 
-    public static void CharacterDied(int characterID, bool isFriendly)
+    public static void CharacterDied(Creature creature)
     {
-        OnDeath?.Invoke(characterID, isFriendly);
+        OnDeath?.Invoke(creature);
     }
 
 

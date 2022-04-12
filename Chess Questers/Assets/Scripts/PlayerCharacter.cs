@@ -10,16 +10,20 @@ public class PlayerCharacter : Creature
 
     private ActionClass _selectedAction;
 
+    [SerializeField] private CreatureRuntimeSet _party;
+
     protected override void OnEnable()
     {
         base.OnEnable();
         BattleEvents.OnPlayerActionSelected += SetSelectedAction;
+        _party.Add(this);
     }
 
     protected override void OnDisable()
     {
         base.OnDisable();
         BattleEvents.OnPlayerActionSelected -= SetSelectedAction;
+        _party.Remove(this);
     }
 
     

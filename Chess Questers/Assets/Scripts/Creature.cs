@@ -45,6 +45,8 @@ public class Creature : MonoBehaviour
     [SerializeField] protected Slider _healthSlider;
     [SerializeField] protected TMPro.TextMeshProUGUI _nameText;
 
+    public Faction Faction;
+
     public CharacterStatesEnum State;
 
     private void Awake()
@@ -67,9 +69,9 @@ public class Creature : MonoBehaviour
         BattleEvents.OnCreatureMoved -= UpdatePositionNew;
     }
 
-    private void TakeDamage(int enemyID, int healthChange)
+    private void TakeDamage(Creature creature, int healthChange)
     {
-        if (ID != enemyID)
+        if (creature != this)
             return;
 
         Health -= healthChange; // assume no healing actions for now...
@@ -79,7 +81,7 @@ public class Creature : MonoBehaviour
         {
             Health = 0;
             // audio, fx to be handled by those subscribed to the event.
-            BattleEvents.CharacterDied(ID, false);
+            BattleEvents.CharacterDied(creature);
             Destroy(gameObject);
         }
     }
@@ -143,11 +145,13 @@ public class Creature : MonoBehaviour
         return 0;
     }
 
+
+
 }
 
-//public enum CharacterStatesEnum
-//{
-//    IDLE,
-//    MOVING,
-//    ATTACKING
-//}
+public enum CharacterStatesEnum
+{
+    IDLE,
+    MOVING,
+    ATTACKING
+}

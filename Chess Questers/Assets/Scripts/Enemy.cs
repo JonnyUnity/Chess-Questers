@@ -6,6 +6,7 @@ public class Enemy : Creature
 {
     public int EnemyID;
 
+
     public Brain Brain { get; private set; }
 
 
@@ -55,6 +56,7 @@ public class Enemy : Creature
 
     public EnemyAction CalcAttack()
     {
+        
         EnemyAction enemyAction = Brain.GetAction(this);
 
         return enemyAction;

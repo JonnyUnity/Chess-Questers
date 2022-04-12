@@ -4338,6 +4338,10 @@ MonoBehaviour:
   lightColor: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 0}
   darkColor: {r: 0.035288375, g: 0.28091282, b: 0.5754717, a: 0}
   _attackTemplatePrefab: {fileID: 592661508}
+  _playerCharacters: {fileID: 11400000, guid: 9176bf84a1762754db0774cf6be51e46, type: 2}
+  _enemies: {fileID: 11400000, guid: 788a405278bcf0b45995559e9eab5b9b, type: 2}
+  _combatants: {fileID: 11400000, guid: eb068d33f9fb5da4b9918fadbdedc669, type: 2}
+  _targets: {fileID: 11400000, guid: 9ee3776be003669408ccf090925d2eec, type: 2}
 --- !u!4 &2101179608
 Transform:
   m_ObjectHideFlags: 0
@@ -4384,13 +4388,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   State: 0
-  Grid: {fileID: 2101179607}
   CreaturePanel: {fileID: 2035768993}
   CameraRig: {fileID: 1498793301}
   _highlightMovePrefab: {fileID: 592661508}
   _attackPrefab: {fileID: 24391682}
   IM: {fileID: 324283639}
   _gridLines: {fileID: 1607832117}
+  _playerCharacters: {fileID: 11400000, guid: 9176bf84a1762754db0774cf6be51e46, type: 2}
+  _enemies: {fileID: 11400000, guid: 788a405278bcf0b45995559e9eab5b9b, type: 2}
+  _combatants: {fileID: 11400000, guid: eb068d33f9fb5da4b9918fadbdedc669, type: 2}
+  _targets: {fileID: 11400000, guid: 9ee3776be003669408ccf090925d2eec, type: 2}
 --- !u!4 &2128089780
 Transform:
   m_ObjectHideFlags: 0

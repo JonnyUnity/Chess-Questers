@@ -10,9 +10,9 @@ public class Portrait : MonoBehaviour
     [SerializeField] private Image BackgroundColour;
     [SerializeField] private Image CharacterImage;
 
-    private ImprovedCharacter Creature;
+    private Creature Creature;
 
-    public void SetupPortrait(ImprovedCharacter creature)
+    public void SetupPortrait(Creature creature)
     {
         Creature = creature;
 

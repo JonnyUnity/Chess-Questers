@@ -117,11 +117,11 @@ public class NewIM : MonoBehaviour
     }
 
 
-    private void CharacterDied(int characterID, bool isFriendly)
+    private void CharacterDied(Creature creature)
     {
         Debug.Log("Someone died! Update the turn order!");
 
-        _init.TurnOrder = _init.TurnOrder.Where(w => w.CharacterID != characterID).ToArray();
+        _init.TurnOrder = _init.TurnOrder.Where(w => w.CharacterID != creature.ID).ToArray();
 
 
         // If all enemies are dead...

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -35,6 +36,11 @@ public class GameGrid : Singleton<GameGrid>
     public Dictionary<int, Vector2> PlayerCharacterPositions { get; private set; }
     public Dictionary<int, Vector2> EnemyPositions { get; private set; }
 
+
+    [SerializeField] private CreatureRuntimeSet _playerCharacters;
+    [SerializeField] private CreatureRuntimeSet _enemies;
+    [SerializeField] private CreatureRuntimeSet _combatants;
+    [SerializeField] private CreatureRuntimeSet _targets;
 
     public void Awake()
     {
@@ -313,6 +319,19 @@ public class GameGrid : Singleton<GameGrid>
         return false;
     }
 
+
+    private void CheckCellOccupied(CreatureRuntimeSet creatures, int x, int y)
+    {
+
+        var creature = creatures.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
+
+        if (creature != null)
+        {
+            _targets.Add(creature);
+        }
+    }
+
+
     private bool IsCellOccupied(int cellX, int cellY)
     {
 
@@ -533,7 +552,80 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
-    public List<GridCell> GetTargetsOfAttack(ActionClass action, int x, int y)
+    public void GetTargetsOfActionNew(ActionClass action, CreatureRuntimeSet targetCreatures, int x, int y)
+    {
+        List<GridCell> targets = new List<GridCell>();
+
+        if (action.IsRanged)
+        {
+
+            int minRange = action.MinRange;
+            int maxRange = action.MaxRange;
+
+
+            for (int i = x - maxRange; i <= x + maxRange; i++)
+            {
+                for (int j = y - maxRange; j <= y + maxRange; j++)
+                {
+                    if (0 <= i && i < Width && 0 <= j && j < Height)
+                    {
+
+                        //GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+
+                        if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                        {
+                            CheckCellOccupied(targetCreatures, i, j);
+                        }
+                    }
+
+                }
+            }
+        }
+        else // melee
+        {
+            // Check only the cells immediately adjacent to the active character
+            // only set a cell as a valid attack if it is occupied.
+            for (int i = x - 1; i <= x + 1; i++)
+            {
+                for (int j = y - 1; j <= y + 1; j++)
+                {
+                    if (i == x && j == y)
+                    {
+                        continue;
+                    }
+
+                    if (0 <= i && i < Width && 0 <= j && j < Height)
+                    {
+                        CheckCellOccupied(targetCreatures, i, j);
+
+                        //GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        //if (IsCellOccupied(cell))
+                        //{
+                        //    //cell.SetAsValidAttack();
+                        //    targets.Add(cell);
+                        //}
+
+
+                        //int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+                        ////Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+
+                        //if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                        //{
+                        //    cell.SetAsValidAttack();
+                        //}
+                    }
+                }
+            }
+
+        }
+
+
+    }
+
+
+
+    public List<GridCell> GetTargetsOfAction(ActionClass action, int x, int y)
     {
         List<GridCell> targets = new List<GridCell>();
 

@@ -32,16 +32,22 @@ public class RandomBrain : Brain
         var randomAction = enemy.Actions[Random.Range(0, enemy.Actions.Length)];
 
         // check for null action?
-
+        
 
         // choose random target
-        List<GridCell> targetCells = GameGrid.Instance.GetTargetsOfAttack(randomAction, enemy.CellX, enemy.CellY);
+        List<GridCell> targetCells = GameGrid.Instance.GetTargetsOfAction(randomAction, enemy.CellX, enemy.CellY);
 
+        GameGrid.Instance.GetTargetsOfActionNew(randomAction, enemy.Faction.GetTargetFaction(false), enemy.CellX, enemy.CellY);
+
+        
         GridCell target = null;
         if (targetCells.Count > 0)
         {
             target = targetCells[Random.Range(0, targetCells.Count)];
-        }        
+        }
+        
+        
+
 
         return new EnemyAction(randomAction, target);       
 

@@ -66,9 +66,16 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private Dictionary<int, Vector2> _creaturePositions = new Dictionary<int, Vector2>();
 
+    [SerializeField] private CreatureRuntimeSet _playerCharacters;
+    [SerializeField] private CreatureRuntimeSet _enemies;
+    [SerializeField] private CreatureRuntimeSet _combatants;
+    [SerializeField] private CreatureRuntimeSet _targets;
+
     public void Awake()
     {
         _camera = Camera.main;
+
+        
 
         State = BattleStatesEnum.START;
         UIHandler = CreaturePanel.GetComponent<BattleUIHandler>();
@@ -115,18 +122,27 @@ public class BattleSystem : Singleton<BattleSystem>
         
         BattleEvents.OnDeath -= CharacterDied;
 
+        _playerCharacters.Empty();
+        _enemies.Empty();
+        _combatants.Empty();
+
     }
 
-    private void CharacterDied(int characterID, bool isFriendly)
+    private void CharacterDied(Creature creature)
     {
-        if (isFriendly)
+        if (creature.IsFriendly)
         {
-            NewAdventurers = NewAdventurers.Where(w => w.ID != characterID).ToList();
+            //NewAdventurers = NewAdventurers.Where(w => w.ID != characterID).ToList();
+            _playerCharacters.Remove(creature);
         }
         else
         {
-            NewEnemies = NewEnemies.Where(w => w.ID != characterID).ToList();
+            //NewEnemies = NewEnemies.Where(w => w.ID != characterID).ToList();
+            _enemies.Remove(creature);
         }
+
+        _combatants.Remove(creature);
+
     }
 
     private void HighlightAttackCell(GridCell cell)
@@ -308,6 +324,9 @@ public class BattleSystem : Singleton<BattleSystem>
             PlayerCharacter ic = CharacterObj.GetComponent<PlayerCharacter>();
             ic.InitFromCharacterData(c);
 
+            _playerCharacters.Add(ic);
+            _combatants.Add(ic);
+
             NewAdventurers.Add(ic);
             Combatants.Add(ic);
 
@@ -358,6 +377,8 @@ public class BattleSystem : Singleton<BattleSystem>
 
             NewEnemies.Add(enemy);
             Combatants.Add(enemy);
+            _enemies.Add(enemy);
+            _combatants.Add(enemy);
 
             enemy.OccupiedCell = cell;
             //cell.SetUnit(enemy);
@@ -558,12 +579,21 @@ public class BattleSystem : Singleton<BattleSystem>
 
         //int damage = pc.GetAttackDamage();
         int damage = _currentAction.Damage;
+
+        // update attacked creatures list to creatures, not ids!
         List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(cell, _currentAction);
 
         foreach (int creatureID in attackedCreatures)
         {
-            BattleEvents.TakeDamage(creatureID, damage);
+            BattleEvents.TakeDamage(pc, damage);
         }
+
+        // new method
+        foreach (Creature creature in _targets.Items)
+        {
+            BattleEvents.TakeDamage(creature, damage);
+        }
+        _targets.Empty();
 
         yield return new WaitForSeconds(1f);
 
@@ -618,17 +648,29 @@ public class BattleSystem : Singleton<BattleSystem>
         yield return new WaitForSeconds(1f);
 
         Enemy thisEnemy = (Enemy)_activeCharacter;
+        _targets.Empty();
 
         EnemyAction enemyAction = thisEnemy.CalcAttack();
 
         if (enemyAction.TargetCell != null)
         {
+            // Change attacked craeatures to be list of creatures, not IDs
             List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(enemyAction.TargetCell, enemyAction.Action);
 
             foreach (int creatureID in attackedCreatures)
             {
-                BattleEvents.TakeDamage(creatureID, enemyAction.Action.Damage);
+
+                
+                BattleEvents.TakeDamage(thisEnemy, enemyAction.Action.Damage);
             }
+
+            // new method!
+            foreach (Creature creature in _targets.Items)
+            {
+                BattleEvents.TakeDamage(creature, enemyAction.Action.Damage);
+            }
+            _targets.Empty();
+
         }
         else
         {

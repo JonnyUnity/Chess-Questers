@@ -67,16 +67,16 @@ public class SaveDataManager
 
     #region Character Data conversions
 
-    public static List<ImprovedCharacter> DeserializeCharacterData(CharacterJsonData[] data, bool isFriendly)
-    {
-        List<ImprovedCharacter> characters = new List<ImprovedCharacter>();
-        foreach (CharacterJsonData c in data)
-        {
-            //characters.Add(new ImprovedCharacter(c));
-        }
+    //public static List<ImprovedCharacter> DeserializeCharacterData(CharacterJsonData[] data, bool isFriendly)
+    //{
+    //    List<ImprovedCharacter> characters = new List<ImprovedCharacter>();
+    //    foreach (CharacterJsonData c in data)
+    //    {
+    //        //characters.Add(new ImprovedCharacter(c));
+    //    }
 
-        return characters;
-    }
+    //    return characters;
+    //}
     
 
     public static CharacterJsonData[] SerializeCharacterData(List<PlayerCharacter> data)

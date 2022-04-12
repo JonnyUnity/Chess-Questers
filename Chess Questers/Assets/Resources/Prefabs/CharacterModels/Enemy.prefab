@@ -194,6 +194,7 @@ MonoBehaviour:
   _creatureInfo: {fileID: 6319652059196713621}
   _healthSlider: {fileID: 2675971632717134137}
   _nameText: {fileID: 3734845952667973784}
+  Faction: {fileID: 11400000, guid: 61717dd44940de24b810a7b658360c9a, type: 2}
   State: 0
   EnemyID: 0
 --- !u!1 &1714345311226408478
