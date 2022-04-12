@@ -29,26 +29,4 @@ public class QuestData
 
     }
 
-
-    // convert json data to objects used in game
-    //public QuestData(QuestJsonData jsonData)
-    //{
-    //    MapSeed = jsonData.MapSeed;
-    //    Floor = jsonData.Floor;
-    //    CurrentEncounterType = jsonData.CurrentEncounterType;
-        
-    //    // characterData => ImprovedCharacter
-    //    PartyMembers = SaveDataManager.DeserializeCharacterData(jsonData.PartyMembers, true);
-
-    //    Battle_ID = jsonData.Battle_ID;
-    //    Battle_Layout = jsonData.Battle_Layout;
-    //    Initiative = jsonData.Initiative;
-    //    Enemies = SaveDataManager.DeserializeCharacterData(jsonData.Enemies, false);
-    //}
-
-
-
-
-
 }
-

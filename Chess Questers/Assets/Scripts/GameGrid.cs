@@ -66,28 +66,68 @@ public class GameGrid : Singleton<GameGrid>
         // get attack template from action
         Debug.Log("Action: " + action.Name + " selected!");
 
-        int minRange = action.MinRange;
-        int maxRange = action.MaxRange;
-
-        for (int i = x - maxRange; i <= x + maxRange; i++)
+        if (action.IsRanged)
         {
-            for (int j = y - maxRange; j <= y + maxRange; j++)
+
+            int minRange = action.MinRange;
+            int maxRange = action.MaxRange;
+
+            for (int i = x - maxRange; i <= x + maxRange; i++)
             {
-                if (0 <= i && i < Width && 0 <= j && j < Height)
+                for (int j = y - maxRange; j <= y + maxRange; j++)
                 {
-
-                    GridCell cell = Grid[i, j].GetComponent<GridCell>();
-                    int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
-                    //Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
-
-                    if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                    if (0 <= i && i < Width && 0 <= j && j < Height)
                     {
-                        cell.SetAsValidAttack();
-                    }
-                }
 
+                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+                        //Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+
+                        if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                        {
+                            cell.SetAsValidAttack();
+                        }
+                    }
+
+                }
             }
         }
+        else // melee
+        {
+            // Check only the cells immediately adjacent to the active character
+            // only set a cell as a valid attack if it is occupied.
+            for (int i = x - 1; i <= x + 1; i++)
+            {
+                for (int j = y - 1; j <= y + 1; j++)
+                {
+                    if (i == x && j == y)
+                    {
+                        continue;
+                    }
+
+                    if (0 <= i && i < Width && 0 <= j && j < Height)
+                    {
+                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        if (IsCellOccupied(cell))
+                        {
+                            cell.SetAsValidAttack();
+                        }
+
+
+                        //int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+                        ////Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+
+                        //if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                        //{
+                        //    cell.SetAsValidAttack();
+                        //}
+                    }
+                }
+            }
+
+        }
+
+
 
     }
 
@@ -388,6 +428,9 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
+
+
+
     public void ShowMovesForPlayer(MoveClass moveClass, int playerX, int playerY)
     {
         //ClearGrid();
@@ -473,14 +516,6 @@ public class GameGrid : Singleton<GameGrid>
                     cell.SetAsValidMove();
                     
 
-                    
-                    //if (cell.IsOccupiedNew())
-                    //{
-                    //    break;
-                    //}
-
-                    //cell.SetAsValidMove();
-                    //cell.gameObject.SetActive(true);
                 }
 
             }
@@ -492,214 +527,86 @@ public class GameGrid : Singleton<GameGrid>
 
 
 
-    //public void GetMovesForPlayer(MoveClass moveClass, int x, int y)
-    //{
-    //    ClearGrid();
-    //    Debug.Log("Hero located x:" + x + ", y:" + y);
-
-    //    int startDirIndex = 0;
-    //    int endDirIndex = 8;
-
-    //    if (moveClass.IsJumpingPiece)
-    //    {
-    //        if (moveClass.MoveType == MoveTypeEnum.Knight)
-    //        {
-    //            foreach (var jumpMove in knightOffsets)
-    //            {
-    //                int squareX = x + jumpMove.Item1;
-    //                int squareY = y + jumpMove.Item2;
-    //                if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
-    //                {
-    //                    if (!IsCellOccupied(squareX, squareY))
-    //                    {
-    //                        GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-    //                        cell.SetAsValidMove();
-    //                    }
-
-    //                    //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-    //                    //if (!cell.IsOccupiedNew())
-    //                    //{
-    //                    //    cell.SetAsValidMove();
-    //                    //}
-    //                }
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        int playerSquare = (y * Width) + x;
-
-    //        switch (moveClass.MoveType)
-    //        {
-    //            case MoveTypeEnum.Queen:
-    //                Debug.Log("King/Queen - consider all directions!");
-    //                break;
-    //            case MoveTypeEnum.Bishop:
-    //                startDirIndex = 4;
-    //                break;
-    //            case MoveTypeEnum.Rook:
-    //                endDirIndex = 4;
-    //                break;
-    //            default:
-    //                Debug.LogFormat("Unrecognised move type, defaulting to all directions!");
-    //                break;
-    //        }
-
-    //        for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++)
-    //        {
-    //            var currentDirOffset = slideOffsets[dirIndex];
-
-    //            int maxDistance = Math.Min(moveClass.MoveLimit, numSquaresToEdge[playerSquare][dirIndex]);
-
-    //            for (int n = 0; n < maxDistance; n++)
-    //            {
-    //                Debug.Log(currentDirOffset + " " + (n + 1));
-    //                int squareX = x + currentDirOffset.Item1 * (n + 1);
-    //                int squareY = y + currentDirOffset.Item2 * (n + 1);
-
-    //                if (IsCellOccupied(squareX, squareY))
-    //                {
-    //                    break;
-    //                }
-
-    //                GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-    //                cell.SetAsValidMove();
-                    
-    //                //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-    //                //if (cell.IsOccupiedNew())
-    //                //{
-    //                //    break;
-    //                //}
-
-    //                //cell.SetAsValidMove();
-    //            }
-
-    //        }
-    //    }
-
-
-    //}
-
-    //public List<GridCell> GetBaseAttack(GridCell playerCell)
-    //{
-    //    ClearGrid();
-    //    List<GridCell> AttackCells = new();
-
-    //    foreach (var attack in baseAttack)
-    //    {
-    //        int squareX = playerCell.X + attack.Item1;
-    //        int squareY = playerCell.Y + attack.Item2;
-    //        if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
-    //        {
-    //            //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-    //            // Debug.Log(Vector3.Distance(GetGridCellWorldPosition(cell), GetGridCellWorldPosition(playerCell)));
-
-    //            if (!IsCellOccupied(squareX, squareY))
-    //            {
-    //                GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-    //                cell.SetAsValidAttack();
-    //                AttackCells.Add(cell);
-    //            }
-
-    //            //if (cell.IsOccupiedNew())
-    //            //{
-    //            //    cell.SetAsValidAttack();
-    //            //    AttackCells.Add(cell);
-    //            //}
-    //        }
-    //    }
-
-    //    return AttackCells;
-    //}
-
-    //public List<GridCell> GetFireballAttack(GridCell playerCell)
-    //{
-    //    ClearGrid();
-    //    List<GridCell> AttackCells = new();
-
-    //    Vector3 playerPos = GetGridCellWorldPosition(playerCell);
-
-    //    Debug.Log($"Fireball {playerCell.X},{playerCell.Y}");
-
-    //    int minRange = 2;
-    //    int maxRange = 3;
-
-    //    for (int i = playerCell.X - maxRange; i <= playerCell.X + maxRange; i++)
-    //    {
-    //        for (int j = playerCell.Y - maxRange; j <= playerCell.Y + maxRange; j++)
-    //        {
-    //            if (0 <= i && i < Width && 0 <= j && j < Height)
-    //            {
-
-    //                GridCell cell = Grid[i, j].GetComponent<GridCell>();
-    //                int cellChebyshevDistance = CalculateChebyshevDistance(playerCell.X, i, playerCell.Y, j);
-    //                Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
-
-    //                if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange && !cell.IsOccupiedNew())
-    //                {
-    //                    cell.SetAsValidAttack();
-    //                    AttackCells.Add(cell);
-    //                }                  
-    //            }
-
-    //        }
-    //    }
-
-    //    return AttackCells;
-    //}
-
     private int CalculateChebyshevDistance(int x1, int x2, int y1, int y2)
     {
         return Math.Max(Math.Abs(x2 - x1), Math.Abs(y2 - y1));
     }
 
-    //public List<GridCell> GetAttacksForPlayer(int x, int y)
-    //{
-    //    ClearGrid();
-    //    List<GridCell> AttackCells = new List<GridCell>();
 
-    //    foreach (var attack in baseAttack)
-    //    {
-    //        int squareX = x + attack.Item1;
-    //        int squareY = y + attack.Item2;
-    //        if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
-    //        {
-    //            GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-    //            if (cell.IsOccupiedNew())
-    //            {
-    //                cell.SetAsValidAttack();
-    //                AttackCells.Add(cell);
-    //            }
-    //        }
-    //    }
+    public List<GridCell> GetTargetsOfAttack(ActionClass action, int x, int y)
+    {
+        List<GridCell> targets = new List<GridCell>();
 
-    //    return AttackCells;
-    //}
+        if (action.IsRanged)
+        {
 
-    //public List<GridCell> TestAttacksForPlayer(GridCell playerCell, int range)
-    //{
-    //    List<GridCell> AttackCells = new List<GridCell>();
+            int minRange = action.MinRange;
+            int maxRange = action.MaxRange;
 
-    //    foreach (var neighbourDirection in _cellNeighbourDirections)
-    //    {
-    //        int squareX = playerCell.X + neighbourDirection.Item1;
-    //        int squareY = playerCell.Y + neighbourDirection.Item2;
-    //        if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
-    //        {
-    //            GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
-    //            if (!AttackCells.Contains(cell))
-    //            {
-    //                if (cell.IsOccupiedNew())
-    //                {
-    //                    cell.SetAsValidAttack();
-    //                    AttackCells.Add(cell);
-    //                }
-    //            }                
-    //        }
-    //    }
 
-    //    return AttackCells;
-    //}
+            for (int i = x - maxRange; i <= x + maxRange; i++)
+            {
+                for (int j = y - maxRange; j <= y + maxRange; j++)
+                {
+                    if (0 <= i && i < Width && 0 <= j && j < Height)
+                    {
+
+                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+
+                        if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                        {
+                            if (IsCellOccupied(cell))
+                            {
+                                //cell.SetAsValidAttack();
+                                targets.Add(cell);
+                            }
+                            
+                        }
+                    }
+
+                }
+            }
+        }
+        else // melee
+        {
+            // Check only the cells immediately adjacent to the active character
+            // only set a cell as a valid attack if it is occupied.
+            for (int i = x - 1; i <= x + 1; i++)
+            {
+                for (int j = y - 1; j <= y + 1; j++)
+                {
+                    if (i == x && j == y)
+                    {
+                        continue;
+                    }
+
+                    if (0 <= i && i < Width && 0 <= j && j < Height)
+                    {
+                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        if (IsCellOccupied(cell))
+                        {
+                            //cell.SetAsValidAttack();
+                            targets.Add(cell);
+                        }
+
+
+                        //int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+                        ////Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+
+                        //if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                        //{
+                        //    cell.SetAsValidAttack();
+                        //}
+                    }
+                }
+            }
+
+        }
+
+        return targets;
+    }
+
 
 
     public List<int> GetAttackedCreatures(GridCell targetCell, ActionClass action)
@@ -748,6 +655,7 @@ public class GameGrid : Singleton<GameGrid>
         return attackedCreatures;
     }
 
+
     public void ClearGrid()
     {
         for (int y = 0; y < Height; y++)
@@ -762,6 +670,7 @@ public class GameGrid : Singleton<GameGrid>
         }
     }
 
+
     public Vector3 GetGridPosFromWorld(Vector3 worldPosition)
     {
         int x = Mathf.FloorToInt(worldPosition.x / GridSpacesize);
@@ -774,6 +683,7 @@ public class GameGrid : Singleton<GameGrid>
 
     }
 
+
     public Vector3 GetWorldPosFromGridPos(Vector3 gridPos)
     {
         float x = gridPos.x * GridSpacesize;
@@ -782,6 +692,7 @@ public class GameGrid : Singleton<GameGrid>
         return new Vector3(x, 0.1f, y);
 
     }
+
 
     public Vector3 GetGridCellWorldPosition(GridCell cell)
     {
@@ -798,6 +709,7 @@ public class GameGrid : Singleton<GameGrid>
         return Grid[x, y].GetComponent<GridCell>();
     }
 
+
     public GridCell GetRandomCell()
     {
         int x = Random.Range(0, Width);
@@ -805,6 +717,7 @@ public class GameGrid : Singleton<GameGrid>
 
         return GetCell(x, y);
     }
+
 
     public GridCell GetRandomUnoccupiedCell()
     {
@@ -822,11 +735,6 @@ public class GameGrid : Singleton<GameGrid>
         return cell;
     }
 
-    //public void AddToCell(Creature c, int x, int y)
-    //{
-    //    GridCell cell = GetCell(x, y);
-
-    //}
 
     private bool CellExists(int x, int y)
     {

@@ -53,8 +53,11 @@ public class Enemy : Creature
     }
 
 
-    public void CalcAttack()
+    public EnemyAction CalcAttack()
     {
+        EnemyAction enemyAction = Brain.GetAction(this);
+
+        return enemyAction;
 
     }
 

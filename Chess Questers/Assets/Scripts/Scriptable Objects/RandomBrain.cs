@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 [CreateAssetMenu(menuName = "Chess Questers/Brains/Random")]
 public class RandomBrain : Brain
 {
+
     public override GridCell GetMove(Enemy me)
     {
         //throw new NotImplementedException();
@@ -23,4 +24,27 @@ public class RandomBrain : Brain
 
         return chosenMove;
     }
+
+    public override EnemyAction GetAction(Enemy enemy)
+    {
+
+        // choose random attack
+        var randomAction = enemy.Actions[Random.Range(0, enemy.Actions.Length)];
+
+        // check for null action?
+
+
+        // choose random target
+        List<GridCell> targetCells = GameGrid.Instance.GetTargetsOfAttack(randomAction, enemy.CellX, enemy.CellY);
+
+        GridCell target = null;
+        if (targetCells.Count > 0)
+        {
+            target = targetCells[Random.Range(0, targetCells.Count)];
+        }        
+
+        return new EnemyAction(randomAction, target);       
+
+    }
+
 }

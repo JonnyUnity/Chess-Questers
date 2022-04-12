@@ -443,27 +443,9 @@ public class BattleSystem : Singleton<BattleSystem>
 
     }
 
-
-
-    //public void OnGridCellClick(GridCell cell)
-    //{
-    //    if (State == BattleStatesEnum.PLAYER_MOVE && cell.IsMove)
-    //    {
-    //        StartCoroutine(PlayerMoveCoroutine(cell.X, cell.Y));
-    //    }
-    //    else if (State == BattleStatesEnum.PLAYER_ATTACK && cell.IsAttack)
-    //    {
-    //        StartCoroutine(PlayerAttackCoroutine(cell.X, cell.Y));
-    //    }
-    //}
-
     void SetupPlayerMove(Creature c)
     {
         UIHandler.UpdateStateText("CALC PLAYER MOVES");
-        //Creature adv = InitiativeManager.GetCurrentCreature();
-
-        //Grid.GetMovesForPlayer(adv.MoveClass, adv.X, adv.Y);
-        //Grid.GetMovesForPlayer(c.MoveClass, c.CellX, c.CellY);
 
         GameGrid.Instance.ShowMovesForPlayer(c.MoveClass, c.CellX, c.CellY);
 
@@ -500,7 +482,6 @@ public class BattleSystem : Singleton<BattleSystem>
 
         Vector3 cellPos = GameGrid.Instance.GetGridCellWorldPosition(cell);
 
-        //Creature adv = InitiativeManager.GetCurrentCreature();
         _activeCharacter.OccupiedCell.ResetCell();
 
         _activeCharacter.DoMove(cellPos, cell.X, cell.Y);
@@ -575,7 +556,8 @@ public class BattleSystem : Singleton<BattleSystem>
         //Creature adv = InitiativeManager.GetCurrentCreature();
         PlayerCharacter pc = (PlayerCharacter)_activeCharacter;
 
-        int damage = pc.GetAttackDamage();
+        //int damage = pc.GetAttackDamage();
+        int damage = _currentAction.Damage;
         List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(cell, _currentAction);
 
         foreach (int creatureID in attackedCreatures)
@@ -590,17 +572,7 @@ public class BattleSystem : Singleton<BattleSystem>
     }
 
 
-    public void PassButton()
-    {
-        // No attacks (or maybe no moves?) so go to next turn...
-        if (State == BattleStatesEnum.PLAYER_ATTACK)
-        {
-            UnhighlightAttackCell();
-            BattleEvents.TurnOver();
-            GameGrid.Instance.ClearGrid();
-        }
 
-    }
 
     private IEnumerator EnemyMoveCoroutine()
     {
@@ -643,15 +615,43 @@ public class BattleSystem : Singleton<BattleSystem>
         // do attack
         UIHandler.UpdateStateText("ENEMY ATTACK");
 
-        yield return new WaitForSeconds(2f);
-        
+        yield return new WaitForSeconds(1f);
 
-        
+        Enemy thisEnemy = (Enemy)_activeCharacter;
+
+        EnemyAction enemyAction = thisEnemy.CalcAttack();
+
+        if (enemyAction.TargetCell != null)
+        {
+            List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(enemyAction.TargetCell, enemyAction.Action);
+
+            foreach (int creatureID in attackedCreatures)
+            {
+                BattleEvents.TakeDamage(creatureID, enemyAction.Action.Damage);
+            }
+        }
+        else
+        {
+            UIHandler.UpdateStateText("NO VALID TARGET!");
+        }
+
+        yield return new WaitForSeconds(1f);
+
         BattleEvents.TurnOver();
+        GameGrid.Instance.ClearGrid();
 
-        //CheckBattleState();
+    }
 
 
+    public void PassButton()
+    {
+        // No attacks (or maybe no moves?) so go to next turn...
+        if (State == BattleStatesEnum.PLAYER_ATTACK)
+        {
+            UnhighlightAttackCell();
+            BattleEvents.TurnOver();
+            GameGrid.Instance.ClearGrid();
+        }
 
     }
 

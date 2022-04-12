@@ -62,8 +62,7 @@ public class QuestStartManager : Singleton<QuestStartManager>
         int nameIndex = Random.Range(0, _characterNames.Length);
         string charName = _characterNames[nameIndex];
 
-        //ImprovedCharacter newCharacter = new ImprovedCharacter(charName, 1, mc, actions, 10);
-        CharacterJsonData newChar = new CharacterJsonData(charName, 1, mc.ID, actions, 10);
+        CharacterJsonData newChar = new CharacterJsonData(charName, 1, mc.ID, actions, 100);
 
         NewChars[characterSlot] = newChar;
         
@@ -76,15 +75,8 @@ public class QuestStartManager : Singleton<QuestStartManager>
     public void StartQuest()
     {
 
-        // create save file with character data
-        //_questData.PartyMembers = new List<ImprovedCharacter>(Characters);
-
-        //SaveDataManager.Save(_questData);
-
         _newData.PartyMembers = NewChars;
-
         GameManager.Instance.SetupTestEncounter(_newData);
-
         SaveDataManager.Save(_newData);
 
         // randomise world map?
@@ -98,7 +90,6 @@ public class QuestStartManager : Singleton<QuestStartManager>
 
     public void ReturnToTitle()
     {
-
         SceneManager.LoadScene(0);
     }
 
