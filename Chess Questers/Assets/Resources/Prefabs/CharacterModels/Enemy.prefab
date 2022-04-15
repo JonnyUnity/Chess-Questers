@@ -197,6 +197,7 @@ MonoBehaviour:
   Faction: {fileID: 11400000, guid: 61717dd44940de24b810a7b658360c9a, type: 2}
   State: 0
   EnemyID: 0
+  _enemyAction: {fileID: 11400000, guid: 405bfd44cfc3c6c4c802c48d93a750c0, type: 2}
 --- !u!1 &1714345311226408478
 GameObject:
   m_ObjectHideFlags: 0

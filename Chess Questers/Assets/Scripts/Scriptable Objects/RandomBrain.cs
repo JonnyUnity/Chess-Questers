@@ -25,31 +25,51 @@ public class RandomBrain : Brain
         return chosenMove;
     }
 
-    public override EnemyAction GetAction(Enemy enemy)
+    public override ActionResult GetAction(Enemy enemy)
     {
 
+        List<ActionResult> results = new List<ActionResult>();
+
+        CreatureRuntimeSet targetCreatures = enemy.Faction.GetTargetFaction(false);
+
+        foreach (var action in enemy.Actions)
+        {
+            List<ActionResult> actionResults = GameGrid.Instance.GetTargetsOfActionNew(action, targetCreatures, enemy.CellX, enemy.CellY);
+            results.AddRange(actionResults);
+
+        }
+
         // choose random attack
-        var randomAction = enemy.Actions[Random.Range(0, enemy.Actions.Length)];
+        //var randomAction = enemy.Actions[Random.Range(0, enemy.Actions.Length)];
 
         // check for null action?
         
 
         // choose random target
-        List<GridCell> targetCells = GameGrid.Instance.GetTargetsOfAction(randomAction, enemy.CellX, enemy.CellY);
+        //List<GridCell> targetCells = GameGrid.Instance.GetTargetsOfAction(randomAction, enemy.CellX, enemy.CellY);
 
-        GameGrid.Instance.GetTargetsOfActionNew(randomAction, enemy.Faction.GetTargetFaction(false), enemy.CellX, enemy.CellY);
+        //List<ActionResult> results = GameGrid.Instance.GetTargetsOfActionNew(randomAction, enemy.Faction.GetTargetFaction(false), enemy.CellX, enemy.CellY);
 
         
-        GridCell target = null;
-        if (targetCells.Count > 0)
+        //GridCell target = null;
+
+
+        if (results.Count > 0)
         {
-            target = targetCells[Random.Range(0, targetCells.Count)];
+            return results[Random.Range(0, results.Count)];
         }
-        
-        
+
+        return null;
+
+        //if (targetCells.Count > 0)
+        //{
+        //    target = targetCells[Random.Range(0, targetCells.Count)];
+        //}
 
 
-        return new EnemyAction(randomAction, target);       
+
+
+        //return new EnemyAction(randomAction, target);       
 
     }
 

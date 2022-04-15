@@ -17,10 +17,14 @@ public class BattleUIHandler : MonoBehaviour
     [SerializeField] private GameObject[] _attackButtons;
     [SerializeField] private GameObject PassButton;
 
-    private int _currentCharacterID;
+
     private ActionClass[] _currentActions;
     private int _characterX;
     private int _characterY;
+
+    private Creature _currentCharacter;
+
+    [SerializeField] private ActionResult _playerAction;
 
 
     private void Awake()
@@ -31,6 +35,13 @@ public class BattleUIHandler : MonoBehaviour
 
     private void AttackSelected(GridCell cell)
     {
+        CreatureRuntimeSet creatures = _currentCharacter.Faction.GetTargetFaction(_playerAction.Action.IsAttack);
+
+        _playerAction.Cell = cell;
+        //List<ActionResult> results = GameGrid.Instance.GetTargetsOfActionNew(_playerAction.Action, creatures, cell.X, cell.Y);
+        //_playerAction.Creatures = results[0].Creatures;
+        _playerAction.Creatures = GameGrid.Instance.GetAttackedCreatures(cell, _playerAction.Action);
+
         HideActions();
     }
 
@@ -51,9 +62,10 @@ public class BattleUIHandler : MonoBehaviour
     }
 
 
-    public void ShowActions(int characterID, ActionClass[] actions, int x, int y)
+    public void ShowActions(Creature currentCreature, ActionClass[] actions, int x, int y)
     {
-        _currentCharacterID = characterID;
+
+        _currentCharacter = currentCreature;
         _currentActions = actions;
         _characterX = x;
         _characterY = y;
@@ -81,7 +93,12 @@ public class BattleUIHandler : MonoBehaviour
         {
             ActionClass action = _currentActions[actionIndex];
 
-            BattleEvents.ActionSelected(_currentCharacterID, action, _characterX, _characterY);
+            _playerAction.Action = action;
+            _playerAction.Damage = action.Damage;
+
+            CreatureRuntimeSet creatures = _currentCharacter.Faction.GetTargetFaction(action.IsAttack);
+
+            BattleEvents.ActionSelected(action, creatures, _currentCharacter.CellX, _currentCharacter.CellY);
 
         }
     }

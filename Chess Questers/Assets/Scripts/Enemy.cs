@@ -9,6 +9,7 @@ public class Enemy : Creature
 
     public Brain Brain { get; private set; }
 
+    [SerializeField] private ActionResult _enemyAction;
 
     public void Init(NewEnemyJsonData data, EnemySO enemyObject)
     {
@@ -54,13 +55,10 @@ public class Enemy : Creature
     }
 
 
-    public EnemyAction CalcAttack()
+    public ActionResult CalcAttack()
     {
-        
-        EnemyAction enemyAction = Brain.GetAction(this);
-
-        return enemyAction;
-
+        _enemyAction = Brain.GetAction(this);
+        return _enemyAction;
     }
 
 

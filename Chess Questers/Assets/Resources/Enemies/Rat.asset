@@ -20,3 +20,4 @@ MonoBehaviour:
   MoveClass: {fileID: 11400000, guid: a52f75e2b9cb5574c937561cc1af2d36, type: 2}
   Actions:
   - {fileID: 11400000, guid: 8c99152c553542847a5eef937891818b, type: 2}
+  - {fileID: 11400000, guid: 3aa8e29469e58e5419e259c098817061, type: 2}

@@ -71,6 +71,9 @@ public class BattleSystem : Singleton<BattleSystem>
     [SerializeField] private CreatureRuntimeSet _combatants;
     [SerializeField] private CreatureRuntimeSet _targets;
 
+    [SerializeField] private ActionResult _enemyAction;
+    [SerializeField] private ActionResult _playerAction;
+
     public void Awake()
     {
         _camera = Camera.main;
@@ -168,7 +171,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
     }
 
-    private void SetupAttackTemplate(int characterID, ActionClass action, int x, int y)
+    private void SetupAttackTemplate(ActionClass action, CreatureRuntimeSet creatures, int x, int y)
     {
         _currentAction = action;
 
@@ -557,7 +560,7 @@ public class BattleSystem : Singleton<BattleSystem>
         //_currentAttackTemplate = Instantiate(_attackPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 
 
-        UIHandler.ShowActions(_activeCharacter.ID, actions, _activeCharacter.CellX, _activeCharacter.CellY);
+        UIHandler.ShowActions(_activeCharacter, actions, _activeCharacter.CellX, _activeCharacter.CellY);
 
         //UIHandler.UpdateCharacterText(adv.CreatureName);
         UIHandler.UpdateCharacterText(_activeCharacter.Name);
@@ -575,24 +578,30 @@ public class BattleSystem : Singleton<BattleSystem>
         Debug.Log("PLAYER ATTACK!");
 
         //Creature adv = InitiativeManager.GetCurrentCreature();
-        PlayerCharacter pc = (PlayerCharacter)_activeCharacter;
+        //PlayerCharacter pc = (PlayerCharacter)_activeCharacter;
 
         //int damage = pc.GetAttackDamage();
-        int damage = _currentAction.Damage;
+        //int damage = _currentAction.Damage;
+        int damage = _playerAction.Action.Damage;
 
-        // update attacked creatures list to creatures, not ids!
-        List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(cell, _currentAction);
-
-        foreach (int creatureID in attackedCreatures)
-        {
-            BattleEvents.TakeDamage(pc, damage);
-        }
-
-        // new method
-        foreach (Creature creature in _targets.Items)
+        foreach (var creature in _playerAction.Creatures)
         {
             BattleEvents.TakeDamage(creature, damage);
         }
+
+        // update attacked creatures list to creatures, not ids!
+        //List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(cell, _currentAction);
+
+        //foreach (int creatureID in attackedCreatures)
+        //{
+        //    BattleEvents.TakeDamage(pc, damage);
+        //}
+
+        //// new method
+        //foreach (Creature creature in _targets.Items)
+        //{
+        //    BattleEvents.TakeDamage(creature, damage);
+        //}
         _targets.Empty();
 
         yield return new WaitForSeconds(1f);
@@ -650,32 +659,50 @@ public class BattleSystem : Singleton<BattleSystem>
         Enemy thisEnemy = (Enemy)_activeCharacter;
         _targets.Empty();
 
-        EnemyAction enemyAction = thisEnemy.CalcAttack();
+        // Calc Attack will populate the enemy Action object with the selected cell and the affected creatures
+        _enemyAction = thisEnemy.CalcAttack();
 
-        if (enemyAction.TargetCell != null)
+        if (_enemyAction != null)
         {
-            // Change attacked craeatures to be list of creatures, not IDs
-            List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(enemyAction.TargetCell, enemyAction.Action);
+            UIHandler.UpdateStateText(_enemyAction.Action.Name);
 
-            foreach (int creatureID in attackedCreatures)
+            foreach (Creature creature in _enemyAction.Creatures)
             {
-
-                
-                BattleEvents.TakeDamage(thisEnemy, enemyAction.Action.Damage);
+                BattleEvents.TakeDamage(creature, _enemyAction.Damage);
             }
-
-            // new method!
-            foreach (Creature creature in _targets.Items)
-            {
-                BattleEvents.TakeDamage(creature, enemyAction.Action.Damage);
-            }
-            _targets.Empty();
 
         }
         else
         {
+            // no action so skip!
             UIHandler.UpdateStateText("NO VALID TARGET!");
         }
+
+
+        //if (enemyAction.TargetCell != null)
+        //{
+        //    // Change attacked craeatures to be list of creatures, not IDs
+        //    List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(enemyAction.TargetCell, enemyAction.Action);
+
+        //    foreach (int creatureID in attackedCreatures)
+        //    {
+
+                
+        //        BattleEvents.TakeDamage(thisEnemy, enemyAction.Action.Damage);
+        //    }
+
+        //    // new method!
+        //    foreach (Creature creature in _targets.Items)
+        //    {
+        //        BattleEvents.TakeDamage(creature, enemyAction.Action.Damage);
+        //    }
+        //    _targets.Empty();
+
+        //}
+        //else
+        //{
+        //    UIHandler.UpdateStateText("NO VALID TARGET!");
+        //}
 
         yield return new WaitForSeconds(1f);
 

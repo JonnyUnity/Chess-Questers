@@ -4036,6 +4036,7 @@ MonoBehaviour:
   - {fileID: 757209885}
   - {fileID: 1427562218}
   PassButton: {fileID: 450473291}
+  _playerAction: {fileID: 11400000, guid: 53b85ab6d3265144f93c660861484111, type: 2}
 --- !u!1 &2059817723
 GameObject:
   m_ObjectHideFlags: 0
@@ -4342,6 +4343,7 @@ MonoBehaviour:
   _enemies: {fileID: 11400000, guid: 788a405278bcf0b45995559e9eab5b9b, type: 2}
   _combatants: {fileID: 11400000, guid: eb068d33f9fb5da4b9918fadbdedc669, type: 2}
   _targets: {fileID: 11400000, guid: 9ee3776be003669408ccf090925d2eec, type: 2}
+  _targetCells: {fileID: 11400000, guid: 1b539d9363466fc489dba89c7aedb82d, type: 2}
 --- !u!4 &2101179608
 Transform:
   m_ObjectHideFlags: 0
@@ -4398,6 +4400,8 @@ MonoBehaviour:
   _enemies: {fileID: 11400000, guid: 788a405278bcf0b45995559e9eab5b9b, type: 2}
   _combatants: {fileID: 11400000, guid: eb068d33f9fb5da4b9918fadbdedc669, type: 2}
   _targets: {fileID: 11400000, guid: 9ee3776be003669408ccf090925d2eec, type: 2}
+  _enemyAction: {fileID: 11400000, guid: 405bfd44cfc3c6c4c802c48d93a750c0, type: 2}
+  _playerAction: {fileID: 11400000, guid: 53b85ab6d3265144f93c660861484111, type: 2}
 --- !u!4 &2128089780
 Transform:
   m_ObjectHideFlags: 0

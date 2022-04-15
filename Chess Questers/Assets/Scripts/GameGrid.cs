@@ -42,6 +42,9 @@ public class GameGrid : Singleton<GameGrid>
     [SerializeField] private CreatureRuntimeSet _combatants;
     [SerializeField] private CreatureRuntimeSet _targets;
 
+    [SerializeField] private GridCellRuntimeSet _targetCells;
+    private List<ActionResult> _actionResults;
+
     public void Awake()
     {
         PlayerCharacterPositions = new Dictionary<int, Vector2>();
@@ -64,13 +67,15 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
-    private void ShowActionOnGrid(int characterID, ActionClass action, int x, int y)
+    private void ShowActionOnGrid(ActionClass action, CreatureRuntimeSet creatures, int x, int y)
     {
 
         ClearGrid();
 
         // get attack template from action
         Debug.Log("Action: " + action.Name + " selected!");
+
+
 
         if (action.IsRanged)
         {
@@ -114,7 +119,7 @@ public class GameGrid : Singleton<GameGrid>
                     if (0 <= i && i < Width && 0 <= j && j < Height)
                     {
                         GridCell cell = Grid[i, j].GetComponent<GridCell>();
-                        if (IsCellOccupied(cell))
+                        if (IsCellOccupied(creatures, i, j))
                         {
                             cell.SetAsValidAttack();
                         }
@@ -302,75 +307,95 @@ public class GameGrid : Singleton<GameGrid>
 
 
 
-    private bool IsCellOccupied(GridCell cell)
+    private bool IsCellOccupied(CreatureRuntimeSet creatures, int x, int y)
     {
-
-        Vector2 cellCoords = new Vector2(cell.X, cell.Y);
-
-        if (PlayerCharacterPositions.ContainsValue(cellCoords))
-        {
-            return true;
-        }
-        else if (EnemyPositions.ContainsValue(cellCoords))
-        {
-            return true;
-        }
-
-        return false;
+        return creatures.Items.Where(w => w.CellX == x && w.CellY == y).Any();
     }
 
 
-    private void CheckCellOccupied(CreatureRuntimeSet creatures, int x, int y)
+
+
+    private void CheckCellOccupied(CreatureRuntimeSet creatures, GridCell cell, ActionClass action, int x, int y)
     {
+        List<GridCell> attackedCells = new List<GridCell>();
+
+        attackedCells.Add(cell);
+        int origX = cell.X;
+        int origY = cell.Y;
+
+        foreach (Vector2 offset in action.additionalAttackedCellOffsets)
+        {
+            int newX = origX + (int)offset.x;
+            int newY = origY + (int)offset.y;
+
+            if (CellExists(newX, newY))
+            {
+                attackedCells.Add(GetCell(newX, newY));
+            }
+        }
+
+
 
         var creature = creatures.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
 
         if (creature != null)
         {
+            _targetCells.Add(cell);
             _targets.Add(creature);
         }
     }
 
-
-    private bool IsCellOccupied(int cellX, int cellY)
+    private void GetActionResult(CreatureRuntimeSet creatures, GridCell targetCell, ActionClass action, int x, int y)
     {
+        ActionResult result = new ActionResult(targetCell, action);
 
-        Vector2 cellCoords = new Vector2(cellX, cellY);
+        List<GridCell> attackedCells = new List<GridCell>();
 
-        if (PlayerCharacterPositions.ContainsValue(cellCoords))
+        attackedCells.Add(targetCell);
+        int origX = targetCell.X;
+        int origY = targetCell.Y;
+
+        foreach (Vector2 offset in action.additionalAttackedCellOffsets)
         {
-            return true;
-        }
-        else if (EnemyPositions.ContainsValue(cellCoords))
-        {
-            return true;
+            int newX = origX + (int)offset.x;
+            int newY = origY + (int)offset.y;
+
+            if (CellExists(newX, newY))
+            {
+                attackedCells.Add(GetCell(newX, newY));
+            }
         }
 
-        return false;
+        foreach (GridCell cell in attackedCells)
+        {
+            var creature = creatures.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
+
+            if (creature != null)
+            {
+                result.Creatures.Add(creature);
+
+                _targetCells.Add(cell);
+                _targets.Add(creature);
+            }
+        }
+
+        if (result.Creatures.Count > 0 )
+        {
+            _actionResults.Add(result);
+        }
+
+
     }
 
-    private int? GetCellOccupant(GridCell cell)
+
+    private bool IsCellOccupied(int x, int y)
     {
+        return _combatants.Items.Where(w => w.CellX == x && w.CellY == y).Any();
+    }
 
-        Vector2 cellCoords = new Vector2(cell.X, cell.Y);
-
-        foreach (KeyValuePair<int,Vector2> kvp in EnemyPositions)
-        {
-            if (kvp.Value == cellCoords)
-            {
-                return kvp.Key;
-            }
-        }
-
-        foreach (KeyValuePair<int, Vector2> kvp in PlayerCharacterPositions)
-        {
-            if (kvp.Value == cellCoords)
-            {
-                return kvp.Key;
-            }
-        }
-
-        return null;
+    private Creature GetCellOccupant(int x, int y)
+    {
+        return _combatants.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
     }
 
 
@@ -552,9 +577,13 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
-    public void GetTargetsOfActionNew(ActionClass action, CreatureRuntimeSet targetCreatures, int x, int y)
+    public List<ActionResult> GetTargetsOfActionNew(ActionClass action, CreatureRuntimeSet targetCreatures, int x, int y)
     {
         List<GridCell> targets = new List<GridCell>();
+        //List<ActionResult> results = new List<ActionResult>();
+        _actionResults = new List<ActionResult>();
+        
+        _targetCells.Empty();
 
         if (action.IsRanged)
         {
@@ -570,12 +599,13 @@ public class GameGrid : Singleton<GameGrid>
                     if (0 <= i && i < Width && 0 <= j && j < Height)
                     {
 
-                        //GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
                         int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
 
                         if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
                         {
-                            CheckCellOccupied(targetCreatures, i, j);
+                            //CheckCellOccupied(targetCreatures, cell, action, i, j);
+                            GetActionResult(targetCreatures, cell, action, i, j);
                         }
                     }
 
@@ -597,7 +627,12 @@ public class GameGrid : Singleton<GameGrid>
 
                     if (0 <= i && i < Width && 0 <= j && j < Height)
                     {
-                        CheckCellOccupied(targetCreatures, i, j);
+                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
+
+                        GetActionResult(targetCreatures, cell, action, i, j);
+                        
+
+                        //CheckCellOccupied(targetCreatures, cell, action, i, j);
 
                         //GridCell cell = Grid[i, j].GetComponent<GridCell>();
                         //if (IsCellOccupied(cell))
@@ -620,90 +655,91 @@ public class GameGrid : Singleton<GameGrid>
 
         }
 
+        return _actionResults;
 
     }
 
 
 
-    public List<GridCell> GetTargetsOfAction(ActionClass action, int x, int y)
-    {
-        List<GridCell> targets = new List<GridCell>();
+    //public List<GridCell> GetTargetsOfAction(ActionClass action, int x, int y)
+    //{
+    //    List<GridCell> targets = new List<GridCell>();
 
-        if (action.IsRanged)
-        {
+    //    if (action.IsRanged)
+    //    {
 
-            int minRange = action.MinRange;
-            int maxRange = action.MaxRange;
+    //        int minRange = action.MinRange;
+    //        int maxRange = action.MaxRange;
 
 
-            for (int i = x - maxRange; i <= x + maxRange; i++)
-            {
-                for (int j = y - maxRange; j <= y + maxRange; j++)
-                {
-                    if (0 <= i && i < Width && 0 <= j && j < Height)
-                    {
+    //        for (int i = x - maxRange; i <= x + maxRange; i++)
+    //        {
+    //            for (int j = y - maxRange; j <= y + maxRange; j++)
+    //            {
+    //                if (0 <= i && i < Width && 0 <= j && j < Height)
+    //                {
 
-                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
-                        int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+    //                    GridCell cell = Grid[i, j].GetComponent<GridCell>();
+    //                    int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
 
-                        if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
-                        {
-                            if (IsCellOccupied(cell))
-                            {
-                                //cell.SetAsValidAttack();
-                                targets.Add(cell);
-                            }
+    //                    if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+    //                    {
+    //                        if (IsCellOccupied(cell))
+    //                        {
+    //                            //cell.SetAsValidAttack();
+    //                            targets.Add(cell);
+    //                        }
                             
-                        }
-                    }
+    //                    }
+    //                }
 
-                }
-            }
-        }
-        else // melee
-        {
-            // Check only the cells immediately adjacent to the active character
-            // only set a cell as a valid attack if it is occupied.
-            for (int i = x - 1; i <= x + 1; i++)
-            {
-                for (int j = y - 1; j <= y + 1; j++)
-                {
-                    if (i == x && j == y)
-                    {
-                        continue;
-                    }
+    //            }
+    //        }
+    //    }
+    //    else // melee
+    //    {
+    //        // Check only the cells immediately adjacent to the active character
+    //        // only set a cell as a valid attack if it is occupied.
+    //        for (int i = x - 1; i <= x + 1; i++)
+    //        {
+    //            for (int j = y - 1; j <= y + 1; j++)
+    //            {
+    //                if (i == x && j == y)
+    //                {
+    //                    continue;
+    //                }
 
-                    if (0 <= i && i < Width && 0 <= j && j < Height)
-                    {
-                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
-                        if (IsCellOccupied(cell))
-                        {
-                            //cell.SetAsValidAttack();
-                            targets.Add(cell);
-                        }
-
-
-                        //int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
-                        ////Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
-
-                        //if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
-                        //{
-                        //    cell.SetAsValidAttack();
-                        //}
-                    }
-                }
-            }
-
-        }
-
-        return targets;
-    }
+    //                if (0 <= i && i < Width && 0 <= j && j < Height)
+    //                {
+    //                    GridCell cell = Grid[i, j].GetComponent<GridCell>();
+    //                    if (IsCellOccupied(cell))
+    //                    {
+    //                        //cell.SetAsValidAttack();
+    //                        targets.Add(cell);
+    //                    }
 
 
+    //                    //int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+    //                    ////Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
 
-    public List<int> GetAttackedCreatures(GridCell targetCell, ActionClass action)
+    //                    //if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+    //                    //{
+    //                    //    cell.SetAsValidAttack();
+    //                    //}
+    //                }
+    //            }
+    //        }
+
+    //    }
+
+    //    return targets;
+    //}
+
+
+
+    public List<Creature> GetAttackedCreatures(GridCell targetCell, ActionClass action)
     {
-        List<int> attackedCreatures = new List<int>();
+        List<Creature> attackedCreatures = new List<Creature>();
         List<GridCell> attackedCells = new List<GridCell>();
 
         // get attacked cells by attack
@@ -725,11 +761,17 @@ public class GameGrid : Singleton<GameGrid>
         // check each of these cells for creatures
         foreach (GridCell cell in attackedCells)
         {
-            var creatureID = GetCellOccupant(cell);
-            if (creatureID.HasValue)
+            var creature = GetCellOccupant(cell.X, cell.Y);
+            if (creature != null)
             {
-                attackedCreatures.Add(creatureID.Value);
+                attackedCreatures.Add(creature);
             }
+
+            //var creatureID = GetCellOccupant(cell);
+            //if (creatureID.HasValue)
+            //{
+            //    attackedCreatures.Add(creatureID.Value);
+            //}
 
             //if (IsCellOccupied(cell))
             //{

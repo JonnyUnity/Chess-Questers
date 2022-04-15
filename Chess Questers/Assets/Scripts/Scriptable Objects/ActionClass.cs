@@ -17,6 +17,8 @@ public class ActionClass : ScriptableObject
     public ActionShapesEnum Shape;
 
     public bool IsRanged;
+    public bool IsAttack;
+
     public bool MoveTarget;
 
     public bool ForPlayer;
