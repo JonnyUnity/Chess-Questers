@@ -15,6 +15,33 @@ public class MoveClass : ScriptableObject
     public bool ForPlayer;
     public bool ForEnemy;
 
+    public int InitialChargesPerTurn;
+    public int ChargesPerTurn;
+    public int Cooldown = 0;
+
+
+
+    public void StartOfBattle()
+    {
+        ChargesPerTurn = InitialChargesPerTurn;
+    }
+
+    public void DoMove()
+    {
+        ChargesPerTurn--;
+    }
+
+    public void EndOfTurn()
+    {
+        ChargesPerTurn = InitialChargesPerTurn;
+    }
+
+
+    public bool IsActive()
+    {
+        return ChargesPerTurn > 0;
+    }
+
 }
 
 public enum MoveTypeEnum

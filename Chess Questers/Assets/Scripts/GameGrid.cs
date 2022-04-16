@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 public class GameGrid : Singleton<GameGrid>
@@ -13,7 +14,10 @@ public class GameGrid : Singleton<GameGrid>
 
     private int NumObstacles;
 
-    [SerializeField] private GameObject GridCellPrefab;
+    [SerializeField] private Camera _camera;
+    [SerializeField] private GameObject _cellsContainer;
+
+    private GameObject GridCellPrefab;
     private GameObject ObstaclePrefab;
     private GameObject[,] Grid;
 
@@ -21,9 +25,6 @@ public class GameGrid : Singleton<GameGrid>
     [SerializeField] private Color darkColor;
 
     [SerializeField] private GameObject _attackTemplatePrefab;
-
-    private BattleSystem BattleSystem;
-
 
     private int[][] numSquaresToEdge;
     private List<(int, int)> slideOffsets;
@@ -43,6 +44,9 @@ public class GameGrid : Singleton<GameGrid>
     [SerializeField] private CreatureRuntimeSet _targets;
 
     [SerializeField] private GridCellRuntimeSet _targetCells;
+
+    [SerializeField] private ActionResult _playerAction;
+
     private List<ActionResult> _actionResults;
 
     public void Awake()
@@ -55,7 +59,10 @@ public class GameGrid : Singleton<GameGrid>
 
         BattleEvents.OnPlayerActionSelected += ShowActionOnGrid;
         BattleEvents.OnCreatureMoved += UpdateCreaturePosition;
-        //BattleEvents.OnTurnOver += ClearGrid;
+        BattleEvents.OnPlayerStartTurn += ShowGrid;
+        BattleEvents.OnPlayerEndTurn += HideGrid;
+        BattleEvents.OnCellSelected += SelectCell;
+
     }
 
 
@@ -63,9 +70,24 @@ public class GameGrid : Singleton<GameGrid>
     {
         BattleEvents.OnPlayerActionSelected -= ShowActionOnGrid;
         BattleEvents.OnCreatureMoved -= UpdateCreaturePosition;
-        //BattleEvents.OnTurnOver -= ClearGrid;
+        BattleEvents.OnPlayerStartTurn -= ShowGrid;
+        BattleEvents.OnPlayerEndTurn -= HideGrid;
+        BattleEvents.OnCellSelected -= SelectCell;
     }
 
+    private void SelectCell(GridCell cell)
+    {
+        if (cell.IsMove)
+        {
+
+        }
+        else if (cell.IsAttack)
+        {
+            //CreatureRuntimeSet creatures = _playerAction.Action.IsAttack;
+        }
+
+        
+    }
 
     private void ShowActionOnGrid(ActionClass action, CreatureRuntimeSet creatures, int x, int y)
     {
@@ -90,12 +112,14 @@ public class GameGrid : Singleton<GameGrid>
                     if (0 <= i && i < Width && 0 <= j && j < Height)
                     {
 
-                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        
                         int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
                         //Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
 
                         if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
                         {
+                            //Grid[i, j].gameObject.SetActive(true);
+                            GridCell cell = Grid[i, j].GetComponent<GridCell>();
                             cell.SetAsValidAttack();
                         }
                     }
@@ -118,9 +142,11 @@ public class GameGrid : Singleton<GameGrid>
 
                     if (0 <= i && i < Width && 0 <= j && j < Height)
                     {
-                        GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                        
                         if (IsCellOccupied(creatures, i, j))
                         {
+                            //Grid[i, j].gameObject.SetActive(true);
+                            GridCell cell = Grid[i, j].GetComponent<GridCell>();
                             cell.SetAsValidAttack();
                         }
 
@@ -142,9 +168,8 @@ public class GameGrid : Singleton<GameGrid>
 
     }
 
-    public void CreateGameGrid(BattleSystem battleSystem)
+    public void CreateGameGrid()
     {
-        BattleSystem = battleSystem;
         Grid = new GameObject[Height, Width];
 
         //yield return new WaitForSeconds(1f);
@@ -160,14 +185,15 @@ public class GameGrid : Singleton<GameGrid>
             {
                 Vector3 cellPosition = new Vector3(x * GridSpacesize, 0.01f, y * GridSpacesize);
 
-                Grid[x, y] = Instantiate(GridCellPrefab, cellPosition, Quaternion.Euler(90, 0, 0));
+                Grid[x, y] = Instantiate(GridCellPrefab, cellPosition, Quaternion.Euler(90, 0, 0), _cellsContainer.transform);
 
                 bool isLightSquare = (x + y) % 2 != 0;
                 var squareColour = isLightSquare ? lightColor : darkColor;
                 GridCell cell = GetCell(x, y);
                 cell.Setup(x, y, cellPosition, squareColour);
-                cell.transform.parent = transform;
+                //cell.transform.parent = _cellsContainer.transform;
                 cell.name = $"Grid Space (x:{x}, y:{y})";
+                //Grid[x, y].gameObject.SetActive(false);
             }
         }
 
@@ -177,40 +203,16 @@ public class GameGrid : Singleton<GameGrid>
 
     }
 
-    public IEnumerator CreateGameGridCoroutine(BattleSystem battleSystem)
+    public void ShowGrid()
     {
-        BattleSystem = battleSystem;
-        Grid = new GameObject[Height, Width];
-
-        //yield return new WaitForSeconds(1f);
-
-        if (GridCellPrefab == null)
-        {
-            Debug.Log("ERROR: Grid cell prefab not set!");
-        }
-
-        for (int x = 0; x < Height; x++)
-        {
-            for (int y = 0; y < Width; y++)
-            {
-                Vector3 cellPosition = new Vector3(x * GridSpacesize, 0.01f, y * GridSpacesize);
-
-                Grid[x, y] = Instantiate(GridCellPrefab, cellPosition, Quaternion.Euler(90, 0, 0));
-
-                bool isLightSquare = (x + y) % 2 != 0;
-                var squareColour = isLightSquare ? lightColor : darkColor;
-                GridCell cell = GetCell(x, y);
-                cell.Setup(x, y, cellPosition, squareColour);
-                cell.transform.parent = transform;
-                cell.name = $"Grid Space (x:{x}, y:{y})";
-            }
-        }
-
-        yield return new WaitForSeconds(0.1f);
-
-        ComputeMoveData();
-        SpawnObstacles();
+        _cellsContainer.SetActive(true);
     }
+
+    public void HideGrid()
+    {
+        _cellsContainer.SetActive(false);
+    }
+
 
     private void ComputeMoveData()
     {
@@ -345,10 +347,9 @@ public class GameGrid : Singleton<GameGrid>
         }
     }
 
-    private void GetActionResult(CreatureRuntimeSet creatures, GridCell targetCell, ActionClass action, int x, int y)
+    private EnemyActionResult GetActionResult(CreatureRuntimeSet creatures, GridCell targetCell, ActionClass action, int x, int y)
     {
-        ActionResult result = new ActionResult(targetCell, action);
-
+        EnemyActionResult result = new EnemyActionResult(targetCell, action);
         List<GridCell> attackedCells = new List<GridCell>();
 
         attackedCells.Add(targetCell);
@@ -381,10 +382,10 @@ public class GameGrid : Singleton<GameGrid>
 
         if (result.Creatures.Count > 0 )
         {
-            _actionResults.Add(result);
+            return result;
         }
 
-
+        return null;
     }
 
 
@@ -472,6 +473,79 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
+    //public List<Vector2> GetMovesNew(MoveClass moveClass, int x, int y)
+    //{
+    //    List<Vector2> moves = new List<Vector2>();
+
+    //    int startDirIndex = 0;
+    //    int endDirIndex = 8;
+
+    //    if (moveClass.IsJumpingPiece)
+    //    {
+    //        if (moveClass.MoveType == MoveTypeEnum.Knight)
+    //        {
+    //            foreach (var jumpMove in knightOffsets)
+    //            {
+    //                int squareX = x + jumpMove.Item1;
+    //                int squareY = y + jumpMove.Item2;
+    //                if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
+    //                {
+    //                    if (!IsCellOccupied(squareX, squareY))
+    //                    {
+    //                        moves.Add(new Vector2(squareX, squareY));
+    //                        //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+    //                        //moves.Add(cell);
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        int playerSquare = (y * Height) + x;
+
+    //        switch (moveClass.MoveType)
+    //        {
+    //            case MoveTypeEnum.Queen:
+    //                Debug.Log("King/Queen - consider all directions!");
+    //                break;
+    //            case MoveTypeEnum.Bishop:
+    //                startDirIndex = 4;
+    //                break;
+    //            case MoveTypeEnum.Rook:
+    //                endDirIndex = 4;
+    //                break;
+    //            default:
+    //                Debug.LogFormat("Unrecognised move type, defaulting to all directions!");
+    //                break;
+    //        }
+
+    //        for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++)
+    //        {
+    //            var currentDirOffset = slideOffsets[dirIndex];
+
+    //            int maxDistance = Math.Min(moveClass.MoveLimit, numSquaresToEdge[playerSquare][dirIndex]);
+
+    //            for (int n = 0; n < maxDistance; n++)
+    //            {
+    //                int squareX = x + currentDirOffset.Item1 * (n + 1);
+    //                int squareY = y + currentDirOffset.Item2 * (n + 1);
+
+    //                if (IsCellOccupied(squareX, squareY))
+    //                {
+    //                    break;
+    //                }
+
+    //                moves.Add(new Vector2(squareX, squareY));
+    //                //GridCell cell = Grid[squareX, squareY].GetComponent<GridCell>();
+    //                //moves.Add(cell);
+    //            }
+
+    //        }
+    //    }
+
+    //    return moves;
+    //}
 
 
 
@@ -480,9 +554,26 @@ public class GameGrid : Singleton<GameGrid>
         //ClearGrid();
         List<GridCell> moves = GetMoves(moveClass, playerX, playerY);
 
+
+
         moves.ForEach(f => f.SetAsValidMove());
 
     }
+
+    //public void ShowMovesForPlayerNew(MoveClass moveClass, int x, int y)
+    //{
+    //    List<Vector2> moves = GetMovesNew(moveClass, x, y);
+
+    //    foreach (Vector2 move in moves)
+    //    {
+    //        int moveX = (int)move.x;
+    //        int moveY = (int)move.y;
+    //        Grid[moveX, moveY].gameObject.SetActive(true);
+    //        GridCell cell = Grid[moveX, moveY].GetComponent<GridCell>();
+    //        cell.SetAsValidMove();
+    //    }
+
+    //}
 
     public void GetMovesForPlayer(MoveClass moveClass, int playerX, int playerY)
     {
@@ -577,11 +668,11 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
-    public List<ActionResult> GetTargetsOfActionNew(ActionClass action, CreatureRuntimeSet targetCreatures, int x, int y)
+    public List<EnemyActionResult> GetTargetsOfActionNew(ActionClass action, CreatureRuntimeSet targetCreatures, int x, int y)
     {
         List<GridCell> targets = new List<GridCell>();
-        //List<ActionResult> results = new List<ActionResult>();
-        _actionResults = new List<ActionResult>();
+        List<EnemyActionResult> results = new List<EnemyActionResult>();
+        //_actionResults = new List<ActionResult>();
         
         _targetCells.Empty();
 
@@ -605,7 +696,11 @@ public class GameGrid : Singleton<GameGrid>
                         if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
                         {
                             //CheckCellOccupied(targetCreatures, cell, action, i, j);
-                            GetActionResult(targetCreatures, cell, action, i, j);
+                            var result = GetActionResult(targetCreatures, cell, action, i, j);
+                            if (result != null)
+                            {
+                                results.Add(result);
+                            }
                         }
                     }
 
@@ -629,33 +724,18 @@ public class GameGrid : Singleton<GameGrid>
                     {
                         GridCell cell = Grid[i, j].GetComponent<GridCell>();
 
-                        GetActionResult(targetCreatures, cell, action, i, j);
-                        
-
-                        //CheckCellOccupied(targetCreatures, cell, action, i, j);
-
-                        //GridCell cell = Grid[i, j].GetComponent<GridCell>();
-                        //if (IsCellOccupied(cell))
-                        //{
-                        //    //cell.SetAsValidAttack();
-                        //    targets.Add(cell);
-                        //}
-
-
-                        //int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
-                        ////Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
-
-                        //if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
-                        //{
-                        //    cell.SetAsValidAttack();
-                        //}
+                        var result = GetActionResult(targetCreatures, cell, action, i, j);
+                        if (result != null)
+                        {
+                            results.Add(result);
+                        }
                     }
                 }
             }
 
         }
 
-        return _actionResults;
+        return results;
 
     }
 
@@ -796,10 +876,10 @@ public class GameGrid : Singleton<GameGrid>
         {
             for (int x = 0; x < Width; x++)
             {
+                //Grid[x, y].gameObject.SetActive(false);
                 GridCell cell = GetCell(x, y);
                 //cell.SetMoveText("");
                 cell.ResetCell();
-                //cell.gameObject.SetActive(false);
             }
         }
     }
@@ -874,5 +954,48 @@ public class GameGrid : Singleton<GameGrid>
     {
         return ((0 <= x) && (x < Height) && (0 <= y) && (y < Width));
     }
+
+    private void Update()
+    {
+
+        //if (State == BattleStatesEnum.PLAYER_MOVE || State == BattleStatesEnum.PLAYER_ATTACK)
+        //{
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            //if (!EventSystem.current.IsPointerOverGameObject())
+            //{
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+
+            int layerMask = 1 << 6;
+
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
+            {
+                GameObject hitObject = hitInfo.transform.gameObject;
+                if (hitObject.TryGetComponent(out GridCell selectedCell))
+                {
+                    if (selectedCell.IsSelectable)
+                    {
+                        Debug.Log(selectedCell.name, this);
+
+                    SelectCell(selectedCell);
+                        //if (State == BattleStatesEnum.PLAYER_MOVE)
+                        //{
+                        //    BattleEvents.CellMoveSelected(selectedCell);
+                        //}
+                        //else
+                        //{
+                        //    BattleEvents.CellAttackSelected(selectedCell);
+                        //}
+                    }
+                }
+            }
+        }
+        //}
+    }
+
+
 
 }

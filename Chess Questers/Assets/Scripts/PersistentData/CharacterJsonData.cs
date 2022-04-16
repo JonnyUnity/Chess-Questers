@@ -13,6 +13,7 @@ public class CharacterJsonData
     public int MaxHealth;
     public int MoveClassID;
     public int[] Actions;
+    public int Initiative;
 
     public int CharacterModel;
 
@@ -43,6 +44,7 @@ public class CharacterJsonData
         MoveClassID = c.MoveClass.ID;
         Actions = c.Actions.Select(s => s.ID).ToArray();
         CharacterModel = c.CharacterModel;
+        Initiative = c.Initiative;
 
         CellX = c.CellX;
         CellY = c.CellY;

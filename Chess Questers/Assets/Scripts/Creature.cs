@@ -47,6 +47,8 @@ public class Creature : MonoBehaviour
 
     public Faction Faction;
 
+    public int Initiative { get; private set; }
+
     public CharacterStatesEnum State;
 
     private void Awake()
@@ -68,6 +70,13 @@ public class Creature : MonoBehaviour
         BattleEvents.OnTakeDamage -= TakeDamage;
         BattleEvents.OnCreatureMoved -= UpdatePositionNew;
     }
+
+
+    public void SetInitiative(int initiative)
+    {
+        Initiative = initiative;
+    }
+
 
     private void TakeDamage(Creature creature, int healthChange)
     {

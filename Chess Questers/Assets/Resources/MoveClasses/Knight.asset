@@ -21,3 +21,6 @@ MonoBehaviour:
   CanBePromoted: 0
   ForPlayer: 1
   ForEnemy: 0
+  InitialChargesPerTurn: 1
+  ChargesPerTurn: 1
+  Cooldown: 1

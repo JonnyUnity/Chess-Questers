@@ -1,142 +1,113 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InitiativeManager : MonoBehaviour
 {
 
-    private GameObject TrackerObject;
-
-    private GameObject CanvasObject;
-    private GameObject PortraitPrefab;
-    private TextMeshProUGUI TurnText;
-
-    private List<GameObject> Portraits;
-
-    //private List<Creature> Creatures;
-
-    //public void Awake()
-    //{
-    //    Creatures = new List<Creature>();
-
-    //    PortraitPrefab = Resources.Load("Prefabs/Portrait") as GameObject;
-    //    GameObject canvas = GameObject.Find("Canvas");
-    //    if (canvas != null)
-    //    {
-    //        CanvasObject = GameObject.Find("Portraits");
-    //        var tmpText = GameObject.Find("CurrentCharTurn");
-    //        TurnText = tmpText.GetComponent<TextMeshProUGUI>();
-    //    }
-    //}
-
-    //public void Setup(List<Creature> adventurers, List<Creature> enemies)
-    //{
-    //    Portraits = new List<GameObject>();
-
-    //    foreach (Creature a in adventurers)
-    //    {
-    //        a.OnDeath.AddListener(RemoveCreature);
-
-    //        a.RollInitiative();
-    //        Creatures.Add(a);
-    //    }
-
-    //    foreach (Creature e in enemies)
-    //    {
-    //        e.OnDeath.AddListener(RemoveCreature);
-    //        e.RollInitiative();
-    //        Creatures.Add(e);
-    //    }
-
-    //    Creatures = Creatures.OrderByDescending(o => o.Initiative).ThenBy(o => o.name).ToList();
-
-    //    foreach (var c in Creatures)
-    //    {
-    //        GameObject portraitObj = Instantiate(PortraitPrefab, CanvasObject.transform);
-    //        Portrait portrait = portraitObj.GetComponent<Portrait>();
-    //        portrait.SetupPortrait(c);
-
-    //        Portraits.Add(portraitObj);
-    //    }
-
-    //    TurnText.text = GetCurrentCreature().CreatureName;
-
-    //}
-
-    //public Creature StartInitiative()
-    //{
-    //    Creature c = GetCurrentCreature();
-
-    //    Debug.Log(c.CreatureName + " - " + c.Initiative + " - Enemy? " + c.IsEnemy, this);
-    //    TurnText.text = c.CreatureName;
-
-    //    return c;
-    //}
-
-    //public void NextTurn()
-    //{
-    //    Creature c = GetCurrentCreature();
-    //    Destroy(CanvasObject.transform.GetChild(0).gameObject);
-
-    //    GameObject portraitObj = Instantiate(PortraitPrefab, CanvasObject.transform);
-    //    Portrait portrait = portraitObj.GetComponent<Portrait>();
-    //    portrait.SetupPortrait(c);
-
-    //    c = GetNextCreature();
+    [SerializeField] private CreatureRuntimeSet _playerCharacters;
+    [SerializeField] private CreatureRuntimeSet _enemies;
+    [SerializeField] private CreatureRuntimeSet _combatants;
 
 
-    //    Debug.Log(c.name + " - " + c.Initiative + " - Enemy? " + c.IsEnemy, this);
-    //    TurnText.text = c.name;
+    [SerializeField] private IntVariable TurnNumber;
+    [SerializeField] private IntVariable TurnPointer;
 
-    //}
+    public int ActiveCharacterID
+    {
+        get
+        {
+            return _combatants.Items[TurnPointer.Value].ID;
+        }
+    }
 
 
-    //public bool AreAllEnemiesDead() => !Creatures.Where(w => w.IsEnemy).Any();
+    private void OnEnable()
+    {
+        BattleEvents.OnRollInitiative += Roll;
+        BattleEvents.OnTurnOver += NextTurn;
+        BattleEvents.OnDeath += CharacterDied;
+        BattleEvents.OnResumeCombat += Setup;
+    }
+
+    private void OnDisable()
+    {
+        BattleEvents.OnRollInitiative -= Roll;
+        BattleEvents.OnTurnOver -= NextTurn;
+        BattleEvents.OnDeath -= CharacterDied;
+        BattleEvents.OnResumeCombat -= Setup;
+    }
+
+    private void Setup()
+    {
+        foreach (var creature in _playerCharacters.Items)
+        {
+            _combatants.Add(creature);
+        }
+        foreach (var creature in _enemies.Items)
+        {
+            _combatants.Add(creature);
+        }
+
+        BattleEvents.TurnStarted(ActiveCharacterID);
+
+    }
+
+    private void Roll()
+    {
+        foreach (var creature in _playerCharacters.Items)
+        {
+            creature.SetInitiative(Random.Range(1, 20));
+            _combatants.Add(creature);
+        }
+
+        foreach (var creature in _enemies.Items)
+        {
+            creature.SetInitiative(Random.Range(1, 20));
+            _combatants.Add(creature);
+        }
+
+        _combatants.Sort();
+
+        TurnNumber.SetValue(1);
+
+        BattleEvents.TurnStarted(ActiveCharacterID);
+
+    }
 
 
-    //public bool AreAllHeroesDead() => !Creatures.Where(w => !w.IsEnemy).Any();
+    private void NextTurn()
+    {
+        Debug.Log("Initiative - NextTurn");
+        TurnPointer.Inc();
+        
+        if (TurnPointer.Value > _combatants.Items.Count() - 1)
+        {
+            TurnNumber.Inc();
+            TurnPointer.SetValue(0);
+            Debug.Log("Initiative - Increase the turn number!");
+        }
+
+        BattleEvents.TurnStarted(ActiveCharacterID);
+    }
 
 
-    //public Creature GetCurrentCreature()
-    //{
-    //    return Creatures.FirstOrDefault();
-    //}
+    private void CharacterDied(Creature creature)
+    {
+        Debug.Log("Someone died! Update the turn order!");
 
-    //public bool IsEnemyTurn()
-    //{
-    //    Creature c = GetCurrentCreature();
-    //    return c.IsEnemy;
-    //}
+        _combatants.Items.Remove(creature);
 
-    //public void RemoveCreature(Creature c)
-    //{
-    //    int index = Creatures.IndexOf(c);
-    //    Creatures.RemoveAt(index);
-    //    if (index >= 0)
-    //    {
-    //        Destroy(CanvasObject.transform.GetChild(index).gameObject);
-    //    }
+        if (!_combatants.Items.Any(a => !a.IsFriendly))
+        {
+            BattleEvents.Victory();
+        }
+        if (!_combatants.Items.Any(a => a.IsFriendly))
+        {
+            BattleEvents.Loss();
+        }
+    }
 
-    //}
-
-    //public void RemoveCreatureAtIndex()
-    //{
-    //    int i = CanvasObject.transform.childCount - 1;
-
-    //    Creatures.RemoveAt(i);
-    //    Destroy(CanvasObject.transform.GetChild(i).gameObject);
-    //}
-
-    //private Creature GetNextCreature()
-    //{
-    //    Creature c = Creatures.First();
-    //    Creatures.RemoveAt(0);
-    //    Creatures.Add(c);
-
-    //    return GetCurrentCreature();
-    //}
 
 }

@@ -12,7 +12,7 @@ public class NewEnemyJsonData
     public string Name;
     public int Health;
     public int MaxHealth;
-
+    public int Initiative;
 
     public int CellX;
     public int CellY;
@@ -40,6 +40,7 @@ public class NewEnemyJsonData
 
         Health = enemy.Health;
         MaxHealth = enemy.MaxHealth;
+        Initiative = enemy.Initiative;
 
         CellX = enemy.CellX;
         CellY = enemy.CellY;

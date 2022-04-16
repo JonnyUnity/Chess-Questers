@@ -8,9 +8,12 @@ public class QuestJsonData
 {
     public int MapSeed;
     public int Floor;
+
     // public Object MapData
 
     public EncounterTypesEnum CurrentEncounterType;
+    public int TurnNumber;
+    public int TurnPointer;
 
     public CharacterJsonData[] PartyMembers;
 
@@ -18,7 +21,6 @@ public class QuestJsonData
     public int Battle_ID;
     public int Battle_Layout;
     public NewEnemyJsonData[] Enemies;
-    public InitiativeData Initiative;
 
 
     public QuestJsonData()
@@ -26,28 +28,30 @@ public class QuestJsonData
         MapSeed = 0;
         Floor = 0;
         CurrentEncounterType = 0;
+        TurnNumber = 0;
+        TurnPointer = 0;
 
         PartyMembers = new CharacterJsonData[3];
 
     }
 
     // create json version to save
-    public QuestJsonData(QuestData data)
-    {
-        // ImprovedCharacter => characterData
-        MapSeed = data.MapSeed;
-        Floor = data.Floor;
-        CurrentEncounterType = data.CurrentEncounterType;
+    //public QuestJsonData(QuestData data)
+    //{
+    //    // ImprovedCharacter => characterData
+    //    MapSeed = data.MapSeed;
+    //    Floor = data.Floor;
+    //    CurrentEncounterType = data.CurrentEncounterType;
 
-        PartyMembers = SaveDataManager.SerializeCharacterData(data.PartyMembers);
+    //    PartyMembers = SaveDataManager.SerializeCharacterData(data.PartyMembers);
 
-        Battle_ID = data.Battle_ID;
-        Battle_Layout = data.Battle_Layout;
-        Enemies = SaveDataManager.SerializeEnemyData(data.Enemies);
-        //Enemies = SaveDataManager.SerializeEnemyData(data.Enemies);
-        Initiative = data.Initiative;
+    //    Battle_ID = data.Battle_ID;
+    //    Battle_Layout = data.Battle_Layout;
+    //    Enemies = SaveDataManager.SerializeEnemyData(data.Enemies);
+    //    //Enemies = SaveDataManager.SerializeEnemyData(data.Enemies);
+    //    Initiative = data.Initiative;
 
-    }
+    //}
 
     public void SetNextEncounter(Encounter encounter)
     {
@@ -62,6 +66,22 @@ public class QuestJsonData
 
     }
 
+
+
+    public bool HasCombatStarted()
+    {
+        if (TurnNumber > 0)
+        {
+            return true;
+        }
+        else if (TurnNumber == 0 && TurnPointer > 0)
+        {
+            return true;
+        }
+
+        return false;
+
+    }
 
 
 }

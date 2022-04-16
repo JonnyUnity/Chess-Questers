@@ -16,7 +16,6 @@ public class BattleSystem : Singleton<BattleSystem>
     public BattleStatesEnum State;
 
     private GameManager _gameManager;
-    private InitiativeManager InitiativeManager;
     //public GameGrid Grid;
 
     //[SerializeField] private GameObject HeroPrefab;
@@ -54,8 +53,6 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private ActionClass _currentAction;
 
-    [SerializeField] private NewIM IM;
-
     private Dictionary<int, GameObject> _creaturePrefabs = new Dictionary<int, GameObject>();
 
 
@@ -71,8 +68,11 @@ public class BattleSystem : Singleton<BattleSystem>
     [SerializeField] private CreatureRuntimeSet _combatants;
     [SerializeField] private CreatureRuntimeSet _targets;
 
-    [SerializeField] private ActionResult _enemyAction;
+    private EnemyActionResult _enemyAction;
     [SerializeField] private ActionResult _playerAction;
+
+    [SerializeField] private IntVariable TurnNumber;
+    [SerializeField] private IntVariable TurnPointer;
 
     public void Awake()
     {
@@ -85,7 +85,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         CameraHandler = CameraRig.GetComponent<CameraHandler>();
 
-        InitiativeManager = GetComponent<InitiativeManager>();
+        
 
         //EventSystem.OnBattleStarted += BattleStarted;
         BattleEvents.OnBattleVictory += GoToVictory;
@@ -101,6 +101,8 @@ public class BattleSystem : Singleton<BattleSystem>
 
         BattleEvents.OnCellAttackHighlighted += HighlightAttackCell;
         BattleEvents.OnCellAttackUnhighlighted += UnhighlightAttackCell;
+
+        BattleEvents.OnCellSelected += SelectCell;
 
         BattleEvents.OnDeath += CharacterDied;
 
@@ -122,7 +124,9 @@ public class BattleSystem : Singleton<BattleSystem>
 
         BattleEvents.OnCellAttackHighlighted -= HighlightAttackCell;
         BattleEvents.OnCellAttackUnhighlighted -= UnhighlightAttackCell;
-        
+
+        BattleEvents.OnCellSelected -= SelectCell;
+
         BattleEvents.OnDeath -= CharacterDied;
 
         _playerCharacters.Empty();
@@ -214,8 +218,23 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private void SelectCell(GridCell cell)
     {
-        _highlightMovePrefab.SetActive(false);
-        StartCoroutine(PlayerMoveCoroutine(cell));
+
+        if (State == BattleStatesEnum.PLAYER_MOVE)
+        {
+            _highlightMovePrefab.SetActive(false);
+            StartCoroutine(PlayerMoveCoroutine(cell));
+        }
+        else
+        {
+            if (_currentAttackTemplate != null)
+            {
+                Destroy(_currentAttackTemplate);
+            }
+
+            StartCoroutine(PlayerAttackCoroutine(cell));
+        }
+
+
     }
 
 
@@ -230,28 +249,46 @@ public class BattleSystem : Singleton<BattleSystem>
         _id = _questData.Battle_ID;
         _layout = _questData.Battle_Layout;
 
-        GameGrid.Instance.CreateGameGrid(this);
+        GameGrid.Instance.CreateGameGrid();
 
-        IM.SetInitiative(_questData.Initiative);
-        
-        if (!IM.HasCombatStarted())
+        bool combatHasStarted = _questData.HasCombatStarted();
+
+        if (!combatHasStarted)
         {
             // resume battle...            
             StartCoroutine(InitBattleCoroutine());
-
         }
+
+        //IM.SetInitiative(_questData.Initiative);
+        
+        //if (!IM.HasCombatStarted())
+        //{
+        //    // resume battle...            
+        //    StartCoroutine(InitBattleCoroutine());
+
+        //}
 
         SpawnCharacters();
         SpawnEnemies();
         
-        if (IM.HasCombatStarted())
+        if (combatHasStarted)
         {
-            StartNextTurn(IM.ActiveCharacterID);
+            //StartNextTurn(_combatants.Items[_questData.TurnPointer].ID);
+            BattleEvents.ResumeCombat();
         }
         else
         {
-            BattleEvents.RollInitiative(Combatants);
+            BattleEvents.RollInitiative();
         }
+
+        //if (IM.HasCombatStarted())
+        //{
+        //    StartNextTurn(IM.ActiveCharacterID);
+        //}
+        //else
+        //{
+        //    BattleEvents.RollInitiative(Combatants);
+        //}
 
     }
 
@@ -328,10 +365,10 @@ public class BattleSystem : Singleton<BattleSystem>
             ic.InitFromCharacterData(c);
 
             _playerCharacters.Add(ic);
-            _combatants.Add(ic);
+            //_combatants.Add(ic);
 
             NewAdventurers.Add(ic);
-            Combatants.Add(ic);
+            //Combatants.Add(ic);
 
             ic.OccupiedCell = cell;
             //cell.SetUnit(ic);
@@ -379,9 +416,9 @@ public class BattleSystem : Singleton<BattleSystem>
             //ic.InitFromEnemyData(c);
 
             NewEnemies.Add(enemy);
-            Combatants.Add(enemy);
+            //Combatants.Add(enemy);
             _enemies.Add(enemy);
-            _combatants.Add(enemy);
+            //_combatants.Add(enemy);
 
             enemy.OccupiedCell = cell;
             //cell.SetUnit(enemy);
@@ -420,31 +457,41 @@ public class BattleSystem : Singleton<BattleSystem>
     }
 
 
-    public void SaveQuest()
-    {
-        StartCoroutine(SaveProgress());
+    //public void SaveQuest()
+    //{
+    //    StartCoroutine(SaveProgress());
 
+    //}
+
+    public void SaveProgress()
+    {
+        _questData.TurnNumber = TurnNumber.Value;
+        _questData.TurnPointer = TurnPointer.Value;
+
+        GameManager.Instance.SaveQuestNew(_questData, _playerCharacters.Items, _enemies.Items);
     }
 
-    public IEnumerator SaveProgress()
-    {
+    //public IEnumerator SaveProgress()
+    //{
 
-        _questData.Initiative = IM._init; // change this? looks horrible
+    //    //_questData.Initiative = IM._init; // change this? looks horrible
         
-        GameManager.Instance.SaveQuest(_questData, NewAdventurers, NewEnemies);
+    //    GameManager.Instance.SaveQuest(_questData, NewAdventurers, NewEnemies);
 
-        yield return null;
-    }
+    //    yield return null;
+    //}
 
     private void StartNextTurn(int characterID)
     {
 
-        StartCoroutine(SaveProgress()); // perhaps move to end of turn?
+        SaveProgress();
+
+        //StartCoroutine(SaveProgress()); // perhaps move to end of turn?
 
         Debug.Log("BattleSystem - Start Next Turn! " + characterID);
         State = BattleStatesEnum.START_TURN;
 
-        _activeCharacter = Combatants.Where(w => w.ID == characterID).Single();
+        _activeCharacter = _combatants.Items.Where(w => w.ID == characterID).Single();
 
         CameraHandler.SwapToCharacter(_activeCharacter.Position);
 
@@ -452,7 +499,8 @@ public class BattleSystem : Singleton<BattleSystem>
 
         if (_activeCharacter.IsFriendly)
         {
-            _gridLines.SetActive(true);
+            BattleEvents.StartPlayerTurn();
+            //_gridLines.SetActive(true);
             State = BattleStatesEnum.PLAYER_MOVE;
             //SetupPlayerMove(_activeCharacter);
             StartCoroutine(SetUpPlayerMoveCoroutine(_activeCharacter));
@@ -460,22 +508,23 @@ public class BattleSystem : Singleton<BattleSystem>
         }
         else
         {
-            _gridLines.SetActive(false);
+            BattleEvents.EndPlayerTurn();
+            //_gridLines.SetActive(false);
             State = BattleStatesEnum.ENEMY_MOVE;
             StartCoroutine(EnemyMoveCoroutine());
         }
 
     }
 
-    void SetupPlayerMove(Creature c)
-    {
-        UIHandler.UpdateStateText("CALC PLAYER MOVES");
+    //void SetupPlayerMove(Creature c)
+    //{
+    //    UIHandler.UpdateStateText("CALC PLAYER MOVES");
 
-        GameGrid.Instance.ShowMovesForPlayer(c.MoveClass, c.CellX, c.CellY);
+    //    GameGrid.Instance.ShowMovesForPlayer(c.MoveClass, c.CellX, c.CellY);
 
-        UIHandler.UpdateStateText("WAITING FOR PLAYER MOVE");
+    //    UIHandler.UpdateStateText("WAITING FOR PLAYER MOVE");
         
-    }
+    //}
 
 
     private IEnumerator SetUpPlayerMoveCoroutine(Creature creature)
@@ -484,6 +533,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         UIHandler.UpdateStateText("CALC PLAYER MOVES");
         GameGrid.Instance.ShowMovesForPlayer(creature.MoveClass, creature.CellX, creature.CellY);
+        //GameGrid.Instance.ShowMovesForPlayerNew(creature.MoveClass, creature.CellX, creature.CellY);
         UIHandler.UpdateStateText("WAITING FOR PLAYER MOVE");
 
     }
@@ -755,14 +805,16 @@ public class BattleSystem : Singleton<BattleSystem>
                         {
                             Debug.Log(selectedCell.name, this);
 
-                            if (State == BattleStatesEnum.PLAYER_MOVE)
-                            {
-                                BattleEvents.CellMoveSelected(selectedCell);
-                            }
-                            else
-                            {
-                                BattleEvents.CellAttackSelected(selectedCell);
-                            }
+                            BattleEvents.CellSelected(selectedCell);
+
+                            //if (State == BattleStatesEnum.PLAYER_MOVE)
+                            //{
+                            //    BattleEvents.CellMoveSelected(selectedCell);
+                            //}
+                            //else
+                            //{
+                            //    BattleEvents.CellAttackSelected(selectedCell);
+                            //}
                         }
                     }
                 }
@@ -770,37 +822,6 @@ public class BattleSystem : Singleton<BattleSystem>
         }
 
 
-
-        //if (State == BattleStatesEnum.PLAYER_ATTACK)
-        //{
-        //    if (_currentAttackTemplate != null)
-        //    {
-        //        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-
-        //        int layerMask = 1 << 6;
-
-        //        if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
-        //        {
-        //            GameObject hitObject = hitInfo.transform.gameObject;
-        //            if (hitObject.TryGetComponent(out GridCell selectedCell))
-        //            {
-        //                // only do the following if this selected cell is different to the selected cell on the previous frame...
-
-        //                Debug.Log("ATTACKING CELL " + selectedCell.name, this);
-
-        //                //_currentAttackTemplate.transform.position = selectedCell.transform.position + new Vector3(0, 0.1f, 0);
-        //                //Creature adv = InitiativeManager.GetCurrentCreature();
-
-        //                //List<Creature> attackedCreatures = Grid.GetAttackedCreatures(selectedCell, adv.GetSelectedAttack());
-        //                //Debug.Log(attackedCreatures);
-
-        //            }
-        //        }
-        //    }
-        //}
-
-
-        //Creature c = InitiativeManager.GetCurrentCreature();
 
 
 

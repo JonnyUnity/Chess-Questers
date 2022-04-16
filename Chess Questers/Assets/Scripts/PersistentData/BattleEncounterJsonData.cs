@@ -7,9 +7,7 @@ public class BattleEncounterJsonData
     private int _battleLayout;
     private int _battleType;
     private int _biome;
-    private int _turnNumber;
 
-    public InitiativeJsonData Initiative;
     public CharacterJsonData[] Enemies;
 
     public BattleEncounterJsonData(int ID, int battleLayout, CharacterJsonData[] enemies)
@@ -18,8 +16,6 @@ public class BattleEncounterJsonData
         _battleLayout = battleLayout;
         Enemies = enemies;
     }
-
-
 
 
 }

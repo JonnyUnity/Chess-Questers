@@ -12,7 +12,8 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnBattleResumed;
 
 
-    public static event Action<List<Creature>> OnRollInitiative;
+    public static event Action OnRollInitiative;
+    public static event Action OnResumeCombat;
 
     public static event Action<int> OnTurnStart;
     public static event Action OnPlayerStartTurn;
@@ -38,6 +39,8 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnCellAttackUnhighlighted;
     public static event Action<GridCell> OnCellAttackSelected;
 
+    public static event Action<GridCell> OnCellSelected;
+
     public static event Action<int> OnEnemySelectMove;
     public static event Action<int> OnEnemySelectAttack;
 
@@ -48,9 +51,14 @@ public class BattleEvents : MonoBehaviour
     }
 
 
-    public static void RollInitiative(List<Creature> characters)
+    public static void RollInitiative()
     {
-        OnRollInitiative?.Invoke(characters);
+        OnRollInitiative?.Invoke();
+    }
+
+    public static void ResumeCombat()
+    {
+        OnResumeCombat?.Invoke();
     }
 
 
@@ -88,6 +96,12 @@ public class BattleEvents : MonoBehaviour
     public static void CellMoveSelected(GridCell cell)
     {
         OnCellMoveSelected?.Invoke(cell);
+    }
+
+
+    public static void CellSelected(GridCell cell)
+    {
+        OnCellSelected?.Invoke(cell);
     }
 
 

@@ -31,16 +31,17 @@ public class BattleUIHandler : MonoBehaviour
     {
         BattleEvents.OnCellAttackSelected += AttackSelected;
         BattleEvents.OnTurnOver += HideActions;
+        BattleEvents.OnCellSelected += AttackSelected;
     }
 
     private void AttackSelected(GridCell cell)
     {
-        CreatureRuntimeSet creatures = _currentCharacter.Faction.GetTargetFaction(_playerAction.Action.IsAttack);
+        //CreatureRuntimeSet creatures = _currentCharacter.Faction.GetTargetFaction(_playerAction.Action.IsAttack);
 
-        _playerAction.Cell = cell;
+        //_playerAction.Cell = cell;
         //List<ActionResult> results = GameGrid.Instance.GetTargetsOfActionNew(_playerAction.Action, creatures, cell.X, cell.Y);
         //_playerAction.Creatures = results[0].Creatures;
-        _playerAction.Creatures = GameGrid.Instance.GetAttackedCreatures(cell, _playerAction.Action);
+        //_playerAction.Creatures = GameGrid.Instance.GetAttackedCreatures(cell, _playerAction.Action);
 
         HideActions();
     }
@@ -49,6 +50,7 @@ public class BattleUIHandler : MonoBehaviour
     {
         BattleEvents.OnCellAttackSelected -= AttackSelected;
         BattleEvents.OnTurnOver -= HideActions;
+        BattleEvents.OnCellSelected -= AttackSelected;
     }
 
     public void UpdateStateText(string text)

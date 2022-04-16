@@ -104,8 +104,34 @@ public class SaveDataManager
 
     }
 
+
+    public static CharacterJsonData[] SerializeCharacterDataNew(List<Creature> data)
+    {
+        CharacterJsonData[] characters = new CharacterJsonData[data.Count];
+
+        for (int i = 0; i < data.Count; i++)
+        {
+            characters[i] = new CharacterJsonData((PlayerCharacter)data[i]);
+        }
+
+        return characters;
+    }
+
+    public static NewEnemyJsonData[] SerializeEnemyDataNew(List<Creature> data)
+    {
+        NewEnemyJsonData[] enemies = new NewEnemyJsonData[data.Count];
+
+        for (int i = 0; i < data.Count; i++)
+        {
+            enemies[i] = new NewEnemyJsonData((Enemy)data[i]);
+        }
+
+        return enemies;
+
+    }
+
     #endregion
 
-    
+
 
 }

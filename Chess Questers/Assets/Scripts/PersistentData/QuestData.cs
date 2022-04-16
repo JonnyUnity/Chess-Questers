@@ -16,7 +16,6 @@ public class QuestData
 
     public int Battle_ID;
     public int Battle_Layout;
-    public InitiativeData Initiative; // will this save to json...
 
 
     public QuestData()

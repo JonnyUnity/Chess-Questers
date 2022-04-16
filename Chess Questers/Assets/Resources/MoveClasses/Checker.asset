@@ -14,9 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 5
   MoveType: 3
+  DebugColor: {r: 0, g: 0, b: 0, a: 0}
   MoveLimit: 2147483647
   IsJumpingPiece: 1
   CanRam: 0
   CanBePromoted: 1
   ForPlayer: 0
   ForEnemy: 1
+  InitialChargesPerTurn: 1
+  ChargesPerTurn: 1
+  Cooldown: 1

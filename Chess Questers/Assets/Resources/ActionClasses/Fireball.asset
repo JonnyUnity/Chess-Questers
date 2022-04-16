@@ -20,9 +20,16 @@ MonoBehaviour:
   AttackTemplatePrefab: {fileID: 733881962699316142, guid: 2861ff0ce9ee6dc4899aeae1f7c039bd, type: 3}
   Shape: 0
   IsRanged: 1
+  IsAttack: 0
   MoveTarget: 0
   ForPlayer: 1
   ForEnemy: 0
+  RefreshAfterXTurns: 3
+  Cooldown: 3
+  InitialChargesPerTurn: 1
+  ChargesPerTurn: 1
+  InitialCharges: 1
+  Charges: 1
   additionalAttackedCellOffsets:
   - {x: 2, y: 0}
   - {x: 1, y: 0}

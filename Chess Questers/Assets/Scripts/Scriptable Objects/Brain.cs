@@ -11,6 +11,6 @@ public abstract class Brain : ScriptableObject
 
     public abstract GridCell GetMove(Enemy enemy);
 
-    public abstract ActionResult GetAction(Enemy enemy);
+    public abstract EnemyActionResult GetAction(Enemy enemy);
 
 }

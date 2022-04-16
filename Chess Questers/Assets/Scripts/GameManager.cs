@@ -20,6 +20,11 @@ public class GameManager : Singleton<GameManager>
     //private QuestData _questData;
     private QuestJsonData _questData;
 
+
+    [SerializeField] private CreatureRuntimeSet _playerCharacters;
+    [SerializeField] private CreatureRuntimeSet _enemyList;
+    
+
     public void Awake()
     {
         _moveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
@@ -151,6 +156,13 @@ public class GameManager : Singleton<GameManager>
         SaveDataManager.Save(questData);
     }
 
+    public void SaveQuestNew(QuestJsonData questData, List<Creature> adventurers, List<Creature> enemies)
+    {
+        questData.PartyMembers = SaveDataManager.SerializeCharacterDataNew(adventurers);
+        questData.Enemies = SaveDataManager.SerializeEnemyDataNew(enemies);
+
+        SaveDataManager.Save(questData);
+    }
 
     public Encounter GetEncounter(int encounterID)
     {
