@@ -25,7 +25,7 @@ public class InitiativeManager : MonoBehaviour
 
     private void OnEnable()
     {
-        BattleEvents.OnRollInitiative += Roll;
+        BattleEvents.OnStartCombat += Roll;
         BattleEvents.OnTurnOver += NextTurn;
         BattleEvents.OnDeath += CharacterDied;
         BattleEvents.OnResumeCombat += Setup;
@@ -33,7 +33,7 @@ public class InitiativeManager : MonoBehaviour
 
     private void OnDisable()
     {
-        BattleEvents.OnRollInitiative -= Roll;
+        BattleEvents.OnStartCombat -= Roll;
         BattleEvents.OnTurnOver -= NextTurn;
         BattleEvents.OnDeath -= CharacterDied;
         BattleEvents.OnResumeCombat -= Setup;
@@ -77,7 +77,7 @@ public class InitiativeManager : MonoBehaviour
     }
 
 
-    private void NextTurn()
+    private void NextTurn(Creature creature)
     {
         Debug.Log("Initiative - NextTurn");
         TurnPointer.Inc();

@@ -71,8 +71,16 @@ public class PlayerCharacter : Creature
         IsFriendly = true;
         MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
         MoveClassText = MoveClass.name;
+        SetInitiative(data.Initiative);
 
-        Actions = GameManager.Instance.GetActionsWithIDs(data.Actions);
+        foreach (var jsonAction in data.Actions)
+        {
+            var action = GameManager.Instance.GetAction(jsonAction);
+            Actions.Add(action);
+        }
+
+        //Actions = GameManager.Instance.GetActionsWithIDs(data.Actions.sel);
+        //Actions = data.Actions;
         Health = data.Health;
         MaxHealth = data.MaxHealth;
 

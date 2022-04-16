@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Enemy : Creature
@@ -19,12 +20,21 @@ public class Enemy : Creature
         _nameText.text = Name;
         IsFriendly = false;
         CharacterModel = enemyObject.CharacterModel;
+        SetInitiative(data.Initiative);
         //MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
         MoveClass = enemyObject.MoveClass;
         MoveClassText = MoveClass.name;
 
         //Actions = GameManager.Instance.GetActionsWithIDs(data.Actions);
-        Actions = enemyObject.Actions;
+       
+        foreach (var action in enemyObject.Actions)
+        {
+            var jsonData = data.Actions.Where(w => w.ID == action.ID).Single();
+            var currAction = Instantiate(action);
+            currAction.Init(jsonData);
+            Actions.Add(currAction);
+        }
+        //Actions = enemyObject.Actions;
         Health = data.Health;
         MaxHealth = data.MaxHealth;
 
@@ -61,24 +71,4 @@ public class Enemy : Creature
         return _enemyAction;
     }
 
-
-
-    // Update is called once per frame
-    //protected override void Update()
-    //{
-    //    base.Update();
-
-    //    if (State != CharacterStatesEnum.MOVING) return;
-
-    //    Vector3 direction = (TargetPosition - Transform.position).normalized;
-    //    Transform.position += MoveSpeed * Time.deltaTime * direction;
-
-    //    if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
-    //    {
-    //        Transform.SetPositionAndRotation(TargetPosition, _orientation);
-
-    //        //SetPosition(TargetX, TargetY);
-    //        State = CharacterStatesEnum.IDLE;
-    //    }
-    //}
 }

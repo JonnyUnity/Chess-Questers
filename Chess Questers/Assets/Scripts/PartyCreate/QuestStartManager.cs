@@ -57,7 +57,7 @@ public class QuestStartManager : Singleton<QuestStartManager>
 
         // select random character model...
         MoveClass mc = GameManager.Instance.GetRandomMoveClass();
-        int[] actions = GameManager.Instance.GetActionIDs(mc);
+        List<ActionClass> actions = GameManager.Instance.GetActions(mc);
 
         int nameIndex = Random.Range(0, _characterNames.Length);
         string charName = _characterNames[nameIndex];

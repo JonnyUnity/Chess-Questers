@@ -12,7 +12,7 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnBattleResumed;
 
 
-    public static event Action OnRollInitiative;
+    public static event Action OnStartCombat;
     public static event Action OnResumeCombat;
 
     public static event Action<int> OnTurnStart;
@@ -21,7 +21,7 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnPlayerSelectMove;
     public static event Action<Creature> OnCreatureMoved;
     public static event Action<ActionClass, CreatureRuntimeSet,int,int> OnPlayerActionSelected;
-    public static event Action OnTurnOver;
+    public static event Action<Creature> OnTurnOver;
 
     public static event Action OnAttack;
     public static event Action<Creature, int> OnTakeDamage;
@@ -39,6 +39,8 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnCellAttackUnhighlighted;
     public static event Action<GridCell> OnCellAttackSelected;
 
+    public static event Action OnCellUnhighlighted;
+
     public static event Action<GridCell> OnCellSelected;
 
     public static event Action<int> OnEnemySelectMove;
@@ -51,9 +53,9 @@ public class BattleEvents : MonoBehaviour
     }
 
 
-    public static void RollInitiative()
+    public static void StartCombat()
     {
-        OnRollInitiative?.Invoke();
+        OnStartCombat?.Invoke();
     }
 
     public static void ResumeCombat()
@@ -77,14 +79,20 @@ public class BattleEvents : MonoBehaviour
         OnPlayerEndTurn?.Invoke();
     }
 
-    public static void TurnOver()
+    public static void TurnOver(Creature creature)
     {
-        OnTurnOver?.Invoke();
+        OnTurnOver?.Invoke(creature);
     }
 
     public static void CellMoveHighlighted(GridCell cell)
     {
         OnCellMoveHighlighted?.Invoke(cell);
+    }
+
+
+    public static void CellUnhighlighted()
+    {
+        OnCellUnhighlighted?.Invoke();
     }
 
     public static void CellMoveUnhighlighted()

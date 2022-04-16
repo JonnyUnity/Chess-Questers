@@ -4502,7 +4502,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2128089780}
   - component: {fileID: 2128089779}
-  - component: {fileID: 2128089781}
   m_Layer: 0
   m_Name: BattleSystem
   m_TagString: Untagged
@@ -4527,7 +4526,6 @@ MonoBehaviour:
   CameraRig: {fileID: 1498793301}
   _highlightMovePrefab: {fileID: 592661508}
   _attackPrefab: {fileID: 24391682}
-  IM: {fileID: 0}
   _gridLines: {fileID: 1607832117}
   _playerCharacters: {fileID: 11400000, guid: 9176bf84a1762754db0774cf6be51e46, type: 2}
   _enemies: {fileID: 11400000, guid: 788a405278bcf0b45995559e9eab5b9b, type: 2}
@@ -4551,15 +4549,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2128089781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2128089778}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4ffe30d913891f4c853663db1ea080e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

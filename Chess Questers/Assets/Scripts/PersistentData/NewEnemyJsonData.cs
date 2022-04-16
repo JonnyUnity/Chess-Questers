@@ -19,6 +19,8 @@ public class NewEnemyJsonData
     public Vector3 Position;
     public int CurrentFacing;
 
+    public List<ActionJsonData> Actions = new List<ActionJsonData>();
+
 
     public NewEnemyJsonData(EnemySO enemy)
     {
@@ -28,6 +30,10 @@ public class NewEnemyJsonData
         Health = enemy.Health;
         MaxHealth = enemy.Health;
 
+        foreach (var action in enemy.Actions)
+        {
+            Actions.Add(new ActionJsonData(action));
+        }
 
     }
 
@@ -41,6 +47,10 @@ public class NewEnemyJsonData
         Health = enemy.Health;
         MaxHealth = enemy.MaxHealth;
         Initiative = enemy.Initiative;
+        foreach (var action in enemy.Actions)
+        {
+            Actions.Add(new ActionJsonData(action));
+        }
 
         CellX = enemy.CellX;
         CellY = enemy.CellY;

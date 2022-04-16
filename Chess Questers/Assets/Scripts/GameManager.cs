@@ -212,16 +212,36 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    public int[] GetActionIDs(MoveClass moveClass)
+    public List<ActionClass> GetActions(MoveClass moveClass)
     {
-        return _actionClasses.Select(s => s.ID).ToArray();
+        return _actionClasses.Where(w => w.ForPlayer).ToList();
     }
 
 
-    public ActionClass[] GetActionsWithIDs(int[] ids)
+    public List<ActionClass> GetActionsWithIDs(int[] ids)
     {
-        return _actionClasses.Where(w => ids.Contains(w.ID)).ToArray();
+        List<ActionClass> actions = new List<ActionClass>();
+
+        foreach (var action in _actionClasses)
+        {
+            if (ids.Contains(action.ID))
+            {
+                actions.Add(Instantiate(action));
+            }
+        }
+
+        return actions;
+
     }
+
+    public ActionClass GetAction(ActionJsonData jsonData)
+    {
+        var actionRef = _actionClasses.Where(w => w.ID == jsonData.ID).Single();
+        var action = Instantiate(actionRef);
+        action.Init(jsonData);
+        return Instantiate(action);
+    }
+
 
     public string GetActionNamesFromIDs(int[] ids)
     {

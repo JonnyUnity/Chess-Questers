@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -36,7 +37,8 @@ public class CharacterSelectManager : MonoBehaviour
 
         MoveClass moveClass = GameManager.Instance.GetMoveClassWithID(_character.MoveClassID);
         string moveClassText = moveClass.name;
-        string actionsText = GameManager.Instance.GetActionNamesFromIDs(_character.Actions);
+        string actionsText = GameManager.Instance.GetActionNamesFromIDs(_character.Actions.Select(s => s.ID).ToArray());
+        //string actionsText = string.Join(",", _character.Actions.Select(s => s.Name));
 
         _moveClassText.text = moveClassText;
         _actionsText.text = "ACTIONS: " + actionsText;

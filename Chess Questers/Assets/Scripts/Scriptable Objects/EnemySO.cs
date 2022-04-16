@@ -13,6 +13,6 @@ public class EnemySO : ScriptableObject
     public Brain Brain;
 
     public MoveClass MoveClass;
-    public ActionClass[] Actions;
+    public List<ActionClass> Actions;
 
 }

@@ -18,7 +18,7 @@ public class BattleUIHandler : MonoBehaviour
     [SerializeField] private GameObject PassButton;
 
 
-    private ActionClass[] _currentActions;
+    private List<ActionClass> _currentActions;
     private int _characterX;
     private int _characterY;
 
@@ -43,7 +43,7 @@ public class BattleUIHandler : MonoBehaviour
         //_playerAction.Creatures = results[0].Creatures;
         //_playerAction.Creatures = GameGrid.Instance.GetAttackedCreatures(cell, _playerAction.Action);
 
-        HideActions();
+        HideActions(null);
     }
 
     private void OnDestroy()
@@ -64,7 +64,7 @@ public class BattleUIHandler : MonoBehaviour
     }
 
 
-    public void ShowActions(Creature currentCreature, ActionClass[] actions, int x, int y)
+    public void ShowActions(Creature currentCreature, List<ActionClass> actions, int x, int y)
     {
 
         _currentCharacter = currentCreature;
@@ -72,9 +72,9 @@ public class BattleUIHandler : MonoBehaviour
         _characterX = x;
         _characterY = y;
 
-        HideActions();
+        HideActions(currentCreature);
 
-        for (int i = 0; i < actions.Length; i++)
+        for (int i = 0; i < actions.Count; i++)
         {
             var buttonText = _attackButtons[i].GetComponentInChildren<TextMeshProUGUI>();
             buttonText.text = actions[i].Name;
@@ -106,7 +106,7 @@ public class BattleUIHandler : MonoBehaviour
     }
 
 
-    private void HideActions()
+    private void HideActions(Creature creature)
     {
         foreach (var attackButton in _attackButtons)
         {

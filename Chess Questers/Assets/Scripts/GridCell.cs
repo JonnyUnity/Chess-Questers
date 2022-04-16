@@ -182,14 +182,14 @@ public class GridCell : MonoBehaviour
         //    BattleEvents.CellAttackSelected(this);
         //}
 
-        if (IsMove)
-        {
-            BattleEvents.CellMoveSelected(this);
-        }
-        else if (IsAttack)
-        {
-            BattleEvents.CellAttackSelected(this);
-        }
+        //if (IsMove)
+        //{
+        //    BattleEvents.CellMoveSelected(this);
+        //}
+        //else if (IsAttack)
+        //{
+        //    BattleEvents.CellAttackSelected(this);
+        //}
 
     }
 

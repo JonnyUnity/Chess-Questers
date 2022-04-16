@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Action", menuName = "Chess Questers/Action Class")]
+[Serializable]
 public class ActionClass : ScriptableObject
 {
     public int ID;
@@ -32,35 +34,45 @@ public class ActionClass : ScriptableObject
     public int InitialChargesPerTurn;
     public int ChargesPerTurn;
 
+    public bool HasCharges;
     public int InitialCharges;
     public int Charges;
 
     public Vector2[] additionalAttackedCellOffsets;
 
+    public bool ActionOnCooldown;
 
     public void StartOfBattle()
     {
         ChargesPerTurn = InitialChargesPerTurn;
         Charges = InitialCharges;
         Cooldown = RefreshAfterXTurns;
+        ActionOnCooldown = false;
     }
 
     public void DoAction()
     {
         ChargesPerTurn--;
-        Charges--;
+        if (HasCharges)
+        {
+            Charges--;
+        }        
+        ActionOnCooldown = true;
     }
 
 
     public void EndOfTurn()
     {
         ChargesPerTurn = InitialChargesPerTurn;
-        Cooldown--;
-        if (Cooldown == 0)
+        if (ActionOnCooldown)
         {
-            Cooldown = RefreshAfterXTurns;
+            Cooldown--;
+            if (Cooldown == 0)
+            {
+                Cooldown = RefreshAfterXTurns;
+                ActionOnCooldown = false;
+            }
         }
-
     }
 
 
@@ -71,11 +83,11 @@ public class ActionClass : ScriptableObject
         {
             return false;
         }
-        else if (Cooldown > 0)
+        else if (ActionOnCooldown)
         {
             return false;
         }
-        else if (Charges == 0)
+        else if (HasCharges && Charges == 0)
         {
             return false;
         }
@@ -84,6 +96,16 @@ public class ActionClass : ScriptableObject
             return true;
         }
     }
+
+    public void Init(ActionJsonData data)
+    {
+        ChargesPerTurn = data.ChargesPerTurn;
+        Cooldown = data.Cooldown;
+        Charges = data.Charges;
+        ActionOnCooldown = data.ActionOnCooldown;
+    }
+
+
 
 
 }

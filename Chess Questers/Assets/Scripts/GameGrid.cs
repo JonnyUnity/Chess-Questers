@@ -79,15 +79,39 @@ public class GameGrid : Singleton<GameGrid>
     {
         if (cell.IsMove)
         {
-
+            BattleEvents.CellMoveSelected(cell);
         }
         else if (cell.IsAttack)
         {
+            _playerAction.Cell = cell;
+            _playerAction.Creatures = GetAttackedCreatures(cell, _playerAction.Action);
+
+            BattleEvents.CellAttackSelected(cell);
             //CreatureRuntimeSet creatures = _playerAction.Action.IsAttack;
         }
 
         
     }
+
+    private void HighlightCell(GridCell cell)
+    {
+        if (cell.IsMove)
+        {
+            BattleEvents.CellMoveHighlighted(cell);
+        }
+        else if (cell.IsAttack)
+        {
+            BattleEvents.CellAttackHighlighted(cell);
+        }
+
+    }
+
+    private void UnhighlightCell(GridCell cell)
+    {
+        //Debug.Log("Unhighlighting cell: " + cell.ToString());
+        BattleEvents.CellUnhighlighted();
+    }
+
 
     private void ShowActionOnGrid(ActionClass action, CreatureRuntimeSet creatures, int x, int y)
     {
@@ -958,41 +982,58 @@ public class GameGrid : Singleton<GameGrid>
     private void Update()
     {
 
-        //if (State == BattleStatesEnum.PLAYER_MOVE || State == BattleStatesEnum.PLAYER_ATTACK)
-        //{
-        if (Input.GetMouseButtonDown(0))
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+
+        int layerMask = 1 << 6;
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
         {
-            if (EventSystem.current.IsPointerOverGameObject())
-                return;
-
-            //if (!EventSystem.current.IsPointerOverGameObject())
-            //{
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-
-            int layerMask = 1 << 6;
-
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
+            GameObject hitObject = hitInfo.transform.gameObject;
+            if (hitObject.TryGetComponent(out GridCell selectedCell))
             {
-                GameObject hitObject = hitInfo.transform.gameObject;
-                if (hitObject.TryGetComponent(out GridCell selectedCell))
+                if (selectedCell.IsSelectable)
                 {
-                    if (selectedCell.IsSelectable)
-                    {
-                        Debug.Log(selectedCell.name, this);
+                   // Debug.Log(selectedCell.name, this);
 
-                    SelectCell(selectedCell);
-                        //if (State == BattleStatesEnum.PLAYER_MOVE)
-                        //{
-                        //    BattleEvents.CellMoveSelected(selectedCell);
-                        //}
-                        //else
-                        //{
-                        //    BattleEvents.CellAttackSelected(selectedCell);
-                        //}
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        SelectCell(selectedCell);
+                        return;
                     }
+
+                    HighlightCell(selectedCell);
+
+
+                    //if (State == BattleStatesEnum.PLAYER_MOVE)
+                    //{
+                    //    BattleEvents.CellMoveSelected(selectedCell);
+                    //}
+                    //else
+                    //{
+                    //    BattleEvents.CellAttackSelected(selectedCell);
+                    //}
+                }
+                else
+                {
+                    UnhighlightCell(selectedCell);
                 }
             }
         }
+
+
+        //if (State == BattleStatesEnum.PLAYER_MOVE || State == BattleStatesEnum.PLAYER_ATTACK)
+        //{
+        //if (Input.GetMouseButtonDown(0))
+        //{
+            
+
+        //    //if (!EventSystem.current.IsPointerOverGameObject())
+        //    //{
+            
+        //}
         //}
     }
 

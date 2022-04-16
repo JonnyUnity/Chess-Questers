@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -12,7 +13,8 @@ public class CharacterJsonData
     public int Health;
     public int MaxHealth;
     public int MoveClassID;
-    public int[] Actions;
+    //public int[] Actions;
+    public List<ActionJsonData> Actions = new List<ActionJsonData>();
     public int Initiative;
 
     public int CharacterModel;
@@ -23,14 +25,18 @@ public class CharacterJsonData
 
     public int CurrentFacing;
 
-    public CharacterJsonData(string name, int characterModel, int moveClassID, int[] actions, int maxHealth)
+    public CharacterJsonData(string name, int characterModel, int moveClassID, List<ActionClass> actions, int maxHealth)
     {
         Name = name;
         IsFriendly = true;
         Health = maxHealth;
         MaxHealth = maxHealth;
         MoveClassID = moveClassID;
-        Actions = actions;
+        foreach (var action in actions)
+        {
+            Actions.Add(new ActionJsonData(action));
+        }
+
         CharacterModel = characterModel;
     }
 
@@ -42,7 +48,10 @@ public class CharacterJsonData
         Health = c.Health;
         MaxHealth = c.MaxHealth;
         MoveClassID = c.MoveClass.ID;
-        Actions = c.Actions.Select(s => s.ID).ToArray();
+        foreach (var action in c.Actions)
+        {
+            Actions.Add(new ActionJsonData(action));
+        }
         CharacterModel = c.CharacterModel;
         Initiative = c.Initiative;
 
@@ -60,7 +69,12 @@ public class CharacterJsonData
         Health = enemy.Health;
         MaxHealth = enemy.Health;
         MoveClassID = enemy.MoveClass.ID;
-        Actions = enemy.Actions.Select(s => s.ID).ToArray();
+        //Actions = enemy.Actions.Select(s => s.ID).ToArray();
+        //Actions = enemy.Actions;
+        foreach (var action in enemy.Actions)
+        {
+            Actions.Add(new ActionJsonData(action));
+        }
         CharacterModel = enemy.CharacterModel;
     }
 

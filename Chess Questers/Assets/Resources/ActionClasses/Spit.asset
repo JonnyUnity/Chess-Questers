@@ -28,6 +28,8 @@ MonoBehaviour:
   Cooldown: 2
   InitialChargesPerTurn: 1
   ChargesPerTurn: 1
-  InitialCharges: 2
-  Charges: 2
+  HasCharges: 0
+  InitialCharges: 0
+  Charges: 0
   additionalAttackedCellOffsets: []
+  ActionOnCooldown: 0

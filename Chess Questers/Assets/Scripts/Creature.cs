@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +19,14 @@ public class Creature : MonoBehaviour
     public MoveClass MoveClass;
     public string MoveClassText { get; protected set; }
 
-    public ActionClass[] Actions { get; protected set; }
+    public List<ActionClass> Actions { get; protected set; }
+    public List<ActionClass> AvailableActions
+    {
+        get
+        {
+            return Actions.Where(w => w.IsActive()).ToList();
+        }
+    }
 
     public int CharacterModel { get; protected set; }
 
@@ -56,6 +64,7 @@ public class Creature : MonoBehaviour
         _cam = Camera.main;
         Transform = transform;
         _orientation = transform.rotation;
+        Actions = new List<ActionClass>();
 
     }
 
@@ -63,14 +72,36 @@ public class Creature : MonoBehaviour
     {
         BattleEvents.OnTakeDamage += TakeDamage;
         BattleEvents.OnCreatureMoved += UpdatePositionNew;
+        BattleEvents.OnStartCombat += ResetActions;
+        BattleEvents.OnTurnOver += TurnOver;
     }
 
     protected virtual void OnDisable()
     {
         BattleEvents.OnTakeDamage -= TakeDamage;
         BattleEvents.OnCreatureMoved -= UpdatePositionNew;
+        BattleEvents.OnStartCombat -= ResetActions;
+        BattleEvents.OnTurnOver -= TurnOver;
     }
 
+    private void TurnOver(Creature creature)
+    {
+        if (creature != this)
+            return;
+
+        foreach (var action in Actions)
+        {
+            action.EndOfTurn();
+        }
+    }
+
+    private void ResetActions()
+    {
+        foreach (var action in Actions)
+        {
+            action.StartOfBattle();
+        }
+    }
 
     public void SetInitiative(int initiative)
     {

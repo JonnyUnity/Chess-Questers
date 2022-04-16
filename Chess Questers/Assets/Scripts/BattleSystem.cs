@@ -93,14 +93,15 @@ public class BattleSystem : Singleton<BattleSystem>
 
 
         BattleEvents.OnCellMoveHighlighted += HighlightCell;
-        BattleEvents.OnCellMoveUnhighlighted += UnhighlightCell;
+        //BattleEvents.OnCellMoveUnhighlighted += UnhighlightCell;
         BattleEvents.OnCellMoveSelected += SelectCell;
         BattleEvents.OnCreatureMoved += SetupPlayerAttack;
         BattleEvents.OnPlayerActionSelected += SetupAttackTemplate;
         BattleEvents.OnCellAttackSelected += HandleAttack;
 
         BattleEvents.OnCellAttackHighlighted += HighlightAttackCell;
-        BattleEvents.OnCellAttackUnhighlighted += UnhighlightAttackCell;
+        // BattleEvents.OnCellAttackUnhighlighted += UnhighlightAttackCell;
+        BattleEvents.OnCellUnhighlighted += UnhighlightCell;
 
         BattleEvents.OnCellSelected += SelectCell;
 
@@ -116,14 +117,16 @@ public class BattleSystem : Singleton<BattleSystem>
         BattleEvents.OnTurnStart -= StartNextTurn;
 
         BattleEvents.OnCellMoveHighlighted -= HighlightCell;
-        BattleEvents.OnCellMoveUnhighlighted -= UnhighlightCell;
+        //BattleEvents.OnCellMoveUnhighlighted -= UnhighlightCell;
         BattleEvents.OnCellMoveSelected -= SelectCell;
         BattleEvents.OnCreatureMoved -= SetupPlayerAttack;
         BattleEvents.OnPlayerActionSelected -= SetupAttackTemplate;
         BattleEvents.OnCellAttackSelected -= HandleAttack;
 
         BattleEvents.OnCellAttackHighlighted -= HighlightAttackCell;
-        BattleEvents.OnCellAttackUnhighlighted -= UnhighlightAttackCell;
+        //BattleEvents.OnCellAttackUnhighlighted -= UnhighlightAttackCell;
+
+        BattleEvents.OnCellUnhighlighted -= UnhighlightCell;
 
         BattleEvents.OnCellSelected -= SelectCell;
 
@@ -204,7 +207,17 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private void UnhighlightCell()
     {
-        _highlightMovePrefab.SetActive(false);
+        if (State == BattleStatesEnum.PLAYER_MOVE)
+        {
+            _highlightMovePrefab.SetActive(false);
+        }
+        else if (State == BattleStatesEnum.PLAYER_ATTACK)
+        {
+            if (_currentAttackTemplate != null)
+            {
+                _currentAttackTemplate.SetActive(false);
+            }
+        }
     }
 
     private void UnhighlightAttackCell()
@@ -278,7 +291,7 @@ public class BattleSystem : Singleton<BattleSystem>
         }
         else
         {
-            BattleEvents.RollInitiative();
+            BattleEvents.StartCombat();
         }
 
         //if (IM.HasCombatStarted())
@@ -589,7 +602,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         UIHandler.UpdateStateText("CALC PLAYER ATTACKS");
 
-        var actions = _activeCharacter.Actions;
+        var actions = _activeCharacter.AvailableActions;
 
         State = BattleStatesEnum.PLAYER_ATTACK;
 
@@ -639,6 +652,8 @@ public class BattleSystem : Singleton<BattleSystem>
             BattleEvents.TakeDamage(creature, damage);
         }
 
+        _playerAction.Action.DoAction();     //rename this!
+
         // update attacked creatures list to creatures, not ids!
         //List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(cell, _currentAction);
 
@@ -656,7 +671,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         yield return new WaitForSeconds(1f);
 
-        BattleEvents.TurnOver();
+        BattleEvents.TurnOver(_activeCharacter);
 
     }
 
@@ -721,6 +736,8 @@ public class BattleSystem : Singleton<BattleSystem>
                 BattleEvents.TakeDamage(creature, _enemyAction.Damage);
             }
 
+            _enemyAction.Action.DoAction();
+
         }
         else
         {
@@ -756,7 +773,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         yield return new WaitForSeconds(1f);
 
-        BattleEvents.TurnOver();
+        BattleEvents.TurnOver(_activeCharacter);
         GameGrid.Instance.ClearGrid();
 
     }
@@ -768,7 +785,7 @@ public class BattleSystem : Singleton<BattleSystem>
         if (State == BattleStatesEnum.PLAYER_ATTACK)
         {
             UnhighlightAttackCell();
-            BattleEvents.TurnOver();
+            BattleEvents.TurnOver(_activeCharacter);
             GameGrid.Instance.ClearGrid();
         }
 
@@ -783,43 +800,43 @@ public class BattleSystem : Singleton<BattleSystem>
             CameraHandler.LookAtCreature(_activeCharacter.Transform);
         }
 
-        if (State == BattleStatesEnum.PLAYER_MOVE || State == BattleStatesEnum.PLAYER_ATTACK)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (EventSystem.current.IsPointerOverGameObject())
-                    return;
+        //if (State == BattleStatesEnum.PLAYER_MOVE || State == BattleStatesEnum.PLAYER_ATTACK)
+        //{
+        //    if (Input.GetMouseButtonDown(0))
+        //    {
+        //        if (EventSystem.current.IsPointerOverGameObject())
+        //            return;
 
-                //if (!EventSystem.current.IsPointerOverGameObject())
-                //{
-                Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+        //        //if (!EventSystem.current.IsPointerOverGameObject())
+        //        //{
+        //        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 
-                int layerMask = 1 << 6;
+        //        int layerMask = 1 << 6;
 
-                if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
-                {
-                    GameObject hitObject = hitInfo.transform.gameObject;
-                    if (hitObject.TryGetComponent(out GridCell selectedCell))
-                    {
-                        if (selectedCell.IsSelectable)
-                        {
-                            Debug.Log(selectedCell.name, this);
+        //        if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
+        //        {
+        //            GameObject hitObject = hitInfo.transform.gameObject;
+        //            if (hitObject.TryGetComponent(out GridCell selectedCell))
+        //            {
+        //                if (selectedCell.IsSelectable)
+        //                {
+        //                    Debug.Log(selectedCell.name, this);
 
-                            BattleEvents.CellSelected(selectedCell);
+        //                    BattleEvents.CellSelected(selectedCell);
 
-                            //if (State == BattleStatesEnum.PLAYER_MOVE)
-                            //{
-                            //    BattleEvents.CellMoveSelected(selectedCell);
-                            //}
-                            //else
-                            //{
-                            //    BattleEvents.CellAttackSelected(selectedCell);
-                            //}
-                        }
-                    }
-                }
-            }
-        }
+        //                    //if (State == BattleStatesEnum.PLAYER_MOVE)
+        //                    //{
+        //                    //    BattleEvents.CellMoveSelected(selectedCell);
+        //                    //}
+        //                    //else
+        //                    //{
+        //                    //    BattleEvents.CellAttackSelected(selectedCell);
+        //                    //}
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
 
 
