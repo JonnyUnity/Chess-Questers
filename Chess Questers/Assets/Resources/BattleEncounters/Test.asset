@@ -17,9 +17,9 @@ MonoBehaviour:
   Type: 1
   Layout: 1
   Enemies:
-  - {fileID: 11400000, guid: d3c7c1d819f222248bc32e59abf9f517, type: 2}
-  - {fileID: 11400000, guid: d3c7c1d819f222248bc32e59abf9f517, type: 2}
-  - {fileID: 11400000, guid: d3c7c1d819f222248bc32e59abf9f517, type: 2}
+  - {fileID: 11400000, guid: 142d1552b8186b34ab4571b6c06e6e8b, type: 2}
+  - {fileID: 11400000, guid: 142d1552b8186b34ab4571b6c06e6e8b, type: 2}
+  - {fileID: 11400000, guid: 142d1552b8186b34ab4571b6c06e6e8b, type: 2}
   PlayerSpawns:
   - {x: 2, y: 1}
   - {x: 4, y: 1}

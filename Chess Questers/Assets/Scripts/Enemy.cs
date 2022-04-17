@@ -17,9 +17,15 @@ public class Enemy : Creature
         ID = data.ID;
         EnemyID = data.EnemyID;
         Name = data.Name;
-        _nameText.text = Name;
+        //_nameText.text = Name;
         IsFriendly = false;
-        CharacterModel = enemyObject.CharacterModel;
+        CreatureModelID = enemyObject.CreatureModelID;
+
+        _portraitSprite = enemyObject.Portrait;
+
+        //_creatureModel = GameManager.Instance.GetCreatureModel(CreatureModelID);
+        //_portraitSprite = _creatureModel.Portrait;
+
         SetInitiative(data.Initiative);
         //MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
         MoveClass = enemyObject.MoveClass;
@@ -38,8 +44,8 @@ public class Enemy : Creature
         Health = data.Health;
         MaxHealth = data.MaxHealth;
 
-        _healthSlider.maxValue = MaxHealth;
-        _healthSlider.value = MaxHealth;
+        //_healthSlider.maxValue = MaxHealth;
+        //_healthSlider.value = Health;
 
         Brain = enemyObject.Brain;
 

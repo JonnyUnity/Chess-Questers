@@ -362,14 +362,14 @@ public class BattleSystem : Singleton<BattleSystem>
 
             Quaternion rot = GetCharacterRotation(c.CurrentFacing);
 
-            if (_creaturePrefabs.ContainsKey(c.CharacterModel))
+            if (_creaturePrefabs.ContainsKey(c.CreatureModelID))
             {
-                currentPrefab = _creaturePrefabs[c.CharacterModel];
+                currentPrefab = _creaturePrefabs[c.CreatureModelID];
             }
             else
             {
-                currentPrefab = GameManager.Instance.GetCreatureModelPrefab(c.CharacterModel);
-                _creaturePrefabs.Add(c.CharacterModel, currentPrefab);
+                currentPrefab = GameManager.Instance.GetCreatureModelPrefab(c.CreatureModelID);
+                _creaturePrefabs.Add(c.CreatureModelID, currentPrefab);
             }
 
             CharacterObj = Instantiate(currentPrefab, cellPos, Quaternion.identity * rot);
@@ -410,14 +410,16 @@ public class BattleSystem : Singleton<BattleSystem>
 
             Quaternion rot = GetCharacterRotation(c.CurrentFacing);
 
-            if (_creaturePrefabs.ContainsKey(enemyObject.CharacterModel))
+            if (_creaturePrefabs.ContainsKey(enemyObject.CreatureModelID))
             {
-                currentPrefab = _creaturePrefabs[enemyObject.CharacterModel];
+                currentPrefab = _creaturePrefabs[enemyObject.CreatureModelID];
             }
             else
             {
-                currentPrefab = GameManager.Instance.GetCreatureModelPrefab(enemyObject.CharacterModel);
-                _creaturePrefabs.Add(enemyObject.CharacterModel, currentPrefab);
+
+                currentPrefab = enemyObject.ModelPrefab;
+                //currentPrefab = GameManager.Instance.GetCreatureModelPrefab(enemyObject.CreatureModelID);
+                _creaturePrefabs.Add(enemyObject.CreatureModelID, currentPrefab);
             }
 
             CharacterObj = Instantiate(currentPrefab, cellPos, Quaternion.identity * rot);
@@ -445,21 +447,21 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private Quaternion GetCharacterRotation(int facing)
     {
-        Quaternion rot = Quaternion.Euler(0, -90, 0);
+        Quaternion rot = Quaternion.Euler(0, 0, 0);
 
         switch (facing)
         {
             case 0:
-                rot = Quaternion.Euler(0, -90, 0);
-                break;
-            case 1:
                 rot = Quaternion.Euler(0, 0, 0);
                 break;
-            case 2:
+            case 1:
                 rot = Quaternion.Euler(0, 90, 0);
                 break;
-            case 3:
+            case 2:
                 rot = Quaternion.Euler(0, 180, 0);
+                break;
+            case 3:
+                rot = Quaternion.Euler(0, -90, 0);
                 break;
             default:
                 Debug.Log("Facing " + facing + " not recognised!");

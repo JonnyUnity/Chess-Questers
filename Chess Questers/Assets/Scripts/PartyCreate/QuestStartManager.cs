@@ -25,20 +25,23 @@ public class QuestStartManager : Singleton<QuestStartManager>
     //private ImprovedCharacter[] Characters;
     private CharacterJsonData[] NewChars;
 
+    private CreatureModel[] _creatureModels;
+
+    private Dictionary<int, GameObject> _creatureModelPrefabs = new Dictionary<int, GameObject>(); 
+
 
     void Start()
     {
         NewChars = new CharacterJsonData[3];
         //Characters = new ImprovedCharacter[3];
         _characterNames = _namesText.Split(" ");
+        //_creatureModelPrefabs = GameManager.Instance.GetCreatureModelPrefabs();        
 
-        //_questData = GameManager.Instance.InitQuestData();
-        //_newData = GameManager.Instance.InitNewQuestData();
         _newData = new QuestJsonData();
 
-        _character1Manager.SetCharacterModel(_character1GameObject);
-        _character2Manager.SetCharacterModel(_character2GameObject);
-        _character3Manager.SetCharacterModel(_character3GameObject);
+        //_character1Manager.SetCharacterModel(_character1GameObject);
+        //_character2Manager.SetCharacterModel(_character2GameObject);
+        //_character3Manager.SetCharacterModel(_character3GameObject);
 
         _character1Manager.RerollCharacter();
         _character2Manager.RerollCharacter();
@@ -61,13 +64,30 @@ public class QuestStartManager : Singleton<QuestStartManager>
 
         int nameIndex = Random.Range(0, _characterNames.Length);
         string charName = _characterNames[nameIndex];
+        int creatureModelID = GameManager.Instance.GetRandomCreatureModelID();
 
-        CharacterJsonData newChar = new CharacterJsonData(charName, 1, mc.ID, actions, 100);
+        CharacterJsonData newChar = new CharacterJsonData(charName, creatureModelID, mc.ID, actions, 100);
 
         NewChars[characterSlot] = newChar;
         
         return newChar;
 
+    }
+
+    public GameObject GetModelPrefab(int id)
+    {
+        if (_creatureModelPrefabs.ContainsKey(id))
+        {
+            return _creatureModelPrefabs[id];
+        }
+
+        return null;
+    }
+
+
+    public void AddModelPrefabToPool(int id, GameObject prefab)
+    {
+        _creatureModelPrefabs.Add(id, prefab);
     }
 
 

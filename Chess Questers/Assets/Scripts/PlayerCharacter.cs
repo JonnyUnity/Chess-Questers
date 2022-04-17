@@ -12,6 +12,8 @@ public class PlayerCharacter : Creature
 
     [SerializeField] private CreatureRuntimeSet _party;
 
+    private CreatureModel _creatureModel;
+
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -66,11 +68,15 @@ public class PlayerCharacter : Creature
     {
         ID = data.ID;
         Name = data.Name;
-        _nameText.text = Name;
-        CharacterModel = data.CharacterModel;
+        //_nameText.text = Name;
+        CreatureModelID = data.CreatureModelID;
         IsFriendly = true;
         MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
         MoveClassText = MoveClass.name;
+
+        _creatureModel = GameManager.Instance.GetCreatureModel(CreatureModelID);
+        _portraitSprite = _creatureModel.Portrait;
+
         SetInitiative(data.Initiative);
 
         foreach (var jsonAction in data.Actions)
@@ -84,8 +90,8 @@ public class PlayerCharacter : Creature
         Health = data.Health;
         MaxHealth = data.MaxHealth;
 
-        _healthSlider.maxValue = MaxHealth;
-        _healthSlider.value = MaxHealth;
+        //_healthSlider.maxValue = MaxHealth;
+        //_healthSlider.value = Health;
 
         CellX = data.CellX;
         CellY = data.CellY;

@@ -272,6 +272,36 @@ public class GameManager : Singleton<GameManager>
         return model.ModelPrefab;
     }
 
+
+    public CreatureModel GetCreatureModel(int creatureModelID)
+    {
+        return _creatureModels.Where(w => w.ID == creatureModelID).Single();
+    }
+
+    //public Dictionary<int, GameObject> GetCreatureModelPrefabs()
+    //{
+    //    Dictionary<int, GameObject> prefabs = new Dictionary<int, GameObject>();
+
+    //    foreach (var creatureModel in _creatureModels)
+    //    {
+    //        int id = creatureModel.ID;
+    //        var obj = Instantiate(creatureModel.ModelPrefab);
+    //        prefabs.Add(id, obj);
+    //    }
+
+    //    return prefabs;
+    //}
+
+    public int GetRandomCreatureModelID()
+    {
+        if (_creatureModels.Length == 0)
+            return 0;
+
+        int index = Random.Range(0, _creatureModels.Length);
+        return _creatureModels[index].ID;
+
+    }
+
     #endregion
 
 

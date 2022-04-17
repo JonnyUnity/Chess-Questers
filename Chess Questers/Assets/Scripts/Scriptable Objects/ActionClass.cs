@@ -10,6 +10,10 @@ public class ActionClass : ScriptableObject
     public int ID;
     public string Name;
 
+    [Multiline]
+    public string Description;
+    public Sprite Icon;
+    
     public int Damage;
     public int MinRange;
     public int MaxRange;

@@ -17,7 +17,7 @@ public class CharacterJsonData
     public List<ActionJsonData> Actions = new List<ActionJsonData>();
     public int Initiative;
 
-    public int CharacterModel;
+    public int CreatureModelID;
 
     public int CellX;
     public int CellY;
@@ -25,7 +25,7 @@ public class CharacterJsonData
 
     public int CurrentFacing;
 
-    public CharacterJsonData(string name, int characterModel, int moveClassID, List<ActionClass> actions, int maxHealth)
+    public CharacterJsonData(string name, int creatureModel, int moveClassID, List<ActionClass> actions, int maxHealth)
     {
         Name = name;
         IsFriendly = true;
@@ -37,7 +37,7 @@ public class CharacterJsonData
             Actions.Add(new ActionJsonData(action));
         }
 
-        CharacterModel = characterModel;
+        CreatureModelID = creatureModel;
     }
 
     public CharacterJsonData(PlayerCharacter c)
@@ -52,7 +52,7 @@ public class CharacterJsonData
         {
             Actions.Add(new ActionJsonData(action));
         }
-        CharacterModel = c.CharacterModel;
+        CreatureModelID = c.CreatureModelID;
         Initiative = c.Initiative;
 
         CellX = c.CellX;
@@ -75,7 +75,7 @@ public class CharacterJsonData
         {
             Actions.Add(new ActionJsonData(action));
         }
-        CharacterModel = enemy.CharacterModel;
+        CreatureModelID = enemy.CreatureModelID;
     }
 
 

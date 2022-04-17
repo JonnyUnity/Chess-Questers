@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f39767ac5df3f4946b78114124172735, type: 3}
+  m_Name: Horse
+  m_EditorClassIdentifier: 
+  ID: 1002
+  Name: Horse
+  Health: 50
+  CreatureModelID: 0
+  ModelPrefab: {fileID: 615789327855940348, guid: 6ecf7906b0c0a4a4cb1d95663d966942, type: 3}
+  Portrait: {fileID: 21300000, guid: 0f7b5a238fab27442b84beb874644d05, type: 3}
+  Brain: {fileID: 11400000, guid: aa95d10291c5d19498dbe6097b523013, type: 2}
+  MoveClass: {fileID: 11400000, guid: 3801e6beadc214d45b0c83fad3db207c, type: 2}
+  Actions:
+  - {fileID: 11400000, guid: 3538cc11186ace64a99f48222c519214, type: 2}
+  - {fileID: 11400000, guid: 3aa8e29469e58e5419e259c098817061, type: 2}

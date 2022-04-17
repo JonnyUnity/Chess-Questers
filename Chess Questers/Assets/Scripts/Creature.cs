@@ -28,8 +28,8 @@ public class Creature : MonoBehaviour
         }
     }
 
-    public int CharacterModel { get; protected set; }
-
+    public int CreatureModelID { get; protected set; }
+  
     public GridCell OccupiedCell;
     protected Vector3 TargetPosition;
     public GridCell TargetCell;
@@ -54,6 +54,10 @@ public class Creature : MonoBehaviour
     [SerializeField] protected TMPro.TextMeshProUGUI _nameText;
 
     public Faction Faction;
+
+
+    protected Sprite _portraitSprite;
+    public Sprite PortraitSprite => _portraitSprite;
 
     public int Initiative { get; private set; }
 
@@ -115,7 +119,7 @@ public class Creature : MonoBehaviour
             return;
 
         Health -= healthChange; // assume no healing actions for now...
-        _healthSlider.value = Health;
+        //_healthSlider.value = Health;
 
         if (Health <= 0)
         {
@@ -152,8 +156,8 @@ public class Creature : MonoBehaviour
     protected virtual void Update()
     {
 
-        _creatureInfo.transform.LookAt(_cam.transform);
-        _creatureInfo.transform.rotation = _cam.transform.rotation;
+        //_creatureInfo.transform.LookAt(_cam.transform);
+        //_creatureInfo.transform.rotation = _cam.transform.rotation;
 
         if (State != CharacterStatesEnum.MOVING) return;
 
