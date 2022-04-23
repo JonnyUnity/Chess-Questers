@@ -12,21 +12,23 @@ public class InitiativeManager : MonoBehaviour
 
     [SerializeField] private CreatureRuntimeSet _playerCharacters;
     [SerializeField] private CreatureRuntimeSet _enemies;
-    [SerializeField] private CreatureRuntimeSet _combatants;
+    //[SerializeField] private CreatureRuntimeSet _combatants;
     [SerializeField] private IntVariable TurnNumber;
     [SerializeField] private IntVariable TurnPointer;
 
     [SerializeField] private float deathPortraitAnimationTime;
 
+    [SerializeField] private InitiativeSet _initiative;
+
     private List<CreaturePortrait> _creaturePortraits = new List<CreaturePortrait>();
 
-    public int ActiveCharacterID
-    {
-        get
-        {
-            return _combatants.Items[TurnPointer.Value].ID;
-        }
-    }
+    //public int ActiveCharacterID
+    //{
+    //    get
+    //    {
+    //        return _combatants.Items[TurnPointer.Value].ID;
+    //    }
+    //}
 
 
     private void OnEnable()
@@ -47,42 +49,53 @@ public class InitiativeManager : MonoBehaviour
 
     private void Setup()
     {
+        _initiative.Empty();
+
         foreach (var creature in _playerCharacters.Items)
         {
-            _combatants.Add(creature);
+            //_combatants.Add(creature);
+            _initiative.Add(creature);
         }
         foreach (var creature in _enemies.Items)
         {
-            _combatants.Add(creature);
+            //_combatants.Add(creature);
+            _initiative.Add(creature);
         }
 
         // setup portraits
         SetupPortraits();
 
-        BattleEvents.TurnStarted(ActiveCharacterID);
+        //BattleEvents.TurnStarted(ActiveCharacterID);
+        BattleEvents.TurnStarted(_initiative.ActiveCharacter);
 
     }
 
     private void Roll()
     {
+        _initiative.Empty();
+
         foreach (var creature in _playerCharacters.Items)
         {
             creature.SetInitiative(Random.Range(1, 20));
-            _combatants.Add(creature);
+            //_combatants.Add(creature);
+            _initiative.Add(creature);
         }
 
         foreach (var creature in _enemies.Items)
         {
             creature.SetInitiative(Random.Range(1, 20));
-            _combatants.Add(creature);
+            //_combatants.Add(creature);
+            _initiative.Add(creature);
         }
 
-        _combatants.Sort();
+        _initiative.Sort();
+        //_combatants.Sort();
         SetupPortraits();
 
         TurnNumber.SetValue(1);
 
-        BattleEvents.TurnStarted(ActiveCharacterID);
+        //BattleEvents.TurnStarted(ActiveCharacterID);
+        BattleEvents.TurnStarted(_initiative.ActiveCharacter);
 
     }
 
@@ -92,7 +105,7 @@ public class InitiativeManager : MonoBehaviour
         Debug.Log("Initiative - NextTurn");
         TurnPointer.Inc();
         
-        if (TurnPointer.Value > _combatants.Items.Count() - 1)
+        if (TurnPointer.Value > _initiative.Items.Count() - 1)
         {
             TurnNumber.Inc();
             TurnPointer.SetValue(0);
@@ -101,7 +114,8 @@ public class InitiativeManager : MonoBehaviour
 
         UpdatePortraitsOfNextTurn();
 
-        BattleEvents.TurnStarted(ActiveCharacterID);
+        //BattleEvents.TurnStarted(ActiveCharacterID);
+        BattleEvents.TurnStarted(_initiative.ActiveCharacter);
     }
 
 
@@ -110,17 +124,27 @@ public class InitiativeManager : MonoBehaviour
         Debug.Log("Someone died! Update the turn order!");
 
         RemovePortrait(creature.ID);
-        _combatants.Items.Remove(creature);
+        //_combatants.Remove(creature);
+        _initiative.Remove(creature);
         
 
-        if (!_combatants.Items.Any(a => !a.IsFriendly))
+        if (_initiative.AllEnemiesDead)
         {
             BattleEvents.Victory();
         }
-        if (!_combatants.Items.Any(a => a.IsFriendly))
+        if (_initiative.AllFriendliesDead)
         {
             BattleEvents.Loss();
         }
+
+        //if (!_combatants.Items.Any(a => !a.IsFriendly))
+        //{
+        //    BattleEvents.Victory();
+        //}
+        //if (!_combatants.Items.Any(a => a.IsFriendly))
+        //{
+        //    BattleEvents.Loss();
+        //}
     }
 
 
@@ -128,7 +152,7 @@ public class InitiativeManager : MonoBehaviour
 
     private void SetupPortraits()
     {
-        foreach (var combatant in _combatants.Items)
+        foreach (var combatant in _initiative.Items)
         {
             GameObject portraitObj = Instantiate(_portraitImagePrefab, _portraitsContainer.transform);
             CreaturePortrait portrait = portraitObj.GetComponent<CreaturePortrait>();

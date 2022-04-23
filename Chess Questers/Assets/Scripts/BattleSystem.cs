@@ -16,6 +16,9 @@ public class BattleSystem : Singleton<BattleSystem>
     public BattleStatesEnum State;
 
     private GameManager _gameManager;
+
+    [SerializeField] private ActionManager _actionManager;
+
     //public GameGrid Grid;
 
     //[SerializeField] private GameObject HeroPrefab;
@@ -49,12 +52,11 @@ public class BattleSystem : Singleton<BattleSystem>
     private List<PlayerCharacter> NewAdventurers = new List<PlayerCharacter>();
     private List<Enemy> NewEnemies = new List<Enemy>();
     private List<Creature> Combatants = new List<Creature>();
-    private Creature _activeCharacter;
 
     private ActionClass _currentAction;
 
     private Dictionary<int, GameObject> _creaturePrefabs = new Dictionary<int, GameObject>();
-
+    private Creature _activeCharacter;
 
     private readonly Vector3 _highlightOffset = new Vector3(0, 0.01f, 0);
 
@@ -65,7 +67,6 @@ public class BattleSystem : Singleton<BattleSystem>
 
     [SerializeField] private CreatureRuntimeSet _playerCharacters;
     [SerializeField] private CreatureRuntimeSet _enemies;
-    [SerializeField] private CreatureRuntimeSet _combatants;
     [SerializeField] private CreatureRuntimeSet _targets;
 
     private EnemyActionResult _enemyAction;
@@ -105,7 +106,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         BattleEvents.OnCellSelected += SelectCell;
 
-        BattleEvents.OnDeath += CharacterDied;
+        //BattleEvents.OnDeath += CharacterDied;
 
     }
 
@@ -130,30 +131,29 @@ public class BattleSystem : Singleton<BattleSystem>
 
         BattleEvents.OnCellSelected -= SelectCell;
 
-        BattleEvents.OnDeath -= CharacterDied;
+        //BattleEvents.OnDeath -= CharacterDied;
 
         _playerCharacters.Empty();
         _enemies.Empty();
-        _combatants.Empty();
-
+        
     }
 
-    private void CharacterDied(Creature creature)
-    {
-        if (creature.IsFriendly)
-        {
-            //NewAdventurers = NewAdventurers.Where(w => w.ID != characterID).ToList();
-            _playerCharacters.Remove(creature);
-        }
-        else
-        {
-            //NewEnemies = NewEnemies.Where(w => w.ID != characterID).ToList();
-            _enemies.Remove(creature);
-        }
+    //private void CharacterDied(Creature creature)
+    //{
+    //    if (creature.IsFriendly)
+    //    {
+    //        //NewAdventurers = NewAdventurers.Where(w => w.ID != characterID).ToList();
+    //        _playerCharacters.Remove(creature);
+    //    }
+    //    else
+    //    {
+    //        //NewEnemies = NewEnemies.Where(w => w.ID != characterID).ToList();
+    //        _enemies.Remove(creature);
+    //    }
 
-        _combatants.Remove(creature);
+    //    _combatants.Remove(creature);
 
-    }
+    //}
 
     private void HighlightAttackCell(GridCell cell)
     {
@@ -194,7 +194,7 @@ public class BattleSystem : Singleton<BattleSystem>
     {
 
         _highlightMovePrefab.transform.position = cell.transform.position + _highlightOffset;
-        Debug.Log("Highlighting cell: (" + cell.X + ", " + cell.Y + ")");
+        //Debug.Log("Highlighting cell: (" + cell.X + ", " + cell.Y + ")");
         if (!_highlightMovePrefab.activeInHierarchy)
         {
             _highlightMovePrefab.SetActive(true);
@@ -496,17 +496,18 @@ public class BattleSystem : Singleton<BattleSystem>
     //    yield return null;
     //}
 
-    private void StartNextTurn(int characterID)
+    private void StartNextTurn(Creature activeCharacter)
     {
 
         SaveProgress();
+        _activeCharacter = activeCharacter;
 
         //StartCoroutine(SaveProgress()); // perhaps move to end of turn?
 
-        Debug.Log("BattleSystem - Start Next Turn! " + characterID);
+        Debug.Log("BattleSystem - Start Next Turn! " + _activeCharacter.ID);
         State = BattleStatesEnum.START_TURN;
 
-        _activeCharacter = _combatants.Items.Where(w => w.ID == characterID).Single();
+        //_activeCharacter = _combatants.Items.Where(w => w.ID == characterID).Single();
 
         CameraHandler.SwapToCharacter(_activeCharacter.Position);
 
@@ -566,6 +567,7 @@ public class BattleSystem : Singleton<BattleSystem>
     IEnumerator PlayerMoveCoroutine(GridCell cell)
     {
         GameGrid.Instance.ClearGrid();
+        GameGrid.Instance.HideGrid();
 
         UIHandler.UpdateStateText("PLAYER MOVE");
 
@@ -604,7 +606,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         UIHandler.UpdateStateText("CALC PLAYER ATTACKS");
 
-        var actions = _activeCharacter.AvailableActions;
+        //var actions = _activeCharacter.AvailableActions;
 
         State = BattleStatesEnum.PLAYER_ATTACK;
 
@@ -624,8 +626,9 @@ public class BattleSystem : Singleton<BattleSystem>
 
         //_currentAttackTemplate = Instantiate(_attackPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 
+        _actionManager.SetActions();
 
-        UIHandler.ShowActions(_activeCharacter, actions, _activeCharacter.CellX, _activeCharacter.CellY);
+        UIHandler.ShowActions(_activeCharacter, _activeCharacter.Actions, _activeCharacter.CellX, _activeCharacter.CellY);
 
         //UIHandler.UpdateCharacterText(adv.CreatureName);
         UIHandler.UpdateCharacterText(_activeCharacter.Name);

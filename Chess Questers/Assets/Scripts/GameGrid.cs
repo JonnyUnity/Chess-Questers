@@ -40,7 +40,9 @@ public class GameGrid : Singleton<GameGrid>
 
     [SerializeField] private CreatureRuntimeSet _playerCharacters;
     [SerializeField] private CreatureRuntimeSet _enemies;
-    [SerializeField] private CreatureRuntimeSet _combatants;
+    //[SerializeField] private CreatureRuntimeSet _combatants;
+    [SerializeField] private InitiativeSet _initiative;
+
     [SerializeField] private CreatureRuntimeSet _targets;
 
     [SerializeField] private GridCellRuntimeSet _targetCells;
@@ -415,12 +417,12 @@ public class GameGrid : Singleton<GameGrid>
 
     private bool IsCellOccupied(int x, int y)
     {
-        return _combatants.Items.Where(w => w.CellX == x && w.CellY == y).Any();
+        return _initiative.Items.Where(w => w.CellX == x && w.CellY == y).Any();
     }
 
     private Creature GetCellOccupant(int x, int y)
     {
-        return _combatants.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
+        return _initiative.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
     }
 
 
@@ -576,6 +578,8 @@ public class GameGrid : Singleton<GameGrid>
     public void ShowMovesForPlayer(MoveClass moveClass, int playerX, int playerY)
     {
         //ClearGrid();
+
+        ShowGrid();
         List<GridCell> moves = GetMoves(moveClass, playerX, playerY);
 
 
