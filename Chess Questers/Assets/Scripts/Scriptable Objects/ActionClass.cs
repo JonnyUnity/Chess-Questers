@@ -46,6 +46,10 @@ public class ActionClass : ScriptableObject
 
     public bool ActionOnCooldown;
 
+    public CreatureRuntimeSet Allies { get; private set; }
+    public CreatureRuntimeSet Enemies { get; private set; }
+
+
     public void StartOfBattle()
     {
         ChargesPerTurn = InitialChargesPerTurn;
@@ -79,38 +83,52 @@ public class ActionClass : ScriptableObject
         }
     }
 
-
-
-    public bool IsActive()
+    public CreatureRuntimeSet TargetCreatures
     {
-        if (ChargesPerTurn == 0)
+        get
         {
-            return false;
-        }
-        else if (ActionOnCooldown)
+            return IsAttack ? Enemies : Allies;
+        }        
+    }
+
+
+    public bool IsActive
+    {
+        get
         {
-            return false;
-        }
-        else if (HasCharges && Charges == 0)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
+            if (ChargesPerTurn == 0)
+            {
+                return false;
+            }
+            else if (ActionOnCooldown)
+            {
+                return false;
+            }
+            else if (HasCharges && Charges == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 
-    public void Init(ActionJsonData data)
+
+
+
+    public void Init(ActionJsonData data, Faction faction)
     {
         ChargesPerTurn = data.ChargesPerTurn;
         Cooldown = data.Cooldown;
         Charges = data.Charges;
         ActionOnCooldown = data.ActionOnCooldown;
+
+        Allies = faction.Friendlies;
+        Enemies = faction.NonFriendlies;
+
     }
-
-
-
 
 }
 

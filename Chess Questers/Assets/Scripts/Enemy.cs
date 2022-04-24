@@ -37,7 +37,7 @@ public class Enemy : Creature
         {
             var jsonData = data.Actions.Where(w => w.ID == action.ID).Single();
             var currAction = Instantiate(action);
-            currAction.Init(jsonData);
+            currAction.Init(jsonData, enemyObject.Faction);
             Actions.Add(currAction);
         }
         //Actions = enemyObject.Actions;

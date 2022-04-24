@@ -9,6 +9,9 @@ public class ActionManager : MonoBehaviour
 {
     [SerializeField] private GameObject _actionsContainer;
     [SerializeField] private GameObject _buttonPrefab;
+    [SerializeField] private GameObject _moveButtonPrefab;
+    [SerializeField] private GameObject _passButtonPrefab;
+
     [SerializeField] private RectTransform _toolTipWindow;
     [SerializeField] private TextMeshProUGUI _headerText;
     [SerializeField] private TextMeshProUGUI _contentText;
@@ -29,6 +32,7 @@ public class ActionManager : MonoBehaviour
         OnMouseHover += ShowToolTip;
         OnMouseLoseFocus += HideToolTip;
         BattleEvents.OnPlayerStartTurn += SetActions;
+        BattleEvents.OnPlayerActionPerformed += UpdateActionsCount;
     }
 
     private void OnDisable()
@@ -36,6 +40,7 @@ public class ActionManager : MonoBehaviour
         OnMouseHover -= ShowToolTip;
         OnMouseLoseFocus -= HideToolTip;
         BattleEvents.OnPlayerStartTurn -= SetActions;
+        BattleEvents.OnPlayerActionPerformed -= UpdateActionsCount;
     }
 
     private void Awake()
@@ -59,6 +64,11 @@ public class ActionManager : MonoBehaviour
             Destroy(actionButton);
         }
 
+        // add the move button.
+        var moveButtonObj = Instantiate(_moveButtonPrefab, _actionsContainer.transform);
+        moveButtonObj.GetComponent<MoveButton>().SetAction(_initiative.ActiveCharacter.MoveClass);
+        _actionButtons.Add(moveButtonObj);
+
         foreach (ActionClass action in _actions)
         {
             Debug.Log(action);
@@ -66,6 +76,10 @@ public class ActionManager : MonoBehaviour
             buttonObj.GetComponent<ActionButton>().SetAction(action);
             _actionButtons.Add(buttonObj);
         }
+
+        // now add the pass button.
+        var passButtonObj = Instantiate(_passButtonPrefab, _actionsContainer.transform);
+        _actionButtons.Add(passButtonObj);
 
     }
 
@@ -94,6 +108,16 @@ public class ActionManager : MonoBehaviour
         _headerText.text = default;
         _contentText.text = default;
         _toolTipWindow.gameObject.SetActive(false);
+    }
+
+    public void UpdateActionsCount(ActionClass action)
+    {
+        _initiative.ActiveCharacter.ActionsRemaining--;
+
+        if (_initiative.ActiveCharacter.ActionsRemaining == 0)
+        {
+            BattleEvents.TurnOver();
+        }
     }
 
 }

@@ -8,12 +8,16 @@ public class EnemySO : ScriptableObject
     public int ID;
     public string Name;
     public int Health;
+    public int ActionsPerTurn;
+
     public int CreatureModelID;
 
     public GameObject ModelPrefab;
     public Sprite Portrait;
 
     public Brain Brain;
+
+    public Faction Faction;
 
     public MoveClass MoveClass;
     public List<ActionClass> Actions;

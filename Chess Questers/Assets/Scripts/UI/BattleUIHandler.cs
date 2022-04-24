@@ -43,7 +43,7 @@ public class BattleUIHandler : MonoBehaviour
         //_playerAction.Creatures = results[0].Creatures;
         //_playerAction.Creatures = GameGrid.Instance.GetAttackedCreatures(cell, _playerAction.Action);
 
-        HideActions(null);
+        HideActions();
     }
 
     private void OnDestroy()
@@ -72,7 +72,7 @@ public class BattleUIHandler : MonoBehaviour
         _characterX = x;
         _characterY = y;
 
-        HideActions(currentCreature);
+        HideActions();
 
         for (int i = 0; i < actions.Count; i++)
         {
@@ -98,15 +98,13 @@ public class BattleUIHandler : MonoBehaviour
             _playerAction.Action = action;
             _playerAction.Damage = action.Damage;
 
-            CreatureRuntimeSet creatures = _currentCharacter.Faction.GetTargetFaction(action.IsAttack);
-
-            BattleEvents.ActionSelected(action, creatures, _currentCharacter.CellX, _currentCharacter.CellY);
+            BattleEvents.ActionSelected(action);
 
         }
     }
 
 
-    private void HideActions(Creature creature)
+    private void HideActions()
     {
         foreach (var attackButton in _attackButtons)
         {

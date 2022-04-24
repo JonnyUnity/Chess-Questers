@@ -15,6 +15,9 @@ public class CharacterJsonData
     public int MoveClassID;
     //public int[] Actions;
     public List<ActionJsonData> Actions = new List<ActionJsonData>();
+    public int ActionsPerTurn;
+    public int ActionsRemaining;
+    
     public int Initiative;
 
     public int CreatureModelID;
@@ -31,6 +34,9 @@ public class CharacterJsonData
         IsFriendly = true;
         Health = maxHealth;
         MaxHealth = maxHealth;
+        ActionsPerTurn = 2;
+        ActionsRemaining = 2;
+
         MoveClassID = moveClassID;
         foreach (var action in actions)
         {

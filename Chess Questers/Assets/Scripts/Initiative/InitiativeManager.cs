@@ -100,8 +100,10 @@ public class InitiativeManager : MonoBehaviour
     }
 
 
-    private void NextTurn(Creature creature)
+    private void NextTurn()
     {
+        _initiative.ActiveCharacter.UpdateActionCooldowns();
+
         Debug.Log("Initiative - NextTurn");
         TurnPointer.Inc();
         
@@ -169,7 +171,8 @@ public class InitiativeManager : MonoBehaviour
         var portraitObj = _portraitsContainer.transform.GetChild(0).gameObject;
 
         portraitObj.transform.parent = null;
-        portraitObj.transform.parent = _portraitsContainer.transform;
+        //portraitObj.transform.parent = _portraitsContainer.transform;
+        portraitObj.transform.SetParent(_portraitsContainer.transform);
     
     }
 

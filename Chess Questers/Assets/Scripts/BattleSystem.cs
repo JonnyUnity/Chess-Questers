@@ -40,7 +40,7 @@ public class BattleSystem : Singleton<BattleSystem>
     [SerializeField] private GameObject _highlightMovePrefab;
 
     [SerializeField] private GameObject _attackPrefab;
-    private GameObject _currentAttackTemplate;
+    //private GameObject _currentAttackTemplate;
 
     //[SerializeField]
     //private CinemachineVirtualCamera VirtualCamera;
@@ -97,12 +97,12 @@ public class BattleSystem : Singleton<BattleSystem>
         //BattleEvents.OnCellMoveUnhighlighted += UnhighlightCell;
         BattleEvents.OnCellMoveSelected += SelectCell;
         BattleEvents.OnCreatureMoved += SetupPlayerAttack;
-        BattleEvents.OnPlayerActionSelected += SetupAttackTemplate;
+        //BattleEvents.OnPlayerActionSelected += SetupAttackTemplate;
         BattleEvents.OnCellAttackSelected += HandleAttack;
 
-        BattleEvents.OnCellAttackHighlighted += HighlightAttackCell;
+        //BattleEvents.OnCellAttackHighlighted += HighlightAttackCell;
         // BattleEvents.OnCellAttackUnhighlighted += UnhighlightAttackCell;
-        BattleEvents.OnCellUnhighlighted += UnhighlightCell;
+        //BattleEvents.OnCellUnhighlighted += UnhighlightCell;
 
         BattleEvents.OnCellSelected += SelectCell;
 
@@ -121,13 +121,13 @@ public class BattleSystem : Singleton<BattleSystem>
         //BattleEvents.OnCellMoveUnhighlighted -= UnhighlightCell;
         BattleEvents.OnCellMoveSelected -= SelectCell;
         BattleEvents.OnCreatureMoved -= SetupPlayerAttack;
-        BattleEvents.OnPlayerActionSelected -= SetupAttackTemplate;
+        //BattleEvents.OnPlayerActionSelected -= SetupAttackTemplate;
         BattleEvents.OnCellAttackSelected -= HandleAttack;
 
-        BattleEvents.OnCellAttackHighlighted -= HighlightAttackCell;
+        //BattleEvents.OnCellAttackHighlighted -= HighlightAttackCell;
         //BattleEvents.OnCellAttackUnhighlighted -= UnhighlightAttackCell;
 
-        BattleEvents.OnCellUnhighlighted -= UnhighlightCell;
+        //BattleEvents.OnCellUnhighlighted -= UnhighlightCell;
 
         BattleEvents.OnCellSelected -= SelectCell;
 
@@ -155,40 +155,41 @@ public class BattleSystem : Singleton<BattleSystem>
 
     //}
 
-    private void HighlightAttackCell(GridCell cell)
-    {
-        _currentAttackTemplate.transform.position = cell.transform.position + _highlightOffset;
-        Debug.Log("Highlighting cell: (" + cell.X + ", " + cell.Y + ") for attack!");
-        if (!_currentAttackTemplate.activeInHierarchy)
-        {
-            _currentAttackTemplate.SetActive(true);
-        }
-    }
+    //private void HighlightAttackCell(GridCell cell)
+    //{
+    //    _currentAttackTemplate.transform.position = cell.transform.position + _highlightOffset;
+    //    Debug.Log("Highlighting cell: (" + cell.X + ", " + cell.Y + ") for attack!");
+    //    if (!_currentAttackTemplate.activeInHierarchy)
+    //    {
+    //        _currentAttackTemplate.SetActive(true);
+    //    }
+    //}
 
 
 
     private void HandleAttack(GridCell cell)
     {
-        if (_currentAttackTemplate != null)
-        {
-            Destroy(_currentAttackTemplate);
-        }
+        //if (_currentAttackTemplate != null)
+        //{
+        //    Destroy(_currentAttackTemplate);
+        //}
 
         StartCoroutine(PlayerAttackCoroutine(cell));
 
     }
 
-    private void SetupAttackTemplate(ActionClass action, CreatureRuntimeSet creatures, int x, int y)
-    {
-        _currentAction = action;
+    //private void SetupAttackTemplate(ActionClass action)
+    //{
+    //    _currentAction = action;
 
-        if (_currentAttackTemplate != null)
-        {
-            Destroy(_currentAttackTemplate);
-        }
-        _currentAttackTemplate = Instantiate(action.AttackTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+    //    if (_currentAttackTemplate != null)
+    //    {
+    //        Destroy(_currentAttackTemplate);
+    //    }
+    //    _currentAttackTemplate = Instantiate(action.AttackTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+    //    _currentAttackTemplate.SetActive(false);
         
-    }
+    //}
 
     private void HighlightCell(GridCell cell)
     {
@@ -205,28 +206,28 @@ public class BattleSystem : Singleton<BattleSystem>
     }
 
 
-    private void UnhighlightCell()
-    {
-        if (State == BattleStatesEnum.PLAYER_MOVE)
-        {
-            _highlightMovePrefab.SetActive(false);
-        }
-        else if (State == BattleStatesEnum.PLAYER_ATTACK)
-        {
-            if (_currentAttackTemplate != null)
-            {
-                _currentAttackTemplate.SetActive(false);
-            }
-        }
-    }
+    //private void UnhighlightCell()
+    //{
+    //    if (State == BattleStatesEnum.PLAYER_MOVE)
+    //    {
+    //        _highlightMovePrefab.SetActive(false);
+    //    }
+    //    else if (State == BattleStatesEnum.PLAYER_ATTACK)
+    //    {
+    //        if (_currentAttackTemplate != null)
+    //        {
+    //            _currentAttackTemplate.SetActive(false);
+    //        }
+    //    }
+    //}
 
-    private void UnhighlightAttackCell()
-    {
-        if (_currentAttackTemplate != null)
-        {
-            _currentAttackTemplate.SetActive(false);
-        }        
-    }
+    //private void UnhighlightAttackCell()
+    //{
+    //    if (_currentAttackTemplate != null)
+    //    {
+    //        _currentAttackTemplate.SetActive(false);
+    //    }        
+    //}
 
 
     private void SelectCell(GridCell cell)
@@ -239,10 +240,10 @@ public class BattleSystem : Singleton<BattleSystem>
         }
         else
         {
-            if (_currentAttackTemplate != null)
-            {
-                Destroy(_currentAttackTemplate);
-            }
+            //if (_currentAttackTemplate != null)
+            //{
+            //    Destroy(_currentAttackTemplate);
+            //}
 
             StartCoroutine(PlayerAttackCoroutine(cell));
         }
@@ -519,7 +520,7 @@ public class BattleSystem : Singleton<BattleSystem>
             //_gridLines.SetActive(true);
             State = BattleStatesEnum.PLAYER_MOVE;
             //SetupPlayerMove(_activeCharacter);
-            StartCoroutine(SetUpPlayerMoveCoroutine(_activeCharacter));
+            //StartCoroutine(SetUpPlayerMoveCoroutine(_activeCharacter));
 
         }
         else
@@ -626,7 +627,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         //_currentAttackTemplate = Instantiate(_attackPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 
-        _actionManager.SetActions();
+        //_actionManager.SetActions();
 
         UIHandler.ShowActions(_activeCharacter, _activeCharacter.Actions, _activeCharacter.CellX, _activeCharacter.CellY);
 
@@ -676,7 +677,8 @@ public class BattleSystem : Singleton<BattleSystem>
 
         yield return new WaitForSeconds(1f);
 
-        BattleEvents.TurnOver(_activeCharacter);
+        //BattleEvents.TurnOver();
+        BattleEvents.ActionPerformed(_playerAction.Action);
 
     }
 
@@ -778,23 +780,23 @@ public class BattleSystem : Singleton<BattleSystem>
 
         yield return new WaitForSeconds(1f);
 
-        BattleEvents.TurnOver(_activeCharacter);
+        BattleEvents.TurnOver();
         GameGrid.Instance.ClearGrid();
 
     }
 
 
-    public void PassButton()
-    {
-        // No attacks (or maybe no moves?) so go to next turn...
-        if (State == BattleStatesEnum.PLAYER_ATTACK)
-        {
-            UnhighlightAttackCell();
-            BattleEvents.TurnOver(_activeCharacter);
-            GameGrid.Instance.ClearGrid();
-        }
+    //public void PassButton()
+    //{
+    //    // No attacks (or maybe no moves?) so go to next turn...
+    //    if (State == BattleStatesEnum.PLAYER_ATTACK)
+    //    {
+    //        //UnhighlightAttackCell();
+    //        BattleEvents.TurnOver();
+    //        GameGrid.Instance.ClearGrid();
+    //    }
 
-    }
+    //}
 
 
     public void Update()

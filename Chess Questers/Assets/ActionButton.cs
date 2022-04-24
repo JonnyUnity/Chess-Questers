@@ -18,6 +18,15 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private ActionClass _action;
     private WaitForSeconds _toolTipDelay;
 
+    private void OnEnable()
+    {
+        BattleEvents.OnPlayerActionPerformed += ActionPerformed;
+    }
+
+    private void OnDisable()
+    {
+        BattleEvents.OnPlayerActionPerformed -= ActionPerformed;
+    }
 
     private void Awake()
     {
@@ -28,7 +37,7 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         _action = action;
         _buttonImage.sprite = _action.Icon;
-        _button.interactable = _action.IsActive();
+        _button.interactable = _action.IsActive;
 
         _anchorPosition = GetComponent<RectTransform>().anchoredPosition;
         _actionName = _action.Name;
@@ -67,6 +76,28 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         yield return _toolTipDelay;
 
         ShowMessage();
+
+
+    }
+
+    public void SelectAttack()
+    {
+        GameGrid.Instance.ClearGrid();
+
+        //_action.DoAction();
+        //_button.interactable = _action.IsActive();
+        BattleEvents.ActionSelected(_action);
+
+    }
+
+    public void ActionPerformed(ActionClass action)
+    {
+        if (action != _action)
+            return;
+
+
+        _action.DoAction();
+        _button.interactable = _action.IsActive;
 
     }
 

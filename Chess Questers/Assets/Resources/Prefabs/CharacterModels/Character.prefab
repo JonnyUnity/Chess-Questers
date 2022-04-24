@@ -173,6 +173,7 @@ MonoBehaviour:
   Faction: {fileID: 11400000, guid: b830dd82863d5c04a9054d4efbeedc2b, type: 2}
   State: 0
   _party: {fileID: 11400000, guid: 7414e14ec7142414cbf22770f61ab5be, type: 2}
+  _partyFaction: {fileID: 11400000, guid: b830dd82863d5c04a9054d4efbeedc2b, type: 2}
 --- !u!1 &1714345311226408478
 GameObject:
   m_ObjectHideFlags: 0

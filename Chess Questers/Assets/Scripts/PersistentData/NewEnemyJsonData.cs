@@ -12,6 +12,8 @@ public class NewEnemyJsonData
     public string Name;
     public int Health;
     public int MaxHealth;
+    public int ActionsPerTurn;
+    
     public int Initiative;
 
     public int CellX;
@@ -46,6 +48,8 @@ public class NewEnemyJsonData
 
         Health = enemy.Health;
         MaxHealth = enemy.MaxHealth;
+        ActionsPerTurn = enemy.ActionsPerTurn;
+
         Initiative = enemy.Initiative;
         foreach (var action in enemy.Actions)
         {

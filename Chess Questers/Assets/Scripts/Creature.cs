@@ -14,6 +14,8 @@ public class Creature : MonoBehaviour
 
     public int Health { get; protected set; }
     public int MaxHealth { get; protected set; }
+    public int ActionsPerTurn { get; protected set; }
+    public int ActionsRemaining;
 
     // Move Class properties
     public MoveClass MoveClass;
@@ -24,7 +26,7 @@ public class Creature : MonoBehaviour
     {
         get
         {
-            return Actions.Where(w => w.IsActive()).ToList();
+            return Actions.Where(w => w.IsActive).ToList();
         }
     }
 
@@ -77,7 +79,6 @@ public class Creature : MonoBehaviour
         BattleEvents.OnTakeDamage += TakeDamage;
         BattleEvents.OnCreatureMoved += UpdatePositionNew;
         BattleEvents.OnStartCombat += ResetActions;
-        BattleEvents.OnTurnOver += TurnOver;
     }
 
     protected virtual void OnDisable()
@@ -85,19 +86,9 @@ public class Creature : MonoBehaviour
         BattleEvents.OnTakeDamage -= TakeDamage;
         BattleEvents.OnCreatureMoved -= UpdatePositionNew;
         BattleEvents.OnStartCombat -= ResetActions;
-        BattleEvents.OnTurnOver -= TurnOver;
     }
 
-    private void TurnOver(Creature creature)
-    {
-        if (creature != this)
-            return;
 
-        foreach (var action in Actions)
-        {
-            action.EndOfTurn();
-        }
-    }
 
     private void ResetActions()
     {
@@ -105,7 +96,17 @@ public class Creature : MonoBehaviour
         {
             action.StartOfBattle();
         }
+        ActionsRemaining = ActionsPerTurn;
     }
+
+    public void UpdateActionCooldowns()
+    {
+        foreach (var action in Actions)
+        {
+            action.EndOfTurn();
+        }
+    }
+
 
     public void SetInitiative(int initiative)
     {

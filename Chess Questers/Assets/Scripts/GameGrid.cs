@@ -24,7 +24,10 @@ public class GameGrid : Singleton<GameGrid>
     [SerializeField] private Color lightColor;
     [SerializeField] private Color darkColor;
 
+    [SerializeField] private GameObject _highlightMovePrefab;
     [SerializeField] private GameObject _attackTemplatePrefab;
+
+    private GameObject _currentAttackTemplate;
 
     private int[][] numSquaresToEdge;
     private List<(int, int)> slideOffsets;
@@ -49,6 +52,8 @@ public class GameGrid : Singleton<GameGrid>
 
     [SerializeField] private ActionResult _playerAction;
 
+    private ActionClass _currentAction;
+
     private List<ActionResult> _actionResults;
 
     public void Awake()
@@ -64,6 +69,7 @@ public class GameGrid : Singleton<GameGrid>
         BattleEvents.OnPlayerStartTurn += ShowGrid;
         BattleEvents.OnPlayerEndTurn += HideGrid;
         BattleEvents.OnCellSelected += SelectCell;
+        BattleEvents.OnPlayerSelectMove += ShowMovesForPlayerNew;
 
     }
 
@@ -75,6 +81,7 @@ public class GameGrid : Singleton<GameGrid>
         BattleEvents.OnPlayerStartTurn -= ShowGrid;
         BattleEvents.OnPlayerEndTurn -= HideGrid;
         BattleEvents.OnCellSelected -= SelectCell;
+        BattleEvents.OnPlayerSelectMove -= ShowMovesForPlayerNew;
     }
 
     private void SelectCell(GridCell cell)
@@ -85,13 +92,12 @@ public class GameGrid : Singleton<GameGrid>
         }
         else if (cell.IsAttack)
         {
+            _playerAction.Action = _currentAction;
             _playerAction.Cell = cell;
-            _playerAction.Creatures = GetAttackedCreatures(cell, _playerAction.Action);
+            _playerAction.Creatures = GetAttackedCreatures(cell, _currentAction);
 
             BattleEvents.CellAttackSelected(cell);
-            //CreatureRuntimeSet creatures = _playerAction.Action.IsAttack;
         }
-
         
     }
 
@@ -100,9 +106,19 @@ public class GameGrid : Singleton<GameGrid>
         if (cell.IsMove)
         {
             BattleEvents.CellMoveHighlighted(cell);
+
+
+
         }
         else if (cell.IsAttack)
         {
+
+            _currentAttackTemplate.transform.position = cell.transform.position;
+            if (!_currentAttackTemplate.activeInHierarchy)
+            {
+                _currentAttackTemplate.SetActive(true);
+            }
+
             BattleEvents.CellAttackHighlighted(cell);
         }
 
@@ -112,18 +128,47 @@ public class GameGrid : Singleton<GameGrid>
     {
         //Debug.Log("Unhighlighting cell: " + cell.ToString());
         BattleEvents.CellUnhighlighted();
+        UnhighlightCell();
+    }
+
+    private void UnhighlightCell()
+    {
+        // _highlightMovePrefab.SetActive(false);
+
+        if (_currentAttackTemplate != null)
+        {
+            _currentAttackTemplate.SetActive(false);
+        }
+        
     }
 
 
-    private void ShowActionOnGrid(ActionClass action, CreatureRuntimeSet creatures, int x, int y)
+    private void SetupAttackTemplate(ActionClass action)
+    {
+        _currentAction = action;
+
+        if (_currentAttackTemplate != null)
+        {
+            Destroy(_currentAttackTemplate);
+        }
+        _currentAttackTemplate = Instantiate(action.AttackTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        _currentAttackTemplate.SetActive(false);
+
+    }
+
+
+    private void ShowActionOnGrid(ActionClass action)
     {
 
         ClearGrid();
+        SetupAttackTemplate(action);
 
         // get attack template from action
         Debug.Log("Action: " + action.Name + " selected!");
 
-
+        _currentAction = action;
+        int x = _initiative.ActiveCharacter.CellX;
+        int y = _initiative.ActiveCharacter.CellY;
 
         if (action.IsRanged)
         {
@@ -169,7 +214,7 @@ public class GameGrid : Singleton<GameGrid>
                     if (0 <= i && i < Width && 0 <= j && j < Height)
                     {
                         
-                        if (IsCellOccupied(creatures, i, j))
+                        if (IsCellOccupied(action.TargetCreatures, i, j))
                         {
                             //Grid[i, j].gameObject.SetActive(true);
                             GridCell cell = Grid[i, j].GetComponent<GridCell>();
@@ -574,6 +619,15 @@ public class GameGrid : Singleton<GameGrid>
     //}
 
 
+    public void ShowMovesForPlayerNew()
+    {
+        PlayerCharacter activeCharacter = (PlayerCharacter)_initiative.ActiveCharacter;
+
+        MoveClass move = activeCharacter.MoveClass;
+        ShowMovesForPlayer(move, activeCharacter.CellX, activeCharacter.CellY);
+
+
+    }
 
     public void ShowMovesForPlayer(MoveClass moveClass, int playerX, int playerY)
     {
@@ -696,7 +750,7 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
-    public List<EnemyActionResult> GetTargetsOfActionNew(ActionClass action, CreatureRuntimeSet targetCreatures, int x, int y)
+    public List<EnemyActionResult> GetTargetsOfActionNew(ActionClass action, int x, int y)
     {
         List<GridCell> targets = new List<GridCell>();
         List<EnemyActionResult> results = new List<EnemyActionResult>();
@@ -724,7 +778,7 @@ public class GameGrid : Singleton<GameGrid>
                         if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
                         {
                             //CheckCellOccupied(targetCreatures, cell, action, i, j);
-                            var result = GetActionResult(targetCreatures, cell, action, i, j);
+                            var result = GetActionResult(action.TargetCreatures, cell, action, i, j);
                             if (result != null)
                             {
                                 results.Add(result);
@@ -752,7 +806,7 @@ public class GameGrid : Singleton<GameGrid>
                     {
                         GridCell cell = Grid[i, j].GetComponent<GridCell>();
 
-                        var result = GetActionResult(targetCreatures, cell, action, i, j);
+                        var result = GetActionResult(action.TargetCreatures, cell, action, i, j);
                         if (result != null)
                         {
                             results.Add(result);

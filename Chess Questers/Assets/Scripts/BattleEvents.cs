@@ -20,8 +20,11 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnPlayerEndTurn;
     public static event Action OnPlayerSelectMove;
     public static event Action<Creature> OnCreatureMoved;
-    public static event Action<ActionClass, CreatureRuntimeSet,int,int> OnPlayerActionSelected;
-    public static event Action<Creature> OnTurnOver;
+    public static event Action<ActionClass> OnPlayerActionSelected;
+
+    public static event Action<ActionClass> OnPlayerActionPerformed;
+
+    public static event Action OnTurnOver;
 
     public static event Action OnAttack;
     public static event Action<Creature, int> OnTakeDamage;
@@ -74,14 +77,20 @@ public class BattleEvents : MonoBehaviour
         OnPlayerStartTurn?.Invoke();
     }
 
+
+    public static void PlayerMoveSelected()
+    {
+        OnPlayerSelectMove?.Invoke();
+    }
+
     public static void EndPlayerTurn()
     {
         OnPlayerEndTurn?.Invoke();
     }
 
-    public static void TurnOver(Creature creature)
+    public static void TurnOver()
     {
-        OnTurnOver?.Invoke(creature);
+        OnTurnOver?.Invoke();
     }
 
     public static void CellMoveHighlighted(GridCell cell)
@@ -135,9 +144,15 @@ public class BattleEvents : MonoBehaviour
         OnCellAttackSelected?.Invoke(cell);
     }
 
-    public static void ActionSelected(ActionClass action, CreatureRuntimeSet creatures, int x, int y)
+    public static void ActionSelected(ActionClass action)
     {
-        OnPlayerActionSelected?.Invoke(action, creatures, x, y);
+        OnPlayerActionSelected?.Invoke(action);
+    }
+
+
+    public static void ActionPerformed(ActionClass action)
+    {
+        OnPlayerActionPerformed?.Invoke(action);
     }
 
 

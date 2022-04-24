@@ -36,6 +36,9 @@ public class CameraHandler : MonoBehaviour
     private Transform _transform;
     private Vector3 CreaturePosition;
 
+    private Transform[] _obstructions;
+    private int _oldHitsNumber;
+
     private void Awake()
     {
         _transform = transform;
@@ -112,6 +115,7 @@ public class CameraHandler : MonoBehaviour
         NewPosition = _transform.position;
         NewRotation = _transform.rotation;
         NewZoom = CameraTransform.localPosition;
+        _oldHitsNumber = 0;
     }
 
     // Update is called once per frame
@@ -128,6 +132,92 @@ public class CameraHandler : MonoBehaviour
         }
 
     }
+
+
+    //private void LateUpdate()
+    //{
+    //    int layerNumber = LayerMask.NameToLayer("Environment");
+    //    int layerMask = 1 << layerNumber;
+
+    //    RaycastHit[] hits = Physics.RaycastAll(_transform.position, CameraTransform.position - _transform.position, Mathf.Infinity, layerMask);
+    //    if (hits.Length > 0)
+    //    {
+            
+    //        int newHits = hits.Length - _oldHitsNumber;
+
+    //        if (_obstructions != null && _obstructions.Length > 0 && newHits < 0)
+    //        {
+    //            // Repaint all the previous obstructions. Because some of the stuff might be not blocking anymore
+    //            for (int i = 0; i < _obstructions.Length; i++)
+    //            {
+    //                _obstructions[i].gameObject.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+    //            }
+    //        }
+    //        _obstructions = new Transform[hits.Length];
+    //        // Hide the current obstructions
+    //        for (int i = 0; i < hits.Length; i++)
+    //        {
+
+
+    //            Transform obstruction = hits[i].transform;
+    //            Debug.Log(obstruction);
+
+    //            LODGroup lodGroup = obstruction.gameObject.GetComponent<LODGroup>();
+    //            if (lodGroup == null)
+    //            {
+    //                obstruction.gameObject.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+    //            }
+    //            else
+    //            {
+    //                Transform lodTransform = lodGroup.transform;
+    //                foreach (Transform child in lodTransform)
+    //                {
+    //                    var renderer = child.GetComponent<MeshRenderer>();
+    //                    if (renderer != null && renderer.isVisible)
+    //                    {
+    //                        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+    //                    }                        
+    //                }
+    //            }
+    //            _obstructions[i] = obstruction;
+    //        }
+    //        _oldHitsNumber = hits.Length;
+
+    //    }
+    //    else
+    //    {
+    //        // Mean that no more stuff is blocking the view and sometimes all the stuff is not blocking as the same time
+    //        if (_obstructions != null && _obstructions.Length > 0)
+    //        {
+    //            for (int i = 0; i < _obstructions.Length; i++)
+    //            {
+    //                Transform obstruction = _obstructions[i].transform;
+    //                LODGroup lodGroup = obstruction.gameObject.GetComponent<LODGroup>();
+    //                if (lodGroup == null)
+    //                {
+    //                    _obstructions[i].gameObject.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+    //                }
+    //                else
+    //                {
+    //                    Transform lodTransform = lodGroup.transform;
+    //                    foreach (Transform child in lodTransform)
+    //                    {
+    //                        var renderer = child.GetComponent<MeshRenderer>();
+    //                        if (renderer != null && renderer.isVisible)
+    //                        {
+    //                            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+    //                        }                            
+    //                    }
+    //                }
+                    
+    //            }
+    //            _oldHitsNumber = 0;
+    //            _obstructions = null;
+    //        }
+    //    }
+
+
+    //}
 
 
     private void RotateClockwise()

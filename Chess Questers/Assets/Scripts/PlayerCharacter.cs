@@ -8,9 +8,12 @@ public class PlayerCharacter : Creature
 
     public Color MoveClassColor => MoveClass.DebugColor;
 
+    
+
     private ActionClass _selectedAction;
 
     [SerializeField] private CreatureRuntimeSet _party;
+    [SerializeField] private Faction _partyFaction;
 
     private CreatureModel _creatureModel;
 
@@ -71,6 +74,9 @@ public class PlayerCharacter : Creature
         //_nameText.text = Name;
         CreatureModelID = data.CreatureModelID;
         IsFriendly = true;
+        ActionsPerTurn = data.ActionsPerTurn;
+        base.ActionsRemaining = data.ActionsRemaining;
+
         MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
         MoveClassText = MoveClass.name;
 
@@ -81,7 +87,11 @@ public class PlayerCharacter : Creature
 
         foreach (var jsonAction in data.Actions)
         {
-            var action = GameManager.Instance.GetAction(jsonAction);
+
+            var actionRef = GameManager.Instance.GetAction(jsonAction.ID);
+            actionRef.Init(jsonAction, _partyFaction);
+            ActionClass action = Instantiate(actionRef);
+
             Actions.Add(action);
         }
 

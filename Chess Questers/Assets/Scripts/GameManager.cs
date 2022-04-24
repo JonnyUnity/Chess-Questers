@@ -23,6 +23,7 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private CreatureRuntimeSet _playerCharacters;
     [SerializeField] private CreatureRuntimeSet _enemyList;
+    [SerializeField] private Faction _partyFaction;
     
 
     public void Awake()
@@ -234,12 +235,14 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    public ActionClass GetAction(ActionJsonData jsonData)
+    public ActionClass GetAction(int actionID)
     {
-        var actionRef = _actionClasses.Where(w => w.ID == jsonData.ID).Single();
-        var action = Instantiate(actionRef);
-        action.Init(jsonData);
-        return Instantiate(action);
+        var action = _actionClasses.Where(w => w.ID == actionID).Single();
+        //var action = Instantiate(actionRef);
+        //action.Init(jsonData, _partyFaction);
+        //return Instantiate(action);
+
+        return action;
     }
 
 

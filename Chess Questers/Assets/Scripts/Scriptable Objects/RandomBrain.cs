@@ -36,11 +36,9 @@ public class RandomBrain : Brain
 
         List<EnemyActionResult> results = new List<EnemyActionResult>();
 
-        CreatureRuntimeSet targetCreatures = enemy.Faction.GetTargetFaction(false);
-
-        foreach (var action in enemy.Actions.Where(w => w.IsActive()).ToList())
+        foreach (var action in enemy.Actions.Where(w => w.IsActive).ToList())
         {
-            List<EnemyActionResult> actionResults = GameGrid.Instance.GetTargetsOfActionNew(action, targetCreatures, enemy.CellX, enemy.CellY);
+            List<EnemyActionResult> actionResults = GameGrid.Instance.GetTargetsOfActionNew(action, enemy.CellX, enemy.CellY);
             results.AddRange(actionResults);
 
         }
