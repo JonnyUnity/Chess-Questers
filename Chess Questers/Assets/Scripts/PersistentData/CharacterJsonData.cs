@@ -12,9 +12,13 @@ public class CharacterJsonData
 
     public int Health;
     public int MaxHealth;
-    public int MoveClassID;
+    public int MoveActionID;
     //public int[] Actions;
     public List<ActionJsonData> Actions = new List<ActionJsonData>();
+
+    public BattleActionJsonData MoveAction;
+    public List<BattleActionJsonData> BattleActions = new List<BattleActionJsonData>();
+
     public int ActionsPerTurn;
     public int ActionsRemaining;
     
@@ -37,7 +41,7 @@ public class CharacterJsonData
         ActionsPerTurn = 2;
         ActionsRemaining = 2;
 
-        MoveClassID = moveClassID;
+        MoveActionID = moveClassID;
         foreach (var action in actions)
         {
             Actions.Add(new ActionJsonData(action));
@@ -46,6 +50,29 @@ public class CharacterJsonData
         CreatureModelID = creatureModel;
     }
 
+
+    public CharacterJsonData(string name, int creatureModel, PlayerClass playerClass)
+    {
+        Name = name;
+        IsFriendly = true;
+        Health = playerClass.MaxHealth;
+        MaxHealth = playerClass.MaxHealth;
+        ActionsPerTurn = 2;
+        ActionsRemaining = 2;
+
+        //BattleActions.Add(new BattleActionJsonData(playerClass.MoveAction));
+        MoveActionID = playerClass.MoveAction.ID;
+
+        foreach (var action in playerClass.AvailableActions)
+        {
+            BattleActions.Add(new BattleActionJsonData(action));
+        }
+
+        CreatureModelID = creatureModel;
+
+    }
+
+
     public CharacterJsonData(PlayerCharacter c)
     {
         ID = c.ID;
@@ -53,10 +80,15 @@ public class CharacterJsonData
         IsFriendly = c.IsFriendly;
         Health = c.Health;
         MaxHealth = c.MaxHealth;
-        MoveClassID = c.MoveClass.ID;
+        MoveActionID = c.MoveAction.ID;
+        ActionsPerTurn = c.ActionsPerTurn;
+        ActionsRemaining = c.ActionsRemaining;
+
+        MoveAction = new BattleActionJsonData(c.MoveAction);
         foreach (var action in c.Actions)
         {
-            Actions.Add(new ActionJsonData(action));
+            //Actions.Add(new ActionJsonData(action));
+            BattleActions.Add(new BattleActionJsonData(action));
         }
         CreatureModelID = c.CreatureModelID;
         Initiative = c.Initiative;
@@ -74,12 +106,14 @@ public class CharacterJsonData
         IsFriendly = false;
         Health = enemy.Health;
         MaxHealth = enemy.Health;
-        MoveClassID = enemy.MoveClass.ID;
+        MoveActionID = enemy.MoveAction.ID;
         //Actions = enemy.Actions.Select(s => s.ID).ToArray();
         //Actions = enemy.Actions;
+        MoveAction = new BattleActionJsonData(enemy.MoveAction);
         foreach (var action in enemy.Actions)
         {
-            Actions.Add(new ActionJsonData(action));
+            //Actions.Add(new ActionJsonData(action));
+            BattleActions.Add(new BattleActionJsonData(action));
         }
         CreatureModelID = enemy.CreatureModelID;
     }

@@ -28,24 +28,22 @@ public class Enemy : Creature
 
         SetInitiative(data.Initiative);
         //MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
-        MoveClass = enemyObject.MoveClass;
-        MoveClassText = MoveClass.name;
+        MoveAction = Instantiate(enemyObject.MoveAction);
+        MoveClassText = MoveAction.name;
 
         //Actions = GameManager.Instance.GetActionsWithIDs(data.Actions);
        
         foreach (var action in enemyObject.Actions)
         {
-            var jsonData = data.Actions.Where(w => w.ID == action.ID).Single();
+            var jsonData = data.BattleActions.Where(w => w.ID == action.ID).Single();
             var currAction = Instantiate(action);
             currAction.Init(jsonData, enemyObject.Faction);
             Actions.Add(currAction);
         }
-        //Actions = enemyObject.Actions;
+
         Health = data.Health;
         MaxHealth = data.MaxHealth;
-
-        //_healthSlider.maxValue = MaxHealth;
-        //_healthSlider.value = Health;
+        ActionsPerTurn = data.ActionsPerTurn;
 
         Brain = enemyObject.Brain;
 

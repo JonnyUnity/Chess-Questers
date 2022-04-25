@@ -86,22 +86,22 @@ public class BattleUIHandler : MonoBehaviour
 
     }
 
-    public void SelectAttack()
-    {
-        var go = EventSystem.current.currentSelectedGameObject;
+    //public void SelectAttack()
+    //{
+    //    var go = EventSystem.current.currentSelectedGameObject;
 
-        // Extract action index
-        if (int.TryParse(go.name.Substring(0, 1), out int actionIndex))
-        {
-            ActionClass action = _currentActions[actionIndex];
+    //    // Extract action index
+    //    if (int.TryParse(go.name.Substring(0, 1), out int actionIndex))
+    //    {
+    //        ActionClass action = _currentActions[actionIndex];
 
-            _playerAction.Action = action;
-            _playerAction.Damage = action.Damage;
+    //        _playerAction.Action = action;
+    //        _playerAction.Damage = action.Damage;
 
-            BattleEvents.ActionSelected(action);
+    //        BattleEvents.ActionSelected(action);
 
-        }
-    }
+    //    }
+    //}
 
 
     private void HideActions()

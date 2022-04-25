@@ -19,7 +19,7 @@ public class EnemySO : ScriptableObject
 
     public Faction Faction;
 
-    public MoveClass MoveClass;
-    public List<ActionClass> Actions;
+    public NewBattleAction MoveAction;
+    public List<NewBattleAction> Actions;
 
 }

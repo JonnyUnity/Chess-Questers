@@ -7,7 +7,7 @@ public class ActionResult : ScriptableObject
 {
 
     public GridCell Cell;
-    public ActionClass Action;
+    public NewBattleAction Action;
     public int X;
     public int Y;
     public int Damage;
@@ -18,7 +18,7 @@ public class ActionResult : ScriptableObject
     //public List<Creature> EnemyCreatures;
     //public List<Creature> FriendlyCreatures;
 
-    public ActionResult(GridCell cell, ActionClass action)
+    public ActionResult(GridCell cell, NewBattleAction action)
     {
         Cell = cell;
         Action = action;

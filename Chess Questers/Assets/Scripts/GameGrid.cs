@@ -27,7 +27,7 @@ public class GameGrid : Singleton<GameGrid>
     [SerializeField] private GameObject _highlightMovePrefab;
     [SerializeField] private GameObject _attackTemplatePrefab;
 
-    private GameObject _currentAttackTemplate;
+    private GameObject _currentActionTemplate;
 
     private int[][] numSquaresToEdge;
     private List<(int, int)> slideOffsets;
@@ -52,7 +52,7 @@ public class GameGrid : Singleton<GameGrid>
 
     [SerializeField] private ActionResult _playerAction;
 
-    private ActionClass _currentAction;
+    private NewBattleAction _currentAction;
 
     private List<ActionResult> _actionResults;
 
@@ -65,10 +65,11 @@ public class GameGrid : Singleton<GameGrid>
         ObstaclePrefab = Resources.Load("Prefabs/Obstacle") as GameObject;
 
         BattleEvents.OnPlayerActionSelected += ShowActionOnGrid;
-        BattleEvents.OnCreatureMoved += UpdateCreaturePosition;
-        BattleEvents.OnPlayerStartTurn += ShowGrid;
+        //BattleEvents.OnCreatureMoved += UpdateCreaturePosition;
+        //BattleEvents.OnPlayerStartTurn += ShowGrid;
         BattleEvents.OnPlayerEndTurn += HideGrid;
-        BattleEvents.OnCellSelected += SelectCell;
+        BattleEvents.OnTurnOver += HideGrid;
+        //BattleEvents.OnCellSelected += SelectCell;
         BattleEvents.OnPlayerSelectMove += ShowMovesForPlayerNew;
 
     }
@@ -77,165 +78,221 @@ public class GameGrid : Singleton<GameGrid>
     private void OnDisable()
     {
         BattleEvents.OnPlayerActionSelected -= ShowActionOnGrid;
-        BattleEvents.OnCreatureMoved -= UpdateCreaturePosition;
-        BattleEvents.OnPlayerStartTurn -= ShowGrid;
+        //BattleEvents.OnCreatureMoved -= UpdateCreaturePosition;
+        //BattleEvents.OnPlayerStartTurn -= ShowGrid;
         BattleEvents.OnPlayerEndTurn -= HideGrid;
-        BattleEvents.OnCellSelected -= SelectCell;
+        BattleEvents.OnTurnOver -= HideGrid;
+        //BattleEvents.OnCellSelected -= SelectCell;
         BattleEvents.OnPlayerSelectMove -= ShowMovesForPlayerNew;
     }
 
     private void SelectCell(GridCell cell)
     {
-        if (cell.IsMove)
-        {
-            BattleEvents.CellMoveSelected(cell);
-        }
-        else if (cell.IsAttack)
-        {
-            _playerAction.Action = _currentAction;
-            _playerAction.Cell = cell;
-            _playerAction.Creatures = GetAttackedCreatures(cell, _currentAction);
-
-            BattleEvents.CellAttackSelected(cell);
-        }
         
+        //if (cell.IsMove)
+        //{
+        //    _playerAction.Action = _currentAction;
+        //    _playerAction.Cell = cell;
+            
+        //    BattleEvents.CellMoveSelected(cell);
+
+        //}
+        //else if (cell.IsAttack)
+        //{
+        //    _playerAction.Action = _currentAction;
+        //    _playerAction.Cell = cell;
+        //    _playerAction.Creatures = GetAttackedCreatures(cell, _currentAction);
+
+        //    BattleEvents.CellAttackSelected(cell);
+        //}
+
+        _playerAction.Action = _currentAction;
+        _playerAction.Cell = cell;
+        _playerAction.Creatures = GetAttackedCreatures(cell, _currentAction);
+
+        BattleEvents.SelectCell(cell);
+
+        _currentActionTemplate.SetActive(false);
+        ClearGrid();
+        HideGrid();
     }
 
     private void HighlightCell(GridCell cell)
     {
-        if (cell.IsMove)
+
+        _currentActionTemplate.transform.position = cell.transform.position;
+        if (!_currentActionTemplate.activeInHierarchy)
         {
-            BattleEvents.CellMoveHighlighted(cell);
-
-
-
+            _currentActionTemplate.SetActive(true);
         }
-        else if (cell.IsAttack)
-        {
 
-            _currentAttackTemplate.transform.position = cell.transform.position;
-            if (!_currentAttackTemplate.activeInHierarchy)
-            {
-                _currentAttackTemplate.SetActive(true);
-            }
+        BattleEvents.HighlightCell(cell);
 
-            BattleEvents.CellAttackHighlighted(cell);
-        }
+        //if (cell.IsSelectable)
+        //{
+        //    BattleEvents.CellMoveHighlighted(cell);
+
+        //    //_highlightMovePrefab.transform.position = cell.transform.position;
+        //    //if (!_highlightMovePrefab.activeInHierarchy)
+        //    //{
+        //    //    _highlightMovePrefab.SetActive(true);
+        //    //}
+
+        //    _currentActionTemplate.transform.position = cell.transform.position;
+        //    if (!_currentActionTemplate.activeInHierarchy)
+        //    {
+        //        _currentActionTemplate.SetActive(true);
+        //    }
+
+        //}
+        //else if (cell.IsSelectable)
+        //{
+
+        //    _currentActionTemplate.transform.position = cell.transform.position;
+        //    if (!_currentActionTemplate.activeInHierarchy)
+        //    {
+        //        _currentActionTemplate.SetActive(true);
+        //    }
+
+        //    BattleEvents.CellAttackHighlighted(cell);
+        //}
 
     }
 
     private void UnhighlightCell(GridCell cell)
     {
-        //Debug.Log("Unhighlighting cell: " + cell.ToString());
         BattleEvents.CellUnhighlighted();
         UnhighlightCell();
     }
 
+
     private void UnhighlightCell()
     {
-        // _highlightMovePrefab.SetActive(false);
+         //_highlightMovePrefab.SetActive(false);
 
-        if (_currentAttackTemplate != null)
+        if (_currentActionTemplate != null)
         {
-            _currentAttackTemplate.SetActive(false);
+            _currentActionTemplate.SetActive(false);
         }
         
     }
 
 
-    private void SetupAttackTemplate(ActionClass action)
+    //private void SetupAttackTemplate(NewBattleAction action)
+    //{
+    //    _currentAction = action;
+
+    //    if (_currentActionTemplate != null)
+    //    {
+    //        Destroy(_currentActionTemplate);
+    //    }
+    //    _currentActionTemplate = Instantiate(action.ActionTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+    //    _currentActionTemplate.SetActive(false);
+
+    //}
+
+
+    private void SetupActionTemplate(NewBattleAction action)
     {
         _currentAction = action;
 
-        if (_currentAttackTemplate != null)
+        if (_currentActionTemplate != null)
         {
-            Destroy(_currentAttackTemplate);
+            Destroy(_currentActionTemplate);
         }
-        _currentAttackTemplate = Instantiate(action.AttackTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        _currentAttackTemplate.SetActive(false);
+        _currentActionTemplate = Instantiate(action.ActionTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        _currentActionTemplate.SetActive(false);
 
     }
 
 
-    private void ShowActionOnGrid(ActionClass action)
+    private void ShowActionOnGrid(NewBattleAction action)
     {
 
         ClearGrid();
-        SetupAttackTemplate(action);
+        ShowGrid();
+        SetupActionTemplate(action);
 
-        // get attack template from action
-        Debug.Log("Action: " + action.Name + " selected!");
-
-        _currentAction = action;
-        int x = _initiative.ActiveCharacter.CellX;
-        int y = _initiative.ActiveCharacter.CellY;
-
-        if (action.IsRanged)
+        if (action.IsMove)
         {
-
-            int minRange = action.MinRange;
-            int maxRange = action.MaxRange;
-
-            for (int i = x - maxRange; i <= x + maxRange; i++)
-            {
-                for (int j = y - maxRange; j <= y + maxRange; j++)
-                {
-                    if (0 <= i && i < Width && 0 <= j && j < Height)
-                    {
-
-                        
-                        int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
-                        //Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
-
-                        if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
-                        {
-                            //Grid[i, j].gameObject.SetActive(true);
-                            GridCell cell = Grid[i, j].GetComponent<GridCell>();
-                            cell.SetAsValidAttack();
-                        }
-                    }
-
-                }
-            }
+            ShowMovesForPlayerNew();
         }
-        else // melee
+        else
         {
-            // Check only the cells immediately adjacent to the active character
-            // only set a cell as a valid attack if it is occupied.
-            for (int i = x - 1; i <= x + 1; i++)
-            {
-                for (int j = y - 1; j <= y + 1; j++)
-                {
-                    if (i == x && j == y)
-                    {
-                        continue;
-                    }
 
-                    if (0 <= i && i < Width && 0 <= j && j < Height)
+            // get attack template from action
+            Debug.Log("Action: " + action.Name + " selected!");
+
+            _currentAction = action;
+            int x = _initiative.ActiveCharacter.CellX;
+            int y = _initiative.ActiveCharacter.CellY;
+
+            if (action.IsRanged)
+            {
+
+                int minRange = action.MinRange;
+                int maxRange = action.MaxRange;
+
+                for (int i = x - maxRange; i <= x + maxRange; i++)
+                {
+                    for (int j = y - maxRange; j <= y + maxRange; j++)
                     {
-                        
-                        if (IsCellOccupied(action.TargetCreatures, i, j))
+                        if (0 <= i && i < Width && 0 <= j && j < Height)
                         {
-                            //Grid[i, j].gameObject.SetActive(true);
-                            GridCell cell = Grid[i, j].GetComponent<GridCell>();
-                            cell.SetAsValidAttack();
+
+
+                            int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+                            //Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+
+                            if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                            {
+                                //Grid[i, j].gameObject.SetActive(true);
+                                GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                                cell.SetAsValidAttack();
+                            }
                         }
 
-
-                        //int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
-                        ////Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
-
-                        //if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
-                        //{
-                        //    cell.SetAsValidAttack();
-                        //}
                     }
                 }
             }
+            else // melee
+            {
+                // Check only the cells immediately adjacent to the active character
+                // only set a cell as a valid attack if it is occupied.
+                for (int i = x - 1; i <= x + 1; i++)
+                {
+                    for (int j = y - 1; j <= y + 1; j++)
+                    {
+                        if (i == x && j == y)
+                        {
+                            continue;
+                        }
+
+                        if (0 <= i && i < Width && 0 <= j && j < Height)
+                        {
+
+                            if (IsCellOccupied(action.TargetCreatures, i, j))
+                            {
+                                //Grid[i, j].gameObject.SetActive(true);
+                                GridCell cell = Grid[i, j].GetComponent<GridCell>();
+                                cell.SetAsValidAttack();
+                            }
+
+
+                            //int cellChebyshevDistance = CalculateChebyshevDistance(x, i, y, j);
+                            ////Debug.Log($"({i},{j}) = {cellChebyshevDistance}");
+
+                            //if (cellChebyshevDistance >= minRange && cellChebyshevDistance <= maxRange)
+                            //{
+                            //    cell.SetAsValidAttack();
+                            //}
+                        }
+                    }
+                }
+
+            }
 
         }
-
-
 
     }
 
@@ -270,7 +327,7 @@ public class GameGrid : Singleton<GameGrid>
 
         ComputeMoveData();
         SpawnObstacles();
-
+        HideGrid();
 
     }
 
@@ -418,7 +475,7 @@ public class GameGrid : Singleton<GameGrid>
         }
     }
 
-    private EnemyActionResult GetActionResult(CreatureRuntimeSet creatures, GridCell targetCell, ActionClass action, int x, int y)
+    private EnemyActionResult GetActionResult(CreatureRuntimeSet creatures, GridCell targetCell, NewBattleAction action, int x, int y)
     {
         EnemyActionResult result = new EnemyActionResult(targetCell, action);
         List<GridCell> attackedCells = new List<GridCell>();
@@ -427,7 +484,7 @@ public class GameGrid : Singleton<GameGrid>
         int origX = targetCell.X;
         int origY = targetCell.Y;
 
-        foreach (Vector2 offset in action.additionalAttackedCellOffsets)
+        foreach (Vector2 offset in action.AdditionalAttackedCellOffsets)
         {
             int newX = origX + (int)offset.x;
             int newY = origY + (int)offset.y;
@@ -471,16 +528,16 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
-    public List<GridCell> GetMoves(MoveClass moveClass, int x, int y)
+    public List<GridCell> GetMoves(NewBattleAction moveAction, int x, int y)
     {
         List<GridCell> moves = new List<GridCell>();
 
         int startDirIndex = 0;
         int endDirIndex = 8;
 
-        if (moveClass.IsJumpingPiece)
+        if (moveAction.IsJumpingMove)
         {
-            if (moveClass.MoveType == MoveTypeEnum.Knight)
+            if (moveAction.MoveType == MoveTypeEnum.Knight)
             {
                 foreach (var jumpMove in knightOffsets)
                 {
@@ -501,7 +558,7 @@ public class GameGrid : Singleton<GameGrid>
         {
             int playerSquare = (y * Height) + x;
 
-            switch (moveClass.MoveType)
+            switch (moveAction.MoveType)
             {
                 case MoveTypeEnum.Queen:
                     Debug.Log("King/Queen - consider all directions!");
@@ -521,7 +578,7 @@ public class GameGrid : Singleton<GameGrid>
             {
                 var currentDirOffset = slideOffsets[dirIndex];
 
-                int maxDistance = Math.Min(moveClass.MoveLimit, numSquaresToEdge[playerSquare][dirIndex]);
+                int maxDistance = Math.Min(moveAction.MoveLimit, numSquaresToEdge[playerSquare][dirIndex]);
 
                 for (int n = 0; n < maxDistance; n++)
                 {
@@ -623,18 +680,18 @@ public class GameGrid : Singleton<GameGrid>
     {
         PlayerCharacter activeCharacter = (PlayerCharacter)_initiative.ActiveCharacter;
 
-        MoveClass move = activeCharacter.MoveClass;
+        NewBattleAction move = activeCharacter.MoveAction;
         ShowMovesForPlayer(move, activeCharacter.CellX, activeCharacter.CellY);
 
 
     }
 
-    public void ShowMovesForPlayer(MoveClass moveClass, int playerX, int playerY)
+    public void ShowMovesForPlayer(NewBattleAction moveAction, int playerX, int playerY)
     {
         //ClearGrid();
 
         ShowGrid();
-        List<GridCell> moves = GetMoves(moveClass, playerX, playerY);
+        List<GridCell> moves = GetMoves(moveAction, playerX, playerY);
 
 
 
@@ -750,7 +807,7 @@ public class GameGrid : Singleton<GameGrid>
     }
 
 
-    public List<EnemyActionResult> GetTargetsOfActionNew(ActionClass action, int x, int y)
+    public List<EnemyActionResult> GetTargetsOfActionNew(NewBattleAction action, int x, int y)
     {
         List<GridCell> targets = new List<GridCell>();
         List<EnemyActionResult> results = new List<EnemyActionResult>();
@@ -899,53 +956,57 @@ public class GameGrid : Singleton<GameGrid>
 
 
 
-    public List<Creature> GetAttackedCreatures(GridCell targetCell, ActionClass action)
+    public List<Creature> GetAttackedCreatures(GridCell targetCell, NewBattleAction action)
     {
         List<Creature> attackedCreatures = new List<Creature>();
         List<GridCell> attackedCells = new List<GridCell>();
 
-        // get attacked cells by attack
-        attackedCells.Add(targetCell);
-        int origX = targetCell.X;
-        int origY = targetCell.Y;
-
-        foreach (Vector2 offset in action.additionalAttackedCellOffsets)
+        if (action.IsAttack)
         {
-            int newX = origX + (int)offset.x;
-            int newY = origY + (int)offset.y;
 
-            if (CellExists(newX, newY))
-            {
-                attackedCells.Add(GetCell(newX, newY));
-            }
-        }
+            // get attacked cells by attack
+            attackedCells.Add(targetCell);
+            int origX = targetCell.X;
+            int origY = targetCell.Y;
 
-        // check each of these cells for creatures
-        foreach (GridCell cell in attackedCells)
-        {
-            var creature = GetCellOccupant(cell.X, cell.Y);
-            if (creature != null)
+            foreach (Vector2 offset in action.AdditionalAttackedCellOffsets)
             {
-                attackedCreatures.Add(creature);
+                int newX = origX + (int)offset.x;
+                int newY = origY + (int)offset.y;
+
+                if (CellExists(newX, newY))
+                {
+                    attackedCells.Add(GetCell(newX, newY));
+                }
             }
 
-            //var creatureID = GetCellOccupant(cell);
-            //if (creatureID.HasValue)
-            //{
-            //    attackedCreatures.Add(creatureID.Value);
-            //}
+            // check each of these cells for creatures
+            foreach (GridCell cell in attackedCells)
+            {
+                var creature = GetCellOccupant(cell.X, cell.Y);
+                if (creature != null)
+                {
+                    attackedCreatures.Add(creature);
+                }
 
-            //if (IsCellOccupied(cell))
-            //{
-            //    // Need more than just the id!
-            //    //attackedCreatures.Add()
+                //var creatureID = GetCellOccupant(cell);
+                //if (creatureID.HasValue)
+                //{
+                //    attackedCreatures.Add(creatureID.Value);
+                //}
 
-            //}
+                //if (IsCellOccupied(cell))
+                //{
+                //    // Need more than just the id!
+                //    //attackedCreatures.Add()
 
-            //if (cell.OccupiedUnit != null)
-            //{
-            //   attackedCreatures.Add(cell.OccupiedUnit);
-            //}    
+                //}
+
+                //if (cell.OccupiedUnit != null)
+                //{
+                //   attackedCreatures.Add(cell.OccupiedUnit);
+                //}    
+            }
         }
 
         return attackedCreatures;
@@ -954,6 +1015,7 @@ public class GameGrid : Singleton<GameGrid>
 
     public void ClearGrid()
     {
+
         for (int y = 0; y < Height; y++)
         {
             for (int x = 0; x < Width; x++)
@@ -964,6 +1026,7 @@ public class GameGrid : Singleton<GameGrid>
                 cell.ResetCell();
             }
         }
+
     }
 
 
@@ -1076,7 +1139,8 @@ public class GameGrid : Singleton<GameGrid>
                 }
                 else
                 {
-                    UnhighlightCell(selectedCell);
+                    //UnhighlightCell(selectedCell);
+                    UnhighlightCell();
                 }
             }
         }

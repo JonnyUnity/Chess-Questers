@@ -15,12 +15,13 @@ MonoBehaviour:
   ID: 1001
   Name: Rat
   Health: 20
+  ActionsPerTurn: 2
   CreatureModelID: 1001
   ModelPrefab: {fileID: 1694538411215306276, guid: c6d419bc0a252194ca20c9340a629c70, type: 3}
   Portrait: {fileID: 21300000, guid: be804b3c69941a242978ff3a79060ae9, type: 3}
   Brain: {fileID: 11400000, guid: aa95d10291c5d19498dbe6097b523013, type: 2}
   Faction: {fileID: 11400000, guid: 61717dd44940de24b810a7b658360c9a, type: 2}
-  MoveClass: {fileID: 11400000, guid: a52f75e2b9cb5574c937561cc1af2d36, type: 2}
+  MoveAction: {fileID: 11400000, guid: f775f4c9e8a82d44298bce06b4ebc282, type: 2}
   Actions:
-  - {fileID: 11400000, guid: 8c99152c553542847a5eef937891818b, type: 2}
-  - {fileID: 11400000, guid: 3aa8e29469e58e5419e259c098817061, type: 2}
+  - {fileID: 11400000, guid: 368c661b61f35e648a459c1958103c4d, type: 2}
+  - {fileID: 11400000, guid: f31a912c981014e47b5387db2c3f1c88, type: 2}

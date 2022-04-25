@@ -14,10 +14,15 @@ public class CharacterSelectManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _actionsText;
     [SerializeField] private Image _portraitImage;
     [SerializeField] private GameObject _modelParent;
+    [SerializeField] private ActionDisplay _actionDisplay;
+    
+    //private GameObject _characterGameObject;
+    //private Renderer _renderer;
 
-    private CharacterJsonData _character;
-    private GameObject _characterGameObject;
-    private Renderer _renderer;
+    private string _name;
+    private int _creatureModelID;
+    private PlayerClass _playerClass;
+
 
     private Transform _prefabParentTransform;
 
@@ -26,49 +31,22 @@ public class CharacterSelectManager : MonoBehaviour
         _prefabParentTransform = _modelParent.transform;
     }
 
-    public void SetCharacterModel(GameObject characterGameObject)
+
+    public void RerollCharacter()
     {
-        _characterGameObject = characterGameObject;
-        //_renderer = _characterGameObject.GetComponent<Renderer>();
-    }
+        NewCharacter newChar = QuestStartManager.Instance.RandomiseCharacter(_characterSlot);
 
-    public void SetCharacterDetails()
-    {
-        if (_character == null)
-            return;
-
-
-        _nameText.text = _character.Name;
-
-        MoveClass moveClass = GameManager.Instance.GetMoveClassWithID(_character.MoveClassID);
-        string moveClassText = moveClass.name;
-        string actionsText = GameManager.Instance.GetActionNamesFromIDs(_character.Actions.Select(s => s.ID).ToArray());
-        //string actionsText = string.Join(",", _character.Actions.Select(s => s.Name));
-
-        CreatureModel creatureModel = GameManager.Instance.GetCreatureModel(_character.CreatureModelID);
+        CreatureModel creatureModel = GameManager.Instance.GetCreatureModel(newChar.CreatureModelID);
         _portraitImage.sprite = creatureModel.Portrait;
 
-        //SetCharacterModel(creatureModel.ModelPrefab);
-
-        //var prefab = QuestStartManager.Instance.GetModelPrefab(_character.CreatureModelID);
         if (_prefabParentTransform.childCount == 1)
         {
             Destroy(_prefabParentTransform.GetChild(0).gameObject);
         }
         var modelPrefab = Instantiate(creatureModel.ModelPrefab, _prefabParentTransform);
 
-        _moveClassText.text = moveClassText;
-        _actionsText.text = "ACTIONS: " + actionsText;
-
-        //_renderer.material.color = moveClass.DebugColor;
-
-    }
-
-
-    public void RerollCharacter()
-    {
-        _character = QuestStartManager.Instance.RandomiseCharacter(_characterSlot);
-        SetCharacterDetails();
+        _nameText.text = newChar.Name;
+        _actionDisplay.SetActions(newChar.PlayerClass);
 
     }
 

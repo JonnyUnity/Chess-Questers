@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd1004a71b735184eb533cb988fa2d13, type: 3}
+  m_Name: Move_Bishop
+  m_EditorClassIdentifier: 
+  ID: 5
+  ForPlayer: 1
+  ForEnemy: 1
+  Name: Bishop Move
+  Description: Move diagonally like a bishop
+  Icon: {fileID: 1463774678, guid: 4ec74e56f8173df41954726b9142b2fc, type: 3}
+  RefreshAfterXTurns: 1
+  Cooldown: 1
+  InitialUsesPerTurn: 1
+  UsesPerTurn: 1
+  HasCharges: 0
+  InitialCharges: 0
+  ChargesRemaining: 0
+  ActionOnCooldown: 0
+  IsMove: 1
+  MoveType: 2
+  DebugColor: {r: 0.042363837, g: 0.06451633, b: 0.5283019, a: 0}
+  MoveLimit: 3
+  IsJumpingMove: 0
+  Damage: 0
+  MinRange: 0
+  MaxRange: 0
+  IsRanged: 0
+  IsAttack: 0
+  ActionTemplatePrefab: {fileID: 3275093222111191537, guid: 638a4850ea1c92943865797f6f89a8b1, type: 3}
+  AdditionalAttackedCellOffsets: []

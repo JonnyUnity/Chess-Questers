@@ -20,9 +20,9 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnPlayerEndTurn;
     public static event Action OnPlayerSelectMove;
     public static event Action<Creature> OnCreatureMoved;
-    public static event Action<ActionClass> OnPlayerActionSelected;
+    public static event Action<NewBattleAction> OnPlayerActionSelected;
 
-    public static event Action<ActionClass> OnPlayerActionPerformed;
+    public static event Action<NewBattleAction> OnPlayerActionPerformed;
 
     public static event Action OnTurnOver;
 
@@ -41,6 +41,9 @@ public class BattleEvents : MonoBehaviour
     public static event Action<GridCell> OnCellAttackHighlighted;
     public static event Action OnCellAttackUnhighlighted;
     public static event Action<GridCell> OnCellAttackSelected;
+
+    public static event Action<GridCell> OnCellHighlighted;
+    
 
     public static event Action OnCellUnhighlighted;
 
@@ -93,6 +96,11 @@ public class BattleEvents : MonoBehaviour
         OnTurnOver?.Invoke();
     }
 
+    public static void HighlightCell(GridCell cell)
+    {
+        OnCellHighlighted?.Invoke(cell);
+    }
+
     public static void CellMoveHighlighted(GridCell cell)
     {
         OnCellMoveHighlighted?.Invoke(cell);
@@ -110,13 +118,13 @@ public class BattleEvents : MonoBehaviour
     }
 
 
-    public static void CellMoveSelected(GridCell cell)
-    {
-        OnCellMoveSelected?.Invoke(cell);
-    }
+    //public static void CellMoveSelected(GridCell cell)
+    //{
+    //    OnCellMoveSelected?.Invoke(cell);
+    //}
 
 
-    public static void CellSelected(GridCell cell)
+    public static void SelectCell(GridCell cell)
     {
         OnCellSelected?.Invoke(cell);
     }
@@ -139,18 +147,18 @@ public class BattleEvents : MonoBehaviour
         OnCellAttackUnhighlighted?.Invoke();
     }
 
-    public static void CellAttackSelected(GridCell cell)
-    {
-        OnCellAttackSelected?.Invoke(cell);
-    }
+    //public static void CellAttackSelected(GridCell cell)
+    //{
+    //    OnCellAttackSelected?.Invoke(cell);
+    //}
 
-    public static void ActionSelected(ActionClass action)
+    public static void ActionSelected(NewBattleAction action)
     {
         OnPlayerActionSelected?.Invoke(action);
     }
 
 
-    public static void ActionPerformed(ActionClass action)
+    public static void ActionPerformed(NewBattleAction action)
     {
         OnPlayerActionPerformed?.Invoke(action);
     }

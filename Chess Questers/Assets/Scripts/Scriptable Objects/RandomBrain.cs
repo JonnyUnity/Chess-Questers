@@ -16,7 +16,7 @@ public class RandomBrain : Brain
         //GameGrid grid = enemySenses.Grid;
         //Enemy thisEnemy = enemySenses.Enemy;
 
-        List<GridCell> cells = GameGrid.Instance.GetMoves(me.MoveClass, me.CellX, me.CellY);
+        List<GridCell> cells = GameGrid.Instance.GetMoves(me.MoveAction, me.CellX, me.CellY);
         //List<Vector2> cells = GameGrid.Instance.GetMovesNew(me.MoveClass, me.CellX, me.CellY);
 
 

@@ -6,11 +6,11 @@ using UnityEngine;
 public class PlayerCharacter : Creature
 {
 
-    public Color MoveClassColor => MoveClass.DebugColor;
+    public Color MoveClassColor => MoveAction.DebugColor;
 
     
 
-    private ActionClass _selectedAction;
+    private NewBattleAction _selectedAction;
 
     [SerializeField] private CreatureRuntimeSet _party;
     [SerializeField] private Faction _partyFaction;
@@ -77,20 +77,22 @@ public class PlayerCharacter : Creature
         ActionsPerTurn = data.ActionsPerTurn;
         base.ActionsRemaining = data.ActionsRemaining;
 
-        MoveClass = GameManager.Instance.GetMoveClassWithID(data.MoveClassID);
-        MoveClassText = MoveClass.name;
+        MoveAction = Instantiate(GameManager.Instance.GetActionNew(data.MoveActionID));
+        MoveClassText = MoveAction.name;
 
         _creatureModel = GameManager.Instance.GetCreatureModel(CreatureModelID);
         _portraitSprite = _creatureModel.Portrait;
 
         SetInitiative(data.Initiative);
 
-        foreach (var jsonAction in data.Actions)
+        foreach (var jsonAction in data.BattleActions)
         {
 
-            var actionRef = GameManager.Instance.GetAction(jsonAction.ID);
-            actionRef.Init(jsonAction, _partyFaction);
-            ActionClass action = Instantiate(actionRef);
+            //var actionRef = GameManager.Instance.GetAction(jsonAction.ID);
+            var actionRef = GameManager.Instance.GetActionNew(jsonAction.ID);
+            //actionRef.Init(jsonAction, _partyFaction);
+            NewBattleAction action = Instantiate(actionRef);
+            action.Init(jsonAction, _partyFaction);
 
             Actions.Add(action);
         }

@@ -11,11 +11,13 @@ public class GameManager : Singleton<GameManager>
 
     private MoveClass[] _moveClasses;
     private ActionClass[] _actionClasses;
+    private NewBattleAction[] _actions;
     private EnemySO[] _enemies;
     private Encounter[] _encounters;
     private Sprite[] _debugPortraitSprites;
     private CreatureModel[] _creatureModels;
 
+    private PlayerClass[] _playerClasses;
 
     //private QuestData _questData;
     private QuestJsonData _questData;
@@ -30,10 +32,12 @@ public class GameManager : Singleton<GameManager>
     {
         _moveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
         _actionClasses = Resources.LoadAll<ActionClass>("ActionClasses/");
+        _actions = Resources.LoadAll<NewBattleAction>("ActionsNEW/");
         _debugPortraitSprites = Resources.LoadAll<Sprite>("Sprites/");
         _enemies = Resources.LoadAll<EnemySO>("Enemies/");
         _encounters = Resources.LoadAll<Encounter>("BattleEncounters/");
         _creatureModels = Resources.LoadAll<CreatureModel>("Creatures/");
+        _playerClasses = Resources.LoadAll<PlayerClass>("PlayerClasses/");
 
         SceneManager.sceneLoaded += LoadScene;
         //EventSystem.OnBattleLoss += LostBattle;
@@ -187,6 +191,17 @@ public class GameManager : Singleton<GameManager>
 
     #region Character
 
+    public PlayerClass GetRandomPlayerClass()
+    {
+        if (_playerClasses.Length == 0)
+            return null;
+
+        int index = Random.Range(0, _playerClasses.Length);
+        return _playerClasses[index];
+
+    }
+
+
     public MoveClass GetRandomMoveClass()
     {
         if (_moveClasses.Length == 0)
@@ -244,6 +259,12 @@ public class GameManager : Singleton<GameManager>
 
         return action;
     }
+
+    public NewBattleAction GetActionNew(int actionID)
+    {
+        return _actions.Where(w => w.ID == actionID).Single();
+    }
+
 
 
     public string GetActionNamesFromIDs(int[] ids)

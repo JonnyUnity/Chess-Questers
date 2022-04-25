@@ -22,7 +22,6 @@ public class QuestStartManager : Singleton<QuestStartManager>
     //private QuestData _questData;
     private QuestJsonData _newData;
 
-    //private ImprovedCharacter[] Characters;
     private CharacterJsonData[] NewChars;
 
     private CreatureModel[] _creatureModels;
@@ -33,15 +32,8 @@ public class QuestStartManager : Singleton<QuestStartManager>
     void Start()
     {
         NewChars = new CharacterJsonData[3];
-        //Characters = new ImprovedCharacter[3];
         _characterNames = _namesText.Split(" ");
-        //_creatureModelPrefabs = GameManager.Instance.GetCreatureModelPrefabs();        
-
         _newData = new QuestJsonData();
-
-        //_character1Manager.SetCharacterModel(_character1GameObject);
-        //_character2Manager.SetCharacterModel(_character2GameObject);
-        //_character3Manager.SetCharacterModel(_character3GameObject);
 
         _character1Manager.RerollCharacter();
         _character2Manager.RerollCharacter();
@@ -50,29 +42,27 @@ public class QuestStartManager : Singleton<QuestStartManager>
     }
 
 
-    public CharacterJsonData RandomiseCharacter(int characterSlot)
+    public NewCharacter RandomiseCharacter(int characterSlot)
     {
-        // generate random name..
-
-        // select random move class
-
-        // select actions (weighted based on move class)
-
-        // select random character model...
-        MoveClass mc = GameManager.Instance.GetRandomMoveClass();
-        List<ActionClass> actions = GameManager.Instance.GetActions(mc);
-
-        int nameIndex = Random.Range(0, _characterNames.Length);
-        string charName = _characterNames[nameIndex];
+        string name = GetRandomName();
+        PlayerClass playerClass = GameManager.Instance.GetRandomPlayerClass();
         int creatureModelID = GameManager.Instance.GetRandomCreatureModelID();
 
-        CharacterJsonData newChar = new CharacterJsonData(charName, creatureModelID, mc.ID, actions, 100);
+        NewCharacter newChar = new NewCharacter(name, playerClass, creatureModelID);
 
-        NewChars[characterSlot] = newChar;
-        
+        NewChars[characterSlot] = newChar.GetJson();
+
         return newChar;
-
     }
+
+
+    private string GetRandomName()
+    {
+        int nameIndex = Random.Range(0, _characterNames.Length);
+        return _characterNames[nameIndex];
+    }
+
+
 
     public GameObject GetModelPrefab(int id)
     {

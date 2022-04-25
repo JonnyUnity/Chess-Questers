@@ -15,12 +15,13 @@ MonoBehaviour:
   ID: 1002
   Name: Horse
   Health: 50
+  ActionsPerTurn: 2
   CreatureModelID: 0
   ModelPrefab: {fileID: 615789327855940348, guid: 6ecf7906b0c0a4a4cb1d95663d966942, type: 3}
   Portrait: {fileID: 21300000, guid: 0f7b5a238fab27442b84beb874644d05, type: 3}
   Brain: {fileID: 11400000, guid: aa95d10291c5d19498dbe6097b523013, type: 2}
   Faction: {fileID: 11400000, guid: 61717dd44940de24b810a7b658360c9a, type: 2}
-  MoveClass: {fileID: 11400000, guid: 3801e6beadc214d45b0c83fad3db207c, type: 2}
+  MoveAction: {fileID: 11400000, guid: e2dc6589b9a49164ba170157d77f4da3, type: 2}
   Actions:
-  - {fileID: 11400000, guid: 3538cc11186ace64a99f48222c519214, type: 2}
-  - {fileID: 11400000, guid: 3aa8e29469e58e5419e259c098817061, type: 2}
+  - {fileID: 11400000, guid: 368c661b61f35e648a459c1958103c4d, type: 2}
+  - {fileID: 11400000, guid: f31a912c981014e47b5387db2c3f1c88, type: 2}

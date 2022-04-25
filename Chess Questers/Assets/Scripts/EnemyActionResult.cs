@@ -6,7 +6,7 @@ public class EnemyActionResult
 {
 
     public GridCell Cell;
-    public ActionClass Action;
+    public NewBattleAction Action;
     public int X;
     public int Y;
     public int Damage;
@@ -17,7 +17,7 @@ public class EnemyActionResult
     //public List<Creature> EnemyCreatures;
     //public List<Creature> FriendlyCreatures;
 
-    public EnemyActionResult(GridCell cell, ActionClass action)
+    public EnemyActionResult(GridCell cell, NewBattleAction action)
     {
         Cell = cell;
         Action = action;

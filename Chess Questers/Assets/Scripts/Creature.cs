@@ -18,11 +18,11 @@ public class Creature : MonoBehaviour
     public int ActionsRemaining;
 
     // Move Class properties
-    public MoveClass MoveClass;
+    public NewBattleAction MoveAction;
     public string MoveClassText { get; protected set; }
 
-    public List<ActionClass> Actions { get; protected set; }
-    public List<ActionClass> AvailableActions
+    public List<NewBattleAction> Actions { get; protected set; }
+    public List<NewBattleAction> AvailableActions
     {
         get
         {
@@ -70,7 +70,7 @@ public class Creature : MonoBehaviour
         _cam = Camera.main;
         Transform = transform;
         _orientation = transform.rotation;
-        Actions = new List<ActionClass>();
+        Actions = new List<NewBattleAction>();
 
     }
 
@@ -92,6 +92,7 @@ public class Creature : MonoBehaviour
 
     private void ResetActions()
     {
+        MoveAction.StartOfBattle();
         foreach (var action in Actions)
         {
             action.StartOfBattle();
@@ -101,6 +102,7 @@ public class Creature : MonoBehaviour
 
     public void UpdateActionCooldowns()
     {
+        MoveAction.EndOfTurn();
         foreach (var action in Actions)
         {
             action.EndOfTurn();
@@ -157,9 +159,6 @@ public class Creature : MonoBehaviour
     protected virtual void Update()
     {
 
-        //_creatureInfo.transform.LookAt(_cam.transform);
-        //_creatureInfo.transform.rotation = _cam.transform.rotation;
-
         if (State != CharacterStatesEnum.MOVING) return;
 
         Vector3 direction = (TargetPosition - Transform.position).normalized;
@@ -169,7 +168,7 @@ public class Creature : MonoBehaviour
         {
             Transform.SetPositionAndRotation(TargetPosition, _orientation);
 
-            //SetPosition(TargetX, TargetY);
+            UpdatePosition(TargetX, TargetY, TargetPosition, CurrentFacing);
             State = CharacterStatesEnum.IDLE;
         }
 

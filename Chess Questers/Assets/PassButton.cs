@@ -48,6 +48,7 @@ public class PassButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void EndTurn()
     {
         GameGrid.Instance.ClearGrid();
+        //BattleEvents.EndPlayerTurn();
         BattleEvents.TurnOver();
     }
 

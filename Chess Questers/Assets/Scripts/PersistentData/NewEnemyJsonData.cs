@@ -23,6 +23,8 @@ public class NewEnemyJsonData
 
     public List<ActionJsonData> Actions = new List<ActionJsonData>();
 
+    public List<BattleActionJsonData> BattleActions = new List<BattleActionJsonData>();
+
 
     public NewEnemyJsonData(EnemySO enemy)
     {
@@ -34,7 +36,8 @@ public class NewEnemyJsonData
 
         foreach (var action in enemy.Actions)
         {
-            Actions.Add(new ActionJsonData(action));
+            //Actions.Add(new ActionJsonData(action));
+            BattleActions.Add(new BattleActionJsonData(action));
         }
 
     }
@@ -53,7 +56,8 @@ public class NewEnemyJsonData
         Initiative = enemy.Initiative;
         foreach (var action in enemy.Actions)
         {
-            Actions.Add(new ActionJsonData(action));
+            //Actions.Add(new ActionJsonData(action));
+            BattleActions.Add(new BattleActionJsonData(action));
         }
 
         CellX = enemy.CellX;

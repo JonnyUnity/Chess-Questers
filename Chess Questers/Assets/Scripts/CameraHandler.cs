@@ -109,6 +109,21 @@ public class CameraHandler : MonoBehaviour
         
     }
 
+    private void MoveToCharacter()
+    {
+        NewPosition = _transform.position;
+
+        var t = 0f;
+        var cameraMovementDuration = 1f;
+
+        while (t < 1)
+        {
+            // variable
+            t += Time.deltaTime / cameraMovementDuration;
+            _transform.position = Vector3.Lerp(NewPosition, CreaturePosition, t);
+        }
+    }
+
 
     private void Start()
     {
@@ -385,6 +400,7 @@ public class CameraHandler : MonoBehaviour
     {
         CreaturePosition = creaturePosition;
         StartCoroutine(MoveToCharacterCoroutine());
+        //MoveToCharacter();
     }
 
 

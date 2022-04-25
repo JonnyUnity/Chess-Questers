@@ -47,25 +47,23 @@ public class InitiativeManager : MonoBehaviour
         BattleEvents.OnResumeCombat -= Setup;
     }
 
+    // Setups the turn order when resuming a battle in progress.
     private void Setup()
     {
         _initiative.Empty();
 
         foreach (var creature in _playerCharacters.Items)
         {
-            //_combatants.Add(creature);
             _initiative.Add(creature);
         }
         foreach (var creature in _enemies.Items)
         {
-            //_combatants.Add(creature);
             _initiative.Add(creature);
         }
 
-        // setup portraits
-        SetupPortraits();
+        _initiative.Sort();
+        InitPortraits(resumingCombat:true);
 
-        //BattleEvents.TurnStarted(ActiveCharacterID);
         BattleEvents.TurnStarted(_initiative.ActiveCharacter);
 
     }
@@ -77,24 +75,20 @@ public class InitiativeManager : MonoBehaviour
         foreach (var creature in _playerCharacters.Items)
         {
             creature.SetInitiative(Random.Range(1, 20));
-            //_combatants.Add(creature);
             _initiative.Add(creature);
         }
 
         foreach (var creature in _enemies.Items)
         {
             creature.SetInitiative(Random.Range(1, 20));
-            //_combatants.Add(creature);
             _initiative.Add(creature);
         }
 
         _initiative.Sort();
-        //_combatants.Sort();
-        SetupPortraits();
+        InitPortraits();
 
         TurnNumber.SetValue(1);
 
-        //BattleEvents.TurnStarted(ActiveCharacterID);
         BattleEvents.TurnStarted(_initiative.ActiveCharacter);
 
     }
@@ -116,7 +110,6 @@ public class InitiativeManager : MonoBehaviour
 
         UpdatePortraitsOfNextTurn();
 
-        //BattleEvents.TurnStarted(ActiveCharacterID);
         BattleEvents.TurnStarted(_initiative.ActiveCharacter);
     }
 
@@ -126,10 +119,15 @@ public class InitiativeManager : MonoBehaviour
         Debug.Log("Someone died! Update the turn order!");
 
         RemovePortrait(creature.ID);
-        //_combatants.Remove(creature);
+        
+        // Move the turn pointer back if a creature earlier in the turn dies.
+        int index = _initiative.Items.IndexOf(creature);
+        if (index <= TurnPointer.Value)
+        {
+            TurnPointer.Dec();
+        }
         _initiative.Remove(creature);
         
-
         if (_initiative.AllEnemiesDead)
         {
             BattleEvents.Victory();
@@ -139,20 +137,12 @@ public class InitiativeManager : MonoBehaviour
             BattleEvents.Loss();
         }
 
-        //if (!_combatants.Items.Any(a => !a.IsFriendly))
-        //{
-        //    BattleEvents.Victory();
-        //}
-        //if (!_combatants.Items.Any(a => a.IsFriendly))
-        //{
-        //    BattleEvents.Loss();
-        //}
     }
 
 
     #region Portrait UI Functions
 
-    private void SetupPortraits()
+    private void InitPortraits(bool resumingCombat = false)
     {
         foreach (var combatant in _initiative.Items)
         {
@@ -163,6 +153,15 @@ public class InitiativeManager : MonoBehaviour
             _creaturePortraits.Add(portrait);
 
         }
+
+        if (resumingCombat)
+        {
+            for (int i = 0; i < TurnPointer.Value; i++)
+            {
+                UpdatePortraitsOfNextTurn();
+            }
+        }
+
     }
 
 
@@ -171,26 +170,22 @@ public class InitiativeManager : MonoBehaviour
         var portraitObj = _portraitsContainer.transform.GetChild(0).gameObject;
 
         portraitObj.transform.parent = null;
-        //portraitObj.transform.parent = _portraitsContainer.transform;
         portraitObj.transform.SetParent(_portraitsContainer.transform);
     
     }
 
+
     private void RemovePortrait(int creatureID)
     {
         CreaturePortrait deadCreature = _creaturePortraits.Where(w => w.ID == creatureID).Single();
-
-        //deadCreature.gameObject.transform.parent = null;
-
         StartCoroutine(RemovePortraitCoroutine(deadCreature.gameObject));
-
     }
+
 
     private IEnumerator RemovePortraitCoroutine(GameObject portraitObj)
     {
 
         Animator animator = portraitObj.GetComponent<Animator>();
-        //portraitObj.transform.parent = null;
         animator.SetBool("HasDied", true);
 
         yield return new WaitForSeconds(1f);
@@ -198,8 +193,6 @@ public class InitiativeManager : MonoBehaviour
         Destroy(portraitObj);
     }
 
-
     #endregion
-
 
 }
