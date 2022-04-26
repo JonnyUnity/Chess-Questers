@@ -10,9 +10,6 @@ public class BattleUIHandler : MonoBehaviour
 {
 
     [SerializeField] private TextMeshProUGUI _stateText;
-    [SerializeField] private TextMeshProUGUI _characterText;
-
-
     [SerializeField] private GameObject _attackList;
     [SerializeField] private GameObject[] _attackButtons;
     [SerializeField] private GameObject PassButton;
@@ -56,11 +53,6 @@ public class BattleUIHandler : MonoBehaviour
     public void UpdateStateText(string text)
     {
         _stateText.text = text;
-    }
-
-    public void UpdateCharacterText(string text)
-    {
-        _characterText.text = text;
     }
 
 

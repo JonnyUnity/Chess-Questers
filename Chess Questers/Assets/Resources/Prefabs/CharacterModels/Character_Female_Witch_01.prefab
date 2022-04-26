@@ -1505,6 +1505,7 @@ GameObject:
   m_Component:
   - component: {fileID: 401170}
   - component: {fileID: 13702346}
+  - component: {fileID: 3748723390974502112}
   m_Layer: 0
   m_Name: Character_Female_Witch
   m_TagString: Untagged
@@ -1629,6 +1630,19 @@ SkinnedMeshRenderer:
     m_Center: {x: 0, y: 94.19189, z: -1.8696165}
     m_Extent: {x: 102.12035, y: 102.584785, z: 31.558674}
   m_DirtyAABB: 0
+--- !u!65 &3748723390974502112
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143746}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 204.2407, y: 205.16956, z: 63.117348}
+  m_Center: {x: 0, y: 94.19189, z: -1.8696165}
 --- !u!1 &144738
 GameObject:
   m_ObjectHideFlags: 0
@@ -3704,6 +3718,8 @@ GameObject:
   - component: {fileID: 431210}
   - component: {fileID: 9566230}
   - component: {fileID: 2298688016021816258}
+  - component: {fileID: 5093191701996644322}
+  - component: {fileID: 9195818551697017728}
   m_Layer: 0
   m_Name: Character_Female_Witch_01
   m_TagString: Untagged
@@ -3772,7 +3788,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
-  MoveClass: {fileID: 0}
+  ActionsRemaining: 0
+  MoveAction: {fileID: 0}
   OccupiedCell: {fileID: 0}
   TargetCell: {fileID: 0}
   Position: {x: 0, y: 0, z: 0}
@@ -3786,6 +3803,34 @@ MonoBehaviour:
   State: 0
   _party: {fileID: 11400000, guid: 7414e14ec7142414cbf22770f61ab5be, type: 2}
   _partyFaction: {fileID: 11400000, guid: b830dd82863d5c04a9054d4efbeedc2b, type: 2}
+--- !u!54 &5093191701996644322
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179454}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &9195818551697017728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bee1571715a03f45815dace56eeba72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &182000
 GameObject:
   m_ObjectHideFlags: 0

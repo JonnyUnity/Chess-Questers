@@ -1845,6 +1845,7 @@ GameObject:
   m_Component:
   - component: {fileID: 488722}
   - component: {fileID: 13703074}
+  - component: {fileID: 7180737890022099519}
   m_Layer: 0
   m_Name: Character_Male_Wizard
   m_TagString: Untagged
@@ -1969,6 +1970,19 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.0000038146973, y: 96.16845, z: -4.6655455}
     m_Extent: {x: 102.541534, y: 108.76028, z: 31.651173}
   m_DirtyAABB: 0
+--- !u!65 &7180737890022099519
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 135268}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 205.08305, y: 217.52055, z: 63.302345}
+  m_Center: {x: -0.0000038146973, y: 96.16845, z: -4.6655455}
 --- !u!1 &138060
 GameObject:
   m_ObjectHideFlags: 0
@@ -3897,6 +3911,8 @@ GameObject:
   - component: {fileID: 455556}
   - component: {fileID: 9545102}
   - component: {fileID: 5246554527088742011}
+  - component: {fileID: 5245740702943846055}
+  - component: {fileID: 8868226844081176123}
   m_Layer: 0
   m_Name: Character_Male_Wizard_01
   m_TagString: Untagged
@@ -3965,7 +3981,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
-  MoveClass: {fileID: 0}
+  ActionsRemaining: 0
+  MoveAction: {fileID: 0}
   OccupiedCell: {fileID: 0}
   TargetCell: {fileID: 0}
   Position: {x: 0, y: 0, z: 0}
@@ -3979,6 +3996,34 @@ MonoBehaviour:
   State: 0
   _party: {fileID: 11400000, guid: 7414e14ec7142414cbf22770f61ab5be, type: 2}
   _partyFaction: {fileID: 11400000, guid: b830dd82863d5c04a9054d4efbeedc2b, type: 2}
+--- !u!54 &5245740702943846055
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193682}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &8868226844081176123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bee1571715a03f45815dace56eeba72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &193772
 GameObject:
   m_ObjectHideFlags: 0

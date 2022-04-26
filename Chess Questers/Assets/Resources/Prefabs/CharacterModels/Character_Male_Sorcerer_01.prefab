@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 497944}
   - component: {fileID: 13783824}
+  - component: {fileID: 3927312789877124619}
   m_Layer: 0
   m_Name: Character_Male_Sorcerer
   m_TagString: Untagged
@@ -134,6 +135,19 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.0004348755, y: 86.71605, z: -7.1418514}
     m_Extent: {x: 102.45622, y: 96.82539, z: 29.05353}
   m_DirtyAABB: 0
+--- !u!65 &3927312789877124619
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101020}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 204.91245, y: 193.65079, z: 58.10706}
+  m_Center: {x: -0.0004348755, y: 86.71605, z: -7.1418514}
 --- !u!1 &101222
 GameObject:
   m_ObjectHideFlags: 0
@@ -3173,6 +3187,8 @@ GameObject:
   - component: {fileID: 495398}
   - component: {fileID: 9513408}
   - component: {fileID: 4990791233775974673}
+  - component: {fileID: 87687438050898432}
+  - component: {fileID: 2721311195295918977}
   m_Layer: 0
   m_Name: Character_Male_Sorcerer_01
   m_TagString: Untagged
@@ -3241,7 +3257,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
-  MoveClass: {fileID: 0}
+  ActionsRemaining: 0
+  MoveAction: {fileID: 0}
   OccupiedCell: {fileID: 0}
   TargetCell: {fileID: 0}
   Position: {x: 0, y: 0, z: 0}
@@ -3255,6 +3272,34 @@ MonoBehaviour:
   State: 0
   _party: {fileID: 11400000, guid: 7414e14ec7142414cbf22770f61ab5be, type: 2}
   _partyFaction: {fileID: 11400000, guid: b830dd82863d5c04a9054d4efbeedc2b, type: 2}
+--- !u!54 &87687438050898432
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 174760}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &2721311195295918977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 174760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bee1571715a03f45815dace56eeba72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &178660
 GameObject:
   m_ObjectHideFlags: 0

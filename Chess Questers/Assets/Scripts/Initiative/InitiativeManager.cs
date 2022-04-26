@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class InitiativeManager : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI _turnInfo;
 
     [SerializeField] private GameObject _portraitsContainer;
     [SerializeField] private GameObject _portraitImagePrefab;
@@ -64,6 +66,8 @@ public class InitiativeManager : MonoBehaviour
         _initiative.Sort();
         InitPortraits(resumingCombat:true);
 
+        _turnInfo.text = "TURN " + TurnNumber.Value.ToString();
+
         BattleEvents.TurnStarted(_initiative.ActiveCharacter);
 
     }
@@ -88,6 +92,7 @@ public class InitiativeManager : MonoBehaviour
         InitPortraits();
 
         TurnNumber.SetValue(1);
+        _turnInfo.text = "TURN " + TurnNumber.Value.ToString();
 
         BattleEvents.TurnStarted(_initiative.ActiveCharacter);
 
@@ -105,10 +110,14 @@ public class InitiativeManager : MonoBehaviour
         {
             TurnNumber.Inc();
             TurnPointer.SetValue(0);
+
+            _turnInfo.text = "TURN " + TurnNumber.Value.ToString();
             Debug.Log("Initiative - Increase the turn number!");
         }
 
         UpdatePortraitsOfNextTurn();
+
+        
 
         BattleEvents.TurnStarted(_initiative.ActiveCharacter);
     }

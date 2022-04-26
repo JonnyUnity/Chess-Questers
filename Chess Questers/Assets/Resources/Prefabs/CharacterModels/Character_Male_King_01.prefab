@@ -685,6 +685,8 @@ GameObject:
   - component: {fileID: 495996}
   - component: {fileID: 9570480}
   - component: {fileID: 3258433552005881799}
+  - component: {fileID: 2820837107545650814}
+  - component: {fileID: 3761335681785849394}
   m_Layer: 0
   m_Name: Character_Male_King_01
   m_TagString: Untagged
@@ -753,7 +755,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
-  MoveClass: {fileID: 0}
+  ActionsRemaining: 0
+  MoveAction: {fileID: 0}
   OccupiedCell: {fileID: 0}
   TargetCell: {fileID: 0}
   Position: {x: 0, y: 0, z: 0}
@@ -767,6 +770,34 @@ MonoBehaviour:
   State: 0
   _party: {fileID: 11400000, guid: 7414e14ec7142414cbf22770f61ab5be, type: 2}
   _partyFaction: {fileID: 11400000, guid: b830dd82863d5c04a9054d4efbeedc2b, type: 2}
+--- !u!54 &2820837107545650814
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115648}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &3761335681785849394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bee1571715a03f45815dace56eeba72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &117410
 GameObject:
   m_ObjectHideFlags: 0
@@ -2909,6 +2940,7 @@ GameObject:
   m_Component:
   - component: {fileID: 467382}
   - component: {fileID: 13720344}
+  - component: {fileID: 6706573068018009911}
   m_Layer: 0
   m_Name: Character_Male_King
   m_TagString: Untagged
@@ -3033,6 +3065,19 @@ SkinnedMeshRenderer:
     m_Center: {x: 0, y: 86.74897, z: -6.586137}
     m_Extent: {x: 102.45592, y: 96.858315, z: 32.532253}
   m_DirtyAABB: 0
+--- !u!65 &6706573068018009911
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163208}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 204.91183, y: 193.71661, z: 65.06451}
+  m_Center: {x: 0, y: 86.74897, z: -6.586137}
 --- !u!1 &165984
 GameObject:
   m_ObjectHideFlags: 0

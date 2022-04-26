@@ -303,6 +303,7 @@ GameObject:
   m_Component:
   - component: {fileID: 425696}
   - component: {fileID: 13765386}
+  - component: {fileID: 7383686856780989773}
   m_Layer: 0
   m_Name: Character_Female_Peasant_02
   m_TagString: Untagged
@@ -427,6 +428,19 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.0000038146973, y: 84.63601, z: -4.067767}
     m_Extent: {x: 102.21837, y: 97.02071, z: 29.463238}
   m_DirtyAABB: 0
+--- !u!65 &7383686856780989773
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111920}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 204.43674, y: 194.04141, z: 58.926476}
+  m_Center: {x: -0.0000038146973, y: 84.63601, z: -4.067767}
 --- !u!1 &112812
 GameObject:
   m_ObjectHideFlags: 0
@@ -3232,6 +3246,8 @@ GameObject:
   - component: {fileID: 478730}
   - component: {fileID: 9522000}
   - component: {fileID: 5679006133010679593}
+  - component: {fileID: 3961310882947178785}
+  - component: {fileID: 4817650360871431771}
   m_Layer: 0
   m_Name: Character_Female_Peasant_02
   m_TagString: Untagged
@@ -3300,7 +3316,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
-  MoveClass: {fileID: 0}
+  ActionsRemaining: 0
+  MoveAction: {fileID: 0}
   OccupiedCell: {fileID: 0}
   TargetCell: {fileID: 0}
   Position: {x: 0, y: 0, z: 0}
@@ -3314,6 +3331,34 @@ MonoBehaviour:
   State: 0
   _party: {fileID: 11400000, guid: 7414e14ec7142414cbf22770f61ab5be, type: 2}
   _partyFaction: {fileID: 11400000, guid: b830dd82863d5c04a9054d4efbeedc2b, type: 2}
+--- !u!54 &3961310882947178785
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173204}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &4817650360871431771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bee1571715a03f45815dace56eeba72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &176180
 GameObject:
   m_ObjectHideFlags: 0

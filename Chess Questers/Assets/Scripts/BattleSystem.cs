@@ -514,8 +514,6 @@ public class BattleSystem : Singleton<BattleSystem>
 
         CameraHandler.SwapToCharacter(_activeCharacter.Position);
 
-        UIHandler.UpdateCharacterText(_activeCharacter.Name);
-
         if (_activeCharacter.IsFriendly)
         {
             BattleEvents.StartPlayerTurn();
@@ -637,7 +635,6 @@ public class BattleSystem : Singleton<BattleSystem>
        // UIHandler.ShowActions(_activeCharacter, _activeCharacter.Actions, _activeCharacter.CellX, _activeCharacter.CellY);
 
         //UIHandler.UpdateCharacterText(adv.CreatureName);
-        UIHandler.UpdateCharacterText(_activeCharacter.Name);
         UIHandler.UpdateStateText("WAITING FOR PLAYER ACTION");
     }
 
@@ -912,12 +909,6 @@ public class BattleSystem : Singleton<BattleSystem>
 
     }
 
-    //private void Victory()
-    //{
-    //    UIHandler.UpdateStateText("VICTORY!");
-    //    _gameManager.UpdateState(GameManager.GameStatesEnum.Battle_Victory);
-
-    //}
 
     private void GoToVictory()
     {
@@ -934,22 +925,8 @@ public class BattleSystem : Singleton<BattleSystem>
     //    // go to post-run score screen...
     //}
 
-    #region Creature Panel UI
-
-    public void UpdateCreatureText(string text)
-    {
-        UIHandler.UpdateCharacterText(text);
-    }
-
-    public void UpdateStateText(string text)
-    {
-        UIHandler.UpdateStateText(text);
-    }
-
-    #endregion
-
-
 }
+
 
 public enum BattleStatesEnum
 {

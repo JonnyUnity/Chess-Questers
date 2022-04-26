@@ -52,6 +52,9 @@ public class BattleEvents : MonoBehaviour
     public static event Action<int> OnEnemySelectMove;
     public static event Action<int> OnEnemySelectAttack;
 
+    public static event Action<Creature> OnCreatureHover;
+    public static event Action<Creature> OnCreatureUnhover;
+
 
     public static void BattleStarted()
     {
@@ -188,8 +191,16 @@ public class BattleEvents : MonoBehaviour
     }
 
 
-    
+    public static void CreatureHovered(Creature creature)
+    {
+        OnCreatureHover?.Invoke(creature);
+    }
 
+
+    public static void CreatureUnhovered(Creature creature)
+    {
+        OnCreatureUnhover?.Invoke(creature);
+    }
 
 
 }
