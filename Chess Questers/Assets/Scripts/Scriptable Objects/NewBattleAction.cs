@@ -37,10 +37,13 @@ public class NewBattleAction : ScriptableObject
     public Color DebugColor;
     public int MoveLimit = int.MaxValue;
     public bool IsJumpingMove;
+    public string MoveAnimationTrigger;
 
 
-    
+
     [Header("Action Information")]
+    [Tooltip("Does this action attack a creature, cast a spell, buff an ally etc")]
+    public bool IsAction;
     public int Damage;
     [Tooltip("The minimum number of grid cells away that the action can be performed")]
     public int MinRange;
@@ -49,6 +52,8 @@ public class NewBattleAction : ScriptableObject
 
     public bool IsRanged;
     public bool IsAttack;
+    public bool IncludeDiagonals;
+    public string ActionAnimationTrigger;
 
     public GameObject ActionTemplatePrefab;
     public Vector2[] AdditionalAttackedCellOffsets;

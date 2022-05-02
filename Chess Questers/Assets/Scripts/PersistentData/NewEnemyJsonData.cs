@@ -12,7 +12,9 @@ public class NewEnemyJsonData
     public string Name;
     public int Health;
     public int MaxHealth;
+
     public int ActionsPerTurn;
+    public int ActionsRemaining;
     
     public int Initiative;
 
@@ -23,6 +25,7 @@ public class NewEnemyJsonData
 
     public List<ActionJsonData> Actions = new List<ActionJsonData>();
 
+    public BattleActionJsonData MoveAction;
     public List<BattleActionJsonData> BattleActions = new List<BattleActionJsonData>();
 
 
@@ -33,10 +36,12 @@ public class NewEnemyJsonData
         Name = enemy.Name;
         Health = enemy.Health;
         MaxHealth = enemy.Health;
+        ActionsPerTurn = enemy.ActionsPerTurn;
+        ActionsRemaining = enemy.ActionsPerTurn;
 
+        MoveAction = new BattleActionJsonData(enemy.MoveAction);
         foreach (var action in enemy.Actions)
         {
-            //Actions.Add(new ActionJsonData(action));
             BattleActions.Add(new BattleActionJsonData(action));
         }
 
@@ -52,8 +57,11 @@ public class NewEnemyJsonData
         Health = enemy.Health;
         MaxHealth = enemy.MaxHealth;
         ActionsPerTurn = enemy.ActionsPerTurn;
+        ActionsRemaining = enemy.ActionsRemaining;
 
         Initiative = enemy.Initiative;
+
+        MoveAction = new BattleActionJsonData(enemy.MoveAction);
         foreach (var action in enemy.Actions)
         {
             //Actions.Add(new ActionJsonData(action));

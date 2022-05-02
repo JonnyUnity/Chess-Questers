@@ -31,10 +31,14 @@ MonoBehaviour:
   DebugColor: {r: 0, g: 0, b: 0, a: 0}
   MoveLimit: 2147483647
   IsJumpingMove: 0
+  MoveAnimationTrigger: 
+  IsAction: 1
   Damage: 10
   MinRange: 1
   MaxRange: 1
   IsRanged: 0
   IsAttack: 1
+  IncludeDiagonals: 1
+  ActionAnimationTrigger: DoMeleeAttack
   ActionTemplatePrefab: {fileID: 3275093222111191537, guid: 638a4850ea1c92943865797f6f89a8b1, type: 3}
   AdditionalAttackedCellOffsets: []

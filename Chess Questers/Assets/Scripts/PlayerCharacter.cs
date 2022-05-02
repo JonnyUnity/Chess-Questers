@@ -15,6 +15,8 @@ public class PlayerCharacter : Creature
     [SerializeField] private CreatureRuntimeSet _party;
     [SerializeField] private Faction _partyFaction;
 
+    [SerializeField] private GameObject[] _characterModels;
+
     private CreatureModel _creatureModel;
 
     protected override void OnEnable()
@@ -38,44 +40,27 @@ public class PlayerCharacter : Creature
     }
 
 
-    public void DoMove(Vector3 position, int x, int y)
-    {
-        TargetX = x;
-        TargetY = y;
-
-        TargetPosition = position;
-        State = CharacterStatesEnum.MOVING;
-    }
-
-    
-    //protected override void Update()
+    //public void DoMove(Vector3 position, int x, int y)
     //{
-    //    base.Update();
+    //    TargetX = x;
+    //    TargetY = y;
 
-    //    if (State != CharacterStatesEnum.MOVING) return;
-
-    //    Vector3 direction = (TargetPosition - Transform.position).normalized;
-    //    Transform.position += MoveSpeed * Time.deltaTime * direction;
-
-    //    if (Vector3.Distance(transform.position, TargetPosition) < 0.1f)
-    //    {
-    //        Transform.SetPositionAndRotation(TargetPosition, _orientation);
-
-    //        //SetPosition(TargetX, TargetY);
-    //        State = CharacterStatesEnum.IDLE;
-    //    }
+    //    TargetPosition = position;
+    //    State = CharacterStatesEnum.MOVING;
     //}
 
-
+    
     public void InitFromCharacterData(CharacterJsonData data)
     {
         ID = data.ID;
         Name = data.Name;
         //_nameText.text = Name;
         CreatureModelID = data.CreatureModelID;
+        SetCharacterModel(CreatureModelID);
+
         IsFriendly = true;
         ActionsPerTurn = data.ActionsPerTurn;
-        base.ActionsRemaining = data.ActionsRemaining;
+        ActionsRemaining = data.ActionsRemaining;
 
         MoveAction = Instantiate(GameManager.Instance.GetActionNew(data.MoveActionID));
         MoveClassText = MoveAction.name;
@@ -87,28 +72,52 @@ public class PlayerCharacter : Creature
 
         foreach (var jsonAction in data.BattleActions)
         {
-
-            //var actionRef = GameManager.Instance.GetAction(jsonAction.ID);
             var actionRef = GameManager.Instance.GetActionNew(jsonAction.ID);
-            //actionRef.Init(jsonAction, _partyFaction);
             NewBattleAction action = Instantiate(actionRef);
             action.Init(jsonAction, _partyFaction);
 
             Actions.Add(action);
         }
 
-        //Actions = GameManager.Instance.GetActionsWithIDs(data.Actions.sel);
-        //Actions = data.Actions;
         Health = data.Health;
         MaxHealth = data.MaxHealth;
-
-        //_healthSlider.maxValue = MaxHealth;
-        //_healthSlider.value = Health;
 
         CellX = data.CellX;
         CellY = data.CellY;
         Position = data.Position;
         CurrentFacing = data.CurrentFacing;
+    }
+
+
+    public void SetCharacterModel(int modelID)
+    {
+        foreach (var characterModel in _characterModels)
+        {
+            characterModel.SetActive(false);
+        }
+        _characterModels[modelID].SetActive(true);
+    }
+
+
+    public void DoSelectedAction(ActionResult actionResult)
+    {
+        StartCoroutine(SelectedActionCoroutine(actionResult));
+    }
+
+
+
+    private IEnumerator SelectedActionCoroutine(ActionResult actionResult)
+    {
+        Debug.Log("Start action");
+
+        BattleEvents.ActionStarted(actionResult.Action);
+
+        yield return StartCoroutine(DoActionCoroutine(actionResult));
+
+        BattleEvents.ActionFinished();
+
+        Debug.Log("Finish action");
+
     }
 
     public void SetSelectedAction(int characterID, ActionClass action, int x, int y)

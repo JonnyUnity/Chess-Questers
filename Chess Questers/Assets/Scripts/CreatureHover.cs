@@ -10,21 +10,10 @@ public class CreatureHover : MonoBehaviour
     private void Awake()
     {
         creature = GetComponent<Creature>();
-
-        //if (TryGetComponent(out PlayerCharacter playerCharacter))
-        //{
-        //    creature = (Creature)playerCharacter;
-        //}
-        //else if (TryGetComponent(out Enemy enemy))
-        //{
-        //    creature = (Creature)enemy;
-        //}
-
     }
 
     public void OnMouseEnter()
     {
-        Debug.Log("Creature hovered!");
         BattleEvents.CreatureHovered(creature);
     }
 
@@ -32,7 +21,6 @@ public class CreatureHover : MonoBehaviour
 
     public void OnMouseExit()
     {
-        Debug.Log("Creature unhovered!");
         BattleEvents.CreatureUnhovered(creature);
     }
 

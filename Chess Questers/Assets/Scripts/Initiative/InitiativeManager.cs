@@ -103,7 +103,7 @@ public class InitiativeManager : MonoBehaviour
     {
         _initiative.ActiveCharacter.UpdateActionCooldowns();
 
-        Debug.Log("Initiative - NextTurn");
+        //Debug.Log("Initiative - NextTurn");
         TurnPointer.Inc();
         
         if (TurnPointer.Value > _initiative.Items.Count() - 1)
@@ -112,7 +112,7 @@ public class InitiativeManager : MonoBehaviour
             TurnPointer.SetValue(0);
 
             _turnInfo.text = "TURN " + TurnNumber.Value.ToString();
-            Debug.Log("Initiative - Increase the turn number!");
+           // Debug.Log("Initiative - Increase the turn number!");
         }
 
         UpdatePortraitsOfNextTurn();
@@ -178,7 +178,7 @@ public class InitiativeManager : MonoBehaviour
     {
         var portraitObj = _portraitsContainer.transform.GetChild(0).gameObject;
 
-        portraitObj.transform.parent = null;
+        portraitObj.transform.SetParent(null);
         portraitObj.transform.SetParent(_portraitsContainer.transform);
     
     }

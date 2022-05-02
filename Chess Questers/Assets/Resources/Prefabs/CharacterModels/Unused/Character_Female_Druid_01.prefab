@@ -2018,6 +2018,19 @@ MonoBehaviour:
   State: 0
   _party: {fileID: 11400000, guid: 7414e14ec7142414cbf22770f61ab5be, type: 2}
   _partyFaction: {fileID: 11400000, guid: b830dd82863d5c04a9054d4efbeedc2b, type: 2}
+  _characterModels:
+  - {fileID: 109980}
+  - {fileID: 123484}
+  - {fileID: 165908}
+  - {fileID: 135966}
+  - {fileID: 190722}
+  - {fileID: 145082}
+  - {fileID: 107574}
+  - {fileID: 191024}
+  - {fileID: 111920}
+  - {fileID: 153282}
+  - {fileID: 164334}
+  - {fileID: 160310}
 --- !u!114 &5883377397892738038
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -282,6 +282,7 @@ MonoBehaviour:
   _playerCharacters: {fileID: 0}
   _enemyList: {fileID: 0}
   _partyFaction: {fileID: 0}
+  _characterPrefab: {fileID: 0}
 --- !u!1 &1164732563
 GameObject:
   m_ObjectHideFlags: 0

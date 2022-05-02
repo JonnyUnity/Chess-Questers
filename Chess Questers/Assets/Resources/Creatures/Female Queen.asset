@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e01896c2963bb4fb2e599835fae334, type: 3}
   m_Name: Female Queen
   m_EditorClassIdentifier: 
-  ID: 5
+  ID: 4
   Name: Queen
   PrefabPath: 
   Portrait: {fileID: 21300000, guid: 681fbbbd09041ce4fa38ad2f589d2201, type: 3}

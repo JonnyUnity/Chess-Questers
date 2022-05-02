@@ -13,13 +13,12 @@ public class EnemyActionResult
 
     public List<Creature> Creatures;
 
-    // Worry about maximising enemy damage, minimising friendly fire later...
-    //public List<Creature> EnemyCreatures;
-    //public List<Creature> FriendlyCreatures;
 
     public EnemyActionResult(GridCell cell, NewBattleAction action)
     {
         Cell = cell;
+        X = cell.X;
+        Y = cell.Y;
         Action = action;
         Damage = action.Damage;
         Creatures = new List<Creature>();

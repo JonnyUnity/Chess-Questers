@@ -9,36 +9,62 @@ using Random = UnityEngine.Random;
 public class RandomBrain : Brain
 {
 
-    public override GridCell GetMove(Enemy me)
+    //public override GridCell GetMove(Enemy me)
+    //{
+    //    //throw new NotImplementedException();
+
+    //    //GameGrid grid = enemySenses.Grid;
+    //    //Enemy thisEnemy = enemySenses.Enemy;
+
+    //    List<GridCell> cells = GameGrid.Instance.GetMoves(me.MoveAction, me.CellX, me.CellY);
+    //    //List<Vector2> cells = GameGrid.Instance.GetMovesNew(me.MoveClass, me.CellX, me.CellY);
+
+
+    //    //Vector2 chosenCoord = cells[Random.Range(0, cells.Count)];
+
+    //    //GridCell chosenMove = GameGrid.Instance.GetCell((int)chosenCoord.x, (int)chosenCoord.y);
+
+    //    //List<GridCell> cells = grid.GetMoves()
+
+    //    GridCell chosenMove = cells[Random.Range(0, cells.Count)];
+
+    //    return chosenMove;
+    //}
+
+    //public override EnemyActionResult GetAction(Enemy enemy)
+    //{
+
+    //    List<EnemyActionResult> results = new List<EnemyActionResult>();
+
+    //    foreach (var action in enemy.Actions.Where(w => w.IsActive).ToList())
+    //    {
+    //        List<EnemyActionResult> actionResults = GameGrid.Instance.GetTargetsOfActionNew(action, enemy.CellX, enemy.CellY);
+    //        results.AddRange(actionResults);
+
+    //    }
+
+    //    if (results.Count > 0)
+    //    {
+    //        return results[Random.Range(0, results.Count)];
+    //    }
+
+    //    return null;  
+
+    //}
+
+
+    public override ActionResult GetAction(Enemy enemy)
     {
-        //throw new NotImplementedException();
-
-        //GameGrid grid = enemySenses.Grid;
-        //Enemy thisEnemy = enemySenses.Enemy;
-
-        List<GridCell> cells = GameGrid.Instance.GetMoves(me.MoveAction, me.CellX, me.CellY);
-        //List<Vector2> cells = GameGrid.Instance.GetMovesNew(me.MoveClass, me.CellX, me.CellY);
-
-
-        //Vector2 chosenCoord = cells[Random.Range(0, cells.Count)];
-
-        //GridCell chosenMove = GameGrid.Instance.GetCell((int)chosenCoord.x, (int)chosenCoord.y);
-
-        //List<GridCell> cells = grid.GetMoves()
-
-        GridCell chosenMove = cells[Random.Range(0, cells.Count)];
-
-        return chosenMove;
-    }
-
-    public override EnemyActionResult GetAction(Enemy enemy)
-    {
-
-        List<EnemyActionResult> results = new List<EnemyActionResult>();
+        List<ActionResult> results = new List<ActionResult>();
+        if (enemy.MoveAction.IsActive)
+        {
+            List<ActionResult> moveResults = GameGrid.Instance.GetEnemyMoves(enemy.MoveAction, enemy.CellX, enemy.CellY);
+            results.AddRange(moveResults);
+        }
 
         foreach (var action in enemy.Actions.Where(w => w.IsActive).ToList())
         {
-            List<EnemyActionResult> actionResults = GameGrid.Instance.GetTargetsOfActionNew(action, enemy.CellX, enemy.CellY);
+            List<ActionResult> actionResults = GameGrid.Instance.GetTargetsOfActionNew(action, enemy.CellX, enemy.CellY);
             results.AddRange(actionResults);
 
         }
@@ -48,7 +74,7 @@ public class RandomBrain : Brain
             return results[Random.Range(0, results.Count)];
         }
 
-        return null;  
+        return null;
 
     }
 

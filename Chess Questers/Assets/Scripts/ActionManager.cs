@@ -33,7 +33,7 @@ public class ActionManager : MonoBehaviour
         OnMouseLoseFocus += HideToolTip;
         BattleEvents.OnPlayerStartTurn += SetActions;
         BattleEvents.OnPlayerEndTurn += HideActions;
-        BattleEvents.OnPlayerActionPerformed += UpdateActionsCount;
+        BattleEvents.OnActionFinish += UpdateActionsCount;
         BattleEvents.OnCellMoveSelected += CellSelected;
         BattleEvents.OnCellAttackSelected += CellSelected;
         BattleEvents.OnCellSelected += CellSelected;
@@ -46,7 +46,7 @@ public class ActionManager : MonoBehaviour
         OnMouseLoseFocus -= HideToolTip;
         BattleEvents.OnPlayerStartTurn -= SetActions;
         BattleEvents.OnPlayerEndTurn -= HideActions;
-        BattleEvents.OnPlayerActionPerformed -= UpdateActionsCount;
+        BattleEvents.OnActionFinish -= UpdateActionsCount;
         BattleEvents.OnCellMoveSelected -= CellSelected;
         BattleEvents.OnCellAttackSelected -= CellSelected;
         BattleEvents.OnCellSelected -= CellSelected;
@@ -134,7 +134,7 @@ public class ActionManager : MonoBehaviour
 
         //var width = _toolTip.preferredWidth > 300 ? 300 : _toolTip.preferredWidth;
         //_toolTipWindow.sizeDelta = new Vector2(width, _toolTip.preferredHeight);
-        Debug.Log($"{_toolTipWindow.sizeDelta}");
+      //  Debug.Log($"{_toolTipWindow.sizeDelta}");
 
         //_layoutElement.enabled = (toolTip.Length > 80);
 
@@ -151,7 +151,8 @@ public class ActionManager : MonoBehaviour
         _toolTipWindow.gameObject.SetActive(false);
     }
 
-    public void UpdateActionsCount(NewBattleAction action)
+
+    public void UpdateActionsCount()
     {
         ShowActions();
         _initiative.ActiveCharacter.ActionsRemaining--;

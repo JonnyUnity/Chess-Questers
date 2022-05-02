@@ -88,6 +88,8 @@ public class CameraHandler : MonoBehaviour
 
     }
 
+
+
     private IEnumerator MoveToCharacterCoroutine()
     {
         NewPosition = _transform.position;
@@ -108,6 +110,26 @@ public class CameraHandler : MonoBehaviour
        
         
     }
+
+    public IEnumerator SwapToCharacterCoroutine(Vector3 creaturePosition)
+    {
+        CreaturePosition = creaturePosition;
+        NewPosition = _transform.position;
+
+        var t = 0f;
+        var cameraMovementDuration = 1f;
+
+        while (t < 1)
+        {
+            // variable
+            t += Time.deltaTime / cameraMovementDuration;
+            _transform.position = Vector3.Lerp(NewPosition, CreaturePosition, t);
+
+            yield return null;
+        }
+
+    }
+
 
     private void MoveToCharacter()
     {
@@ -389,12 +411,12 @@ public class CameraHandler : MonoBehaviour
         _transform.position = creatureTransform.position;
     }
 
-    public void SwapToCharacter(Transform creatureTransform)
-    {
-        CreatureTransform = creatureTransform;
+    //public void SwapToCharacter(Transform creatureTransform)
+    //{
+    //    CreatureTransform = creatureTransform;
 
-        StartCoroutine(MoveToCharacterCoroutine());
-    }
+    //    StartCoroutine(MoveToCharacterCoroutine());
+    //}
 
     public void SwapToCharacter(Vector3 creaturePosition)
     {

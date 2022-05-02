@@ -55,6 +55,11 @@ public class BattleEvents : MonoBehaviour
     public static event Action<Creature> OnCreatureHover;
     public static event Action<Creature> OnCreatureUnhover;
 
+    public static event Action OnPassTurn;
+    public static event Action<NewBattleAction> OnActionStart;
+    public static event Action OnActionFinish;
+
+
 
     public static void BattleStarted()
     {
@@ -76,6 +81,11 @@ public class BattleEvents : MonoBehaviour
     public static void TurnStarted(Creature activeCharacter)
     {
         OnTurnStart?.Invoke(activeCharacter);
+    }
+
+    public static void PassedTurn()
+    {
+        OnPassTurn?.Invoke();
     }
 
     public static void StartPlayerTurn()
@@ -201,6 +211,18 @@ public class BattleEvents : MonoBehaviour
     {
         OnCreatureUnhover?.Invoke(creature);
     }
+
+
+    public static void ActionStarted(NewBattleAction action)
+    {
+        OnActionStart?.Invoke(action);
+    }
+
+    public static void ActionFinished()
+    {
+        OnActionFinish?.Invoke();
+    }
+
 
 
 }

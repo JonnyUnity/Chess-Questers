@@ -10,7 +10,6 @@ public class ActionResult : ScriptableObject
     public NewBattleAction Action;
     public int X;
     public int Y;
-    public int Damage;
 
     public List<Creature> Creatures;
 
@@ -18,13 +17,25 @@ public class ActionResult : ScriptableObject
     //public List<Creature> EnemyCreatures;
     //public List<Creature> FriendlyCreatures;
 
-    public ActionResult(GridCell cell, NewBattleAction action)
+    //public ActionResult(GridCell cell, NewBattleAction action)
+    //{
+    //    Cell = cell;
+    //    X = cell.X;
+    //    Y = cell.Y;
+    //    Action = action;
+    //    Damage = action.Damage;
+    //    Creatures = new List<Creature>();
+
+    //}
+
+    public void Init(GridCell cell, NewBattleAction action)
     {
         Cell = cell;
+        X = cell.X;
+        Y = cell.Y;
         Action = action;
-        Damage = action.Damage;
         Creatures = new List<Creature>();
-
     }
+
 
 }

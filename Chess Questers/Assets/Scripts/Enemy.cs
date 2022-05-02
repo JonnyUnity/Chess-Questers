@@ -10,7 +10,7 @@ public class Enemy : Creature
 
     public Brain Brain { get; private set; }
 
-    private EnemyActionResult _enemyAction;
+    private ActionResult _enemyAction;
 
     public void Init(NewEnemyJsonData data, EnemySO enemyObject)
     {
@@ -31,8 +31,7 @@ public class Enemy : Creature
         MoveAction = Instantiate(enemyObject.MoveAction);
         MoveClassText = MoveAction.name;
 
-        //Actions = GameManager.Instance.GetActionsWithIDs(data.Actions);
-       
+      
         foreach (var action in enemyObject.Actions)
         {
             var jsonData = data.BattleActions.Where(w => w.ID == action.ID).Single();
@@ -44,6 +43,7 @@ public class Enemy : Creature
         Health = data.Health;
         MaxHealth = data.MaxHealth;
         ActionsPerTurn = data.ActionsPerTurn;
+        ActionsRemaining = data.ActionsRemaining;
 
         Brain = enemyObject.Brain;
 
@@ -55,24 +55,90 @@ public class Enemy : Creature
 
 
 
-    public void CalcMove()
+    //public void CalcMove()
+    //{
+
+    //    GridCell move = Brain.GetMove(this);
+
+    //    TargetX = move.X;
+    //    TargetY = move.Y;
+    //    TargetPosition = move.Position;
+
+    //    State = CharacterStatesEnum.MOVING;
+
+    //}
+
+
+    //public EnemyActionResult CalcAttack()
+    //{
+    //    _enemyAction = Brain.GetAction(this);
+    //    return _enemyAction;
+    //}
+
+    public void CalcActions()
     {
 
-        GridCell move = Brain.GetMove(this);
 
-        TargetX = move.X;
-        TargetY = move.Y;
-        TargetPosition = move.Position;
+        StartCoroutine(ActionsCoroutine());
 
-        State = CharacterStatesEnum.MOVING;
+
+
+    }
+
+    private IEnumerator ActionsCoroutine()
+    {
+
+        Debug.Log("Start enemy turn!");
+
+        ActionsRemaining = ActionsPerTurn;
+
+        while (ActionsRemaining > 0)
+        {
+            var action = Brain.GetAction(this);
+
+            if (action != null)
+            {
+                // do action
+                Debug.Log("Start enemy action!");
+
+                Debug.Log(action.Action.Name);
+                yield return StartCoroutine(DoActionCoroutine(action));
+
+                //yield return new WaitForSeconds(2f);
+
+                Debug.Log("End enemy action!");
+            }
+
+            ActionsRemaining--;
+
+        }
+
+        Debug.Log("Finish enemy turn!");
+
+        BattleEvents.TurnOver();
 
     }
 
 
-    public EnemyActionResult CalcAttack()
-    {
-        _enemyAction = Brain.GetAction(this);
-        return _enemyAction;
-    }
+    //public ActionResult CalcAction()
+    //{
+    //    _enemyAction = Brain.GetAction(this);
+
+    //    if (_enemyAction == null)
+    //        return null;
+
+    //    //Debug.Log($"{ActionsRemaining} - {_enemyAction.Action.Name}");
+
+    //    DoAction(_enemyAction);
+
+    //    _enemyAction.Action.DoAction();
+    //    ActionsRemaining--;
+
+    //    return _enemyAction;
+                
+    //}
+
+
+
 
 }

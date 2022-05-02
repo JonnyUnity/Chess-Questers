@@ -3,7 +3,11 @@ guid: 5e163365289ff8948ae51a82cb49ce01
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - _playerCharacters: {instanceID: 0}
+  - _enemyList: {instanceID: 0}
+  - _partyFaction: {instanceID: 0}
+  - _characterPrefab: {fileID: 136616, guid: b11d7a556c35bec42ae249729568e7e0, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

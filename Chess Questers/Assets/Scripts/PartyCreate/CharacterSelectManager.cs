@@ -15,8 +15,11 @@ public class CharacterSelectManager : MonoBehaviour
     [SerializeField] private Image _portraitImage;
     [SerializeField] private GameObject _modelParent;
     [SerializeField] private ActionDisplay _actionDisplay;
-    
-    //private GameObject _characterGameObject;
+
+    [SerializeField] private GameObject _characterPrefab;
+
+    private GameObject _characterGameObject;
+    private PlayerCharacter _playerCharacer;
     //private Renderer _renderer;
 
     private string _name;
@@ -29,6 +32,8 @@ public class CharacterSelectManager : MonoBehaviour
     public void Start()
     {
         _prefabParentTransform = _modelParent.transform;
+        _characterGameObject = Instantiate(_characterPrefab, _prefabParentTransform);
+        _playerCharacer = _characterGameObject.GetComponent<PlayerCharacter>();
     }
 
 
@@ -38,12 +43,14 @@ public class CharacterSelectManager : MonoBehaviour
 
         CreatureModel creatureModel = GameManager.Instance.GetCreatureModel(newChar.CreatureModelID);
         _portraitImage.sprite = creatureModel.Portrait;
+        _playerCharacer.SetCharacterModel(creatureModel.ID);
 
-        if (_prefabParentTransform.childCount == 1)
-        {
-            Destroy(_prefabParentTransform.GetChild(0).gameObject);
-        }
-        var modelPrefab = Instantiate(creatureModel.ModelPrefab, _prefabParentTransform);
+        //if (_prefabParentTransform.childCount == 1)
+        //{
+        //    Destroy(_prefabParentTransform.GetChild(0).gameObject);
+        //}
+        //var modelPrefab = Instantiate(creatureModel.ModelPrefab, _prefabParentTransform);
+        //var modelPrefab = Instantiate()
 
         _nameText.text = newChar.Name;
         _actionDisplay.SetActions(newChar.PlayerClass);

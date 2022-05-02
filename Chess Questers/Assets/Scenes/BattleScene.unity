@@ -5819,6 +5819,7 @@ MonoBehaviour:
   State: 0
   CreaturePanel: {fileID: 2035768993}
   CameraRig: {fileID: 1498793301}
+  _characterPrefab: {fileID: 136616, guid: b11d7a556c35bec42ae249729568e7e0, type: 3}
   _gridLines: {fileID: 1607832117}
   _playerCharacters: {fileID: 11400000, guid: 9176bf84a1762754db0774cf6be51e46, type: 2}
   _enemies: {fileID: 11400000, guid: 788a405278bcf0b45995559e9eab5b9b, type: 2}

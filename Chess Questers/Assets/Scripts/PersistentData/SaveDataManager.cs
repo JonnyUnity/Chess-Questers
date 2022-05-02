@@ -19,7 +19,7 @@ public class SaveDataManager
 
         string saveData = JsonUtility.ToJson(questData);
 
-        Debug.Log(saveData);
+        //Debug.Log(saveData);
         File.WriteAllText(dir + filename, saveData);
 
         return true;

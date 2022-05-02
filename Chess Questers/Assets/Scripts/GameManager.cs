@@ -26,6 +26,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private CreatureRuntimeSet _playerCharacters;
     [SerializeField] private CreatureRuntimeSet _enemyList;
     [SerializeField] private Faction _partyFaction;
+
+    [SerializeField] private GameObject _characterPrefab;
     
 
     public void Awake()
@@ -291,9 +293,11 @@ public class GameManager : Singleton<GameManager>
 
     public GameObject GetCreatureModelPrefab(int modelID)
     {
-        var model = _creatureModels.Where(w => w.ID == modelID).Single();
+        return _characterPrefab;
 
-        return model.ModelPrefab;
+        //var model = _creatureModels.Where(w => w.ID == modelID).Single();
+
+        //return model.ModelPrefab;
     }
 
 
