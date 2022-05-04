@@ -46,8 +46,8 @@ public class Creature : MonoBehaviour
 
 
     public Vector3 Position;
-    public int CellX;
-    public int CellY;
+    public int X;
+    public int Y;
     public int CurrentFacing;
 
     private Camera _cam;
@@ -153,8 +153,8 @@ public class Creature : MonoBehaviour
 
     public void UpdatePosition(int cellX, int cellY, Vector3 position, int currentFacing)
     {
-        CellX = cellX;
-        CellY = cellY;
+        X = cellX;
+        Y = cellY;
         Position = position;
         CurrentFacing = currentFacing;
     }
@@ -165,38 +165,12 @@ public class Creature : MonoBehaviour
             return;
 
 
-        CellX = TargetX;
-        CellY = TargetY;
+        X = TargetX;
+        Y = TargetY;
         Position = TargetPosition;
 
     }
 
-
-
-    //protected virtual void Update()
-    //{
-
-    //    if (State != CharacterStatesEnum.MOVING) return;
-
-    //    //Vector3 direction = (TargetPosition - Transform.position).normalized;
-    //    //Transform.position += MoveSpeed * Time.deltaTime * direction;
-
-    //    float t = CurrentMoveTime / TotalMoveTime;
-
-
-
-    //    Transform.position = Vector3.Lerp(Transform.position, TargetPosition, t);
-    //    CurrentMoveTime += Time.deltaTime;
-
-    //    if (Vector3.Distance(Transform.position, TargetPosition) < 0.1f)
-    //    {
-    //        Transform.SetPositionAndRotation(TargetPosition, _orientation);
-
-    //        UpdatePosition(TargetX, TargetY, TargetPosition, CurrentFacing);
-    //        State = CharacterStatesEnum.IDLE;
-    //    }
-
-    //}
 
     public virtual void DoAction(ActionResult actionResult)
     {
@@ -254,10 +228,7 @@ public class Creature : MonoBehaviour
             TargetY = actionResult.Y;
             TargetPosition = actionResult.Cell.Position;
 
-
-            yield return StartCoroutine(MoveCoroutine(action));
-            
-            //MoveCoroutine();
+            yield return StartCoroutine(MoveCoroutine(action));            
         }
 
 
@@ -265,19 +236,12 @@ public class Creature : MonoBehaviour
         {
             Debug.Log("Actioning!");
             yield return StartCoroutine(ActionCoroutine(actionResult));
-            
-            //foreach (Creature creature in actionResult.Creatures)
-            //{
-            //    BattleEvents.TakeDamage(creature, actionResult.Damage);
-            //}
-
         }
 
         action.DoAction();
 
         yield return null;
 
-        
     }
 
 
@@ -291,10 +255,6 @@ public class Creature : MonoBehaviour
         
 
         State = CharacterStatesEnum.MOVING;
-
-        //StartCoroutine(MoveCoroutine());
-        
-
 
 
     }
@@ -330,32 +290,33 @@ public class Creature : MonoBehaviour
         _animator.SetBool("IsMoving", false);
 
         // change facing?
-        int diffX = TargetX - CellX;
-        int diffY = TargetY - CellY;
-        Debug.Log("DiffX = " + diffX + " DiffY = " + diffY);
-        if (Math.Abs(diffX) >= Math.Abs(diffY))
-        {
-            if (diffX > 0)
-            {
-                _orientation = Quaternion.Euler(0, 90, 0);
-            }
-            else
-            {
-                _orientation = Quaternion.Euler(0, -90, 0);
-            }
+        //int diffX = TargetX - CellX;
+        //int diffY = TargetY - CellY;
+        //Debug.Log("DiffX = " + diffX + " DiffY = " + diffY);
+        //if (Math.Abs(diffX) >= Math.Abs(diffY))
+        //{
+        //    if (diffX > 0)
+        //    {
+        //        _orientation = Quaternion.Euler(0, 90, 0);
+        //    }
+        //    else
+        //    {
+        //        _orientation = Quaternion.Euler(0, -90, 0);
+        //    }
 
-        }
-        else
-        {
-            if (diffY > 0)
-            {
-                _orientation = Quaternion.Euler(0, 0, 0);
-            }
-            else
-            {
-                _orientation = Quaternion.Euler(0, 180, 0);
-            }
-        }
+        //}
+        //else
+        //{
+        //    if (diffY > 0)
+        //    {
+        //        _orientation = Quaternion.Euler(0, 0, 0);
+        //    }
+        //    else
+        //    {
+        //        _orientation = Quaternion.Euler(0, 180, 0);
+        //    }
+        //}
+        Reorientate(TargetX, TargetY);
 
 
         Transform.SetPositionAndRotation(TargetPosition, _orientation);
@@ -363,9 +324,11 @@ public class Creature : MonoBehaviour
 
         Debug.Log("Finished moving!");
         yield return new WaitForSeconds(1f);
+        
         State = CharacterStatesEnum.IDLE;
 
         UpdatePosition(TargetX, TargetY, TargetPosition, CurrentFacing);
+        BattleEvents.CreatureMoved(this);
     }
 
 
@@ -388,9 +351,48 @@ public class Creature : MonoBehaviour
         }
 
         // set new facing
-        int diffX = actionResult.X - CellX;
-        int diffY = actionResult.Y - CellY;
-        Debug.Log("DiffX = " + diffX + " DiffY = " + diffY);
+        //int diffX = actionResult.X - CellX;
+        //int diffY = actionResult.Y - CellY;
+        //Debug.Log("DiffX = " + diffX + " DiffY = " + diffY);
+        //if (Math.Abs(diffX) >= Math.Abs(diffY))
+        //{
+        //    if (diffX > 0)
+        //    {
+        //        _orientation = Quaternion.Euler(0, 90, 0);
+        //    }
+        //    else
+        //    {
+        //        _orientation = Quaternion.Euler(0, -90, 0);
+        //    }
+
+        //}
+        //else
+        //{
+        //    if (diffY > 0)
+        //    {
+        //        _orientation = Quaternion.Euler(0, 0, 0);
+        //    }
+        //    else
+        //    {
+        //        _orientation = Quaternion.Euler(0, 180, 0);
+        //    }
+        //}
+
+        Reorientate(actionResult.X, actionResult.Y);
+
+        yield return new WaitForSeconds(_animator.GetCurrentAnimatorStateInfo(0).length + 1);
+
+        Transform.rotation = _orientation;
+
+        Debug.Log("finished action!");
+        
+
+    }
+
+    private void Reorientate(int targetX, int targetY)
+    {
+        int diffX = targetX - X;
+        int diffY = targetY - Y;
         if (Math.Abs(diffX) >= Math.Abs(diffY))
         {
             if (diffX > 0)
@@ -401,7 +403,6 @@ public class Creature : MonoBehaviour
             {
                 _orientation = Quaternion.Euler(0, -90, 0);
             }
-
         }
         else
         {
@@ -414,16 +415,6 @@ public class Creature : MonoBehaviour
                 _orientation = Quaternion.Euler(0, 180, 0);
             }
         }
-
-
-        Debug.Log(_animator.GetCurrentAnimatorStateInfo(0).length + " _ " + _animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
-        yield return new WaitForSeconds(_animator.GetCurrentAnimatorStateInfo(0).length + _animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
-
-        Transform.rotation = _orientation;
-
-        Debug.Log("finished action!");
-        
-
     }
 
     public virtual int GetAttackDamage()

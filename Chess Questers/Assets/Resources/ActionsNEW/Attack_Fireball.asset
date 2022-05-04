@@ -39,7 +39,7 @@ MonoBehaviour:
   IsRanged: 1
   IsAttack: 1
   IncludeDiagonals: 0
-  ActionAnimationTrigger: DoMeleeAttack
+  ActionAnimationTrigger: CastSpell
   ActionTemplatePrefab: {fileID: 733881962699316142, guid: 2861ff0ce9ee6dc4899aeae1f7c039bd, type: 3}
   AdditionalAttackedCellOffsets:
   - {x: 2, y: 0}

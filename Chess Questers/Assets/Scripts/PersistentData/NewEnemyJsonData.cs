@@ -68,8 +68,8 @@ public class NewEnemyJsonData
             BattleActions.Add(new BattleActionJsonData(action));
         }
 
-        CellX = enemy.CellX;
-        CellY = enemy.CellY;
+        CellX = enemy.X;
+        CellY = enemy.Y;
         Position = enemy.Position;
         CurrentFacing = enemy.CurrentFacing;
     }

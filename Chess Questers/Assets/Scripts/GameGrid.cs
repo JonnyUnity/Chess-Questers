@@ -136,6 +136,13 @@ public class GameGrid : Singleton<GameGrid>
         }
 
         _initiative.ActiveCharacter.LookAtTarget(cell);
+
+        Creature highlightCreature = GetCellOccupant(cell.X, cell.Y);
+        if (highlightCreature != null)
+        {
+            BattleEvents.CreatureHovered(highlightCreature);
+        }
+
         BattleEvents.HighlightCell(cell);
 
         //if (cell.IsSelectable)
@@ -185,7 +192,7 @@ public class GameGrid : Singleton<GameGrid>
             _currentActionTemplate.SetActive(false);
         }
 
-        //BattleEvents.CellUnhighlighted();
+        BattleEvents.CreatureUnhovered(null);
         _initiative.ActiveCharacter.ResetLook();
     }
 
@@ -237,8 +244,8 @@ public class GameGrid : Singleton<GameGrid>
             Debug.Log("Action: " + action.Name + " selected!");
 
             _currentAction = action;
-            int x = _initiative.ActiveCharacter.CellX;
-            int y = _initiative.ActiveCharacter.CellY;
+            int x = _initiative.ActiveCharacter.X;
+            int y = _initiative.ActiveCharacter.Y;
 
             if (action.IsRanged)
             {
@@ -456,7 +463,7 @@ public class GameGrid : Singleton<GameGrid>
     public void AddCreaturePosition(Creature creature)
     {
         //GridCell cell = GetCell(creature.CellX, creature.CellY);
-        Vector2 cellCoords = new Vector2(creature.CellX, creature.CellY);
+        Vector2 cellCoords = new Vector2(creature.X, creature.Y);
 
         if (creature.IsFriendly)
         {
@@ -470,7 +477,7 @@ public class GameGrid : Singleton<GameGrid>
 
     public void UpdateCreaturePosition(Creature creature)
     {
-        Vector2 cellCoords = new Vector2(creature.CellX, creature.CellY);
+        Vector2 cellCoords = new Vector2(creature.X, creature.Y);
 
         if (creature.IsFriendly)
         {
@@ -487,7 +494,7 @@ public class GameGrid : Singleton<GameGrid>
 
     private bool IsCellOccupied(CreatureRuntimeSet creatures, int x, int y)
     {
-        return creatures.Items.Where(w => w.CellX == x && w.CellY == y).Any();
+        return creatures.Items.Where(w => w.X == x && w.Y == y).Any();
     }
 
 
@@ -514,7 +521,7 @@ public class GameGrid : Singleton<GameGrid>
 
 
 
-        var creature = creatures.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
+        var creature = creatures.Items.Where(w => w.X == x && w.Y == y).SingleOrDefault();
 
         if (creature != null)
         {
@@ -546,7 +553,7 @@ public class GameGrid : Singleton<GameGrid>
 
         foreach (GridCell cell in attackedCells)
         {
-            var creature = creatures.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
+            var creature = creatures.Items.Where(w => w.X == x && w.Y == y).SingleOrDefault();
 
             if (creature != null)
             {
@@ -568,12 +575,12 @@ public class GameGrid : Singleton<GameGrid>
 
     private bool IsCellOccupied(int x, int y)
     {
-        return _initiative.Items.Where(w => w.CellX == x && w.CellY == y).Any();
+        return _initiative.Items.Where(w => w.X == x && w.Y == y).Any();
     }
 
     private Creature GetCellOccupant(int x, int y)
     {
-        return _initiative.Items.Where(w => w.CellX == x && w.CellY == y).SingleOrDefault();
+        return _initiative.Items.Where(w => w.X == x && w.Y == y).SingleOrDefault();
     }
 
 
@@ -807,7 +814,7 @@ public class GameGrid : Singleton<GameGrid>
         PlayerCharacter activeCharacter = (PlayerCharacter)_initiative.ActiveCharacter;
 
         NewBattleAction move = activeCharacter.MoveAction;
-        ShowMovesForPlayer(move, activeCharacter.CellX, activeCharacter.CellY);
+        ShowMovesForPlayer(move, activeCharacter.X, activeCharacter.Y);
 
 
     }

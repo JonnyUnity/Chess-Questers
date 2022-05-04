@@ -58,13 +58,13 @@ public class RandomBrain : Brain
         List<ActionResult> results = new List<ActionResult>();
         if (enemy.MoveAction.IsActive)
         {
-            List<ActionResult> moveResults = GameGrid.Instance.GetEnemyMoves(enemy.MoveAction, enemy.CellX, enemy.CellY);
+            List<ActionResult> moveResults = GameGrid.Instance.GetEnemyMoves(enemy.MoveAction, enemy.X, enemy.Y);
             results.AddRange(moveResults);
         }
 
         foreach (var action in enemy.Actions.Where(w => w.IsActive).ToList())
         {
-            List<ActionResult> actionResults = GameGrid.Instance.GetTargetsOfActionNew(action, enemy.CellX, enemy.CellY);
+            List<ActionResult> actionResults = GameGrid.Instance.GetTargetsOfActionNew(action, enemy.X, enemy.Y);
             results.AddRange(actionResults);
 
         }

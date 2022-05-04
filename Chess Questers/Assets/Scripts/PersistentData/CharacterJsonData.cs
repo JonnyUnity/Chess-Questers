@@ -93,8 +93,8 @@ public class CharacterJsonData
         CreatureModelID = c.CreatureModelID;
         Initiative = c.Initiative;
 
-        CellX = c.CellX;
-        CellY = c.CellY;
+        CellX = c.X;
+        CellY = c.Y;
         Position = c.Position;
         CurrentFacing = c.CurrentFacing;
     }

@@ -47,8 +47,8 @@ public class Enemy : Creature
 
         Brain = enemyObject.Brain;
 
-        CellX = data.CellX;
-        CellY = data.CellY;
+        X = data.CellX;
+        Y = data.CellY;
         Position = data.Position;
         CurrentFacing = data.CurrentFacing;
     }

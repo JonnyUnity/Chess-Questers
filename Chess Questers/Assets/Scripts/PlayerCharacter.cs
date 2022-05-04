@@ -82,8 +82,8 @@ public class PlayerCharacter : Creature
         Health = data.Health;
         MaxHealth = data.MaxHealth;
 
-        CellX = data.CellX;
-        CellY = data.CellY;
+        X = data.CellX;
+        Y = data.CellY;
         Position = data.Position;
         CurrentFacing = data.CurrentFacing;
     }

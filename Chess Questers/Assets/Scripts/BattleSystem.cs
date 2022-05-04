@@ -90,7 +90,7 @@ public class BattleSystem : Singleton<BattleSystem>
         
 
         //EventSystem.OnBattleStarted += BattleStarted;
-        BattleEvents.OnBattleVictory += GoToVictory;
+        //BattleEvents.OnBattleVictory += GoToVictory;
         BattleEvents.OnTurnStart += StartNextTurn;
 
 
@@ -115,7 +115,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private void OnDisable()
     {
-        BattleEvents.OnBattleVictory -= GoToVictory;
+        //BattleEvents.OnBattleVictory -= GoToVictory;
         BattleEvents.OnTurnStart -= StartNextTurn;
 
         //BattleEvents.OnCellMoveHighlighted -= HighlightCell;
@@ -921,7 +921,14 @@ public class BattleSystem : Singleton<BattleSystem>
         SceneManager.LoadSceneAsync(3);
     }
 
+    public void TestButton()
+    {
+        BattleEvents.Loss();
+    }
+
 }
+
+
 
 
 public enum BattleStatesEnum

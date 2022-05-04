@@ -146,6 +146,13 @@ public class GameManager : Singleton<GameManager>
 
     }
 
+
+    public void EndQuest()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+
     //public QuestJsonData LoadQuest(List<ImprovedCharacter> adventurers, List<ImprovedCharacter> enemies)
     //{
     //    _questData = SaveDataManager.Load();
