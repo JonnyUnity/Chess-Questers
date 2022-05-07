@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f39767ac5df3f4946b78114124172735, type: 3}
+  m_Name: Skeleton
+  m_EditorClassIdentifier: 
+  ID: 3
+  Name: Skeleton
+  Health: 3
+  ActionsPerTurn: 2
+  CreatureModelID: 0
+  ModelPrefab: {fileID: 2242180899812230472, guid: d2aaa9030ebe0d54bbc327d32237125d, type: 3}
+  Portrait: {fileID: 21300000, guid: a38512e49e3a6d44ea8027779e3b198b, type: 3}
+  Brain: {fileID: 11400000, guid: aa95d10291c5d19498dbe6097b523013, type: 2}
+  Faction: {fileID: 11400000, guid: 61717dd44940de24b810a7b658360c9a, type: 2}
+  MoveAction: {fileID: 11400000, guid: e9ec6e9f49315ef4d869829eb80dfce1, type: 2}
+  Actions:
+  - {fileID: 11400000, guid: 368c661b61f35e648a459c1958103c4d, type: 2}
+  - {fileID: 11400000, guid: 9f319624a6cf33a4e866b04d249bd12a, type: 2}

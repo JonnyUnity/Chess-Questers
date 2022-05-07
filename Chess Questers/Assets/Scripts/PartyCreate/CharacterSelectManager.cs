@@ -34,6 +34,7 @@ public class CharacterSelectManager : MonoBehaviour
         _prefabParentTransform = _modelParent.transform;
         _characterGameObject = Instantiate(_characterPrefab, _prefabParentTransform);
         _playerCharacer = _characterGameObject.GetComponent<PlayerCharacter>();
+        _playerCharacer.SetPartySelectMode();
     }
 
 

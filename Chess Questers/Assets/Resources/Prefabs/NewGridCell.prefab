@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1596664623871405919}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.01, z: 0}
-  m_LocalScale: {x: 4.9, y: 4.9, z: 1}
+  m_LocalScale: {x: 1.99, y: 1.99, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -111,12 +111,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 870288b999204de4ab256e102cc80ae6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _highlight: {fileID: 0}
   _highlightColour: {r: 1, g: 1, b: 1, a: 0}
   _moveColour: {r: 0.015797434, g: 0.6698113, b: 0.13028087, a: 1}
   _attackColur: {r: 0, g: 0, b: 0, a: 0}
-  OccupiedUnit: {fileID: 0}
-  IsMove: 0
-  IsAttack: 0
   CellNumberText: {fileID: 0}
   MoveText: {fileID: 0}
+  IsSelectable: 0

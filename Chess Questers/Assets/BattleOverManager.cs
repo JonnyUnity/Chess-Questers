@@ -6,13 +6,11 @@ using UnityEngine.UI;
 
 public class BattleOverManager : MonoBehaviour
 {
-
+    private CanvasGroup _canvasGroup;
+    [SerializeField] private GameObject _panelBackground;
     [SerializeField] private TextMeshProUGUI _header;
     [SerializeField] private Button _continueButton;
 
-    private Animator _animator;
-
-    
 
     private void OnEnable()
     {
@@ -30,17 +28,28 @@ public class BattleOverManager : MonoBehaviour
 
     void Start()
     {
-        _animator = GetComponent<Animator>();    
+        _canvasGroup = GetComponent<CanvasGroup>();
     }
-
-
 
 
     public void ShowVictoryDetails()
     {
         _header.text = "VICTORY!";
         _continueButton.onClick.AddListener(ContinueQuest);
-        _animator.SetTrigger("Show");
+        AnimatePanel();
+        _continueButton.interactable = true;
+    }
+
+
+    private void AnimatePanel()
+    {
+        _continueButton.interactable = false;
+        _canvasGroup.interactable = false;
+        _canvasGroup.blocksRaycasts = false;
+        LeanTween.alphaCanvas(_canvasGroup, 1f, 1f);
+        LeanTween.moveY(_panelBackground.GetComponent<RectTransform>(), 0, 1f).setEaseOutQuint().setDelay(0.5f);
+        _canvasGroup.interactable = true;
+        _canvasGroup.blocksRaycasts = true;
     }
 
 
@@ -48,7 +57,7 @@ public class BattleOverManager : MonoBehaviour
     {
         _header.text = "DEFEAT!";
         _continueButton.onClick.AddListener(EndQuest);
-        _animator.SetTrigger("Show");
+        AnimatePanel();
     }
 
 
@@ -69,8 +78,5 @@ public class BattleOverManager : MonoBehaviour
         
 
     }
-
-
-
 
 }

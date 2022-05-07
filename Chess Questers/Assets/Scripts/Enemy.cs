@@ -102,7 +102,7 @@ public class Enemy : Creature
                 Debug.Log("Start enemy action!");
 
                 Debug.Log(action.Action.Name);
-                yield return StartCoroutine(DoActionCoroutine(action));
+                yield return StartCoroutine(DoTurnCoroutine(action));
 
                 //yield return new WaitForSeconds(2f);
 

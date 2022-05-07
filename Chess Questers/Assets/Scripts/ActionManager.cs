@@ -86,7 +86,7 @@ public class ActionManager : MonoBehaviour
 
         foreach (NewBattleAction action in _actions)
         {
-            Debug.Log(action);
+           // Debug.Log(action);
             var buttonObj = Instantiate(_buttonPrefab, _actionsContainer.transform);
             buttonObj.GetComponent<ActionButton>().SetAction(action);
             _actionButtons.Add(buttonObj);

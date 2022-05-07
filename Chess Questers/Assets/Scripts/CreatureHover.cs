@@ -14,6 +14,9 @@ public class CreatureHover : MonoBehaviour
 
     public void OnMouseEnter()
     {
+        if (creature.State == CharacterStatesEnum.PARTY_SELECT)
+            return;
+
         BattleEvents.CreatureHovered(creature);
     }
 
@@ -21,6 +24,9 @@ public class CreatureHover : MonoBehaviour
 
     public void OnMouseExit()
     {
+        if (creature.State == CharacterStatesEnum.PARTY_SELECT)
+            return;
+
         BattleEvents.CreatureUnhovered(creature);
     }
 

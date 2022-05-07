@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -60,6 +61,10 @@ public class Creature : MonoBehaviour
     [SerializeField] protected Slider _healthSlider;
     [SerializeField] protected TMPro.TextMeshProUGUI _nameText;
 
+    [SerializeField] protected GameObject _materialObject;
+
+    private CreatureHealthBar _creatureHealthBar;
+
     public Faction Faction;
 
 
@@ -77,11 +82,12 @@ public class Creature : MonoBehaviour
         _orientation = transform.rotation;
         Actions = new List<NewBattleAction>();
         _animator = GetComponent<Animator>();
+        _creatureHealthBar = GetComponent<CreatureHealthBar>();
     }
 
     protected virtual void OnEnable()
     {
-        BattleEvents.OnTakeDamage += TakeDamage;
+        //BattleEvents.OnTakeDamageStart += TakeDamage;
         //BattleEvents.OnCreatureMoved += UpdatePositionNew;
         BattleEvents.OnStartCombat += ResetActions;
         BattleEvents.OnPassTurn += PassTurn;
@@ -91,7 +97,7 @@ public class Creature : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-        BattleEvents.OnTakeDamage -= TakeDamage;
+        //BattleEvents.OnTakeDamageStart -= TakeDamage;
         //BattleEvents.OnCreatureMoved -= UpdatePositionNew;
         BattleEvents.OnStartCombat -= ResetActions;
         BattleEvents.OnPassTurn -= PassTurn;
@@ -133,21 +139,94 @@ public class Creature : MonoBehaviour
     }
 
 
+    public bool TakeDamageNew(int healthChange)
+    {
+        //Debug.Log("TakeDamageNew Start!");
+        StartCoroutine(CreatureSuffersDamage(healthChange));
+
+        //Debug.Log("TakeDamageNew Finish!");
+        return true;
+    }
+
     private void TakeDamage(Creature creature, int healthChange)
     {
         if (creature != this)
             return;
 
+        StartCoroutine(CreatureSuffersDamage(healthChange));
+
+        //Health -= healthChange; // assume no healing actions for now...
+        ////_healthSlider.value = Health;
+
+        //if (Health <= 0)
+        //{
+        //    Health = 0;
+        //    // audio, fx to be handled by those subscribed to the event.
+
+        //    // death animation!
+        //    StartCoroutine(CreatureDied());
+
+            
+        //}
+    }
+
+
+    public IEnumerator CreatureSuffersDamage(int healthChange)
+    {
+        Debug.Log("CreatureSuffersDamage Start!");
+        State = CharacterStatesEnum.BEING_ATTACKED;
         Health -= healthChange; // assume no healing actions for now...
-        //_healthSlider.value = Health;
+        BattleEvents.TakeDamage(this, healthChange);
 
         if (Health <= 0)
         {
             Health = 0;
+            _animator.SetTrigger("Dies");
             // audio, fx to be handled by those subscribed to the event.
-            BattleEvents.CharacterDied(creature);
-            Destroy(gameObject);
+
+            // death animation!
+            //Debug.Log("Creature died start!");
+            ////yield return StartCoroutine(CreatureDied());
+            
+            //Debug.Log("Creature died finish!");
+
         }
+        else
+        {
+            _animator.SetTrigger("Hurt");
+            Debug.Log("Damage resolved for " + Name);
+            //BattleEvents.TakenDamageResolved(this);
+        }
+
+
+        yield return new WaitUntil(() => State != CharacterStatesEnum.BEING_ATTACKED);
+        BattleEvents.TakenDamageResolved(this);
+
+        // raise event that damage has been resolved.
+        Debug.Log("CreatureSuffersDamage Finish!");
+
+
+    }
+
+
+    private void DamageResolved()
+    {
+        State = CharacterStatesEnum.IDLE;
+    }
+
+    private void CreatureDied()
+    {
+        //yield return new WaitForSeconds(2f);
+
+        Faction.Friendlies.Remove(this);
+        State = CharacterStatesEnum.IDLE;
+
+        BattleEvents.CharacterDied(this);
+
+        LeanTween.alpha(_materialObject, 0, 1f);
+
+        Destroy(gameObject, 4f);
+
     }
 
 
@@ -174,13 +253,13 @@ public class Creature : MonoBehaviour
 
     public virtual void DoAction(ActionResult actionResult)
     {
-        Debug.Log("Action started");
-        BattleEvents.ActionStarted(actionResult.Action);
+        //Debug.Log("Action started");
+        //BattleEvents.ActionStarted(actionResult.Action);
 
-        StartCoroutine(DoActionCoroutine(actionResult));
+        StartCoroutine(DoTurnCoroutine(actionResult));
 
-        Debug.Log("Action finished");
-        BattleEvents.ActionFinished();
+        //Debug.Log("Action finished");
+        //BattleEvents.ActionFinished();
 
         //var action = actionResult.Action;
 
@@ -217,10 +296,12 @@ public class Creature : MonoBehaviour
     }
 
 
-    protected IEnumerator DoActionCoroutine(ActionResult actionResult)
+    protected IEnumerator DoTurnCoroutine(ActionResult actionResult)
     {
+
         var action = actionResult.Action;
-        
+        BattleEvents.ActionStarted(action);
+        Debug.Log("Action started");
 
         if (action.IsMove)
         {
@@ -240,7 +321,10 @@ public class Creature : MonoBehaviour
 
         action.DoAction();
 
-        yield return null;
+        Debug.Log("Action finished");
+        BattleEvents.ActionFinished();
+
+        //yield return null;
 
     }
 
@@ -272,7 +356,13 @@ public class Creature : MonoBehaviour
 
         State = CharacterStatesEnum.MOVING;
         Debug.Log("Started moving!");
-        _animator.SetBool("IsMoving", true);
+        Transform.LookAt(TargetPosition);
+
+        //_animator.SetBool("IsMoving", true);
+        if (!string.IsNullOrEmpty(action.MoveAnimationTrigger))
+        {
+            _animator.SetBool(action.MoveAnimationTrigger, true);
+        }
 
         while (CurrentMoveTime < TotalMoveTime)
         {
@@ -282,12 +372,18 @@ public class Creature : MonoBehaviour
             }
             else
             {
+
                 Transform.position = Vector3.Lerp(startPosition, TargetPosition, CurrentMoveTime / TotalMoveTime);
             }
             CurrentMoveTime += Time.deltaTime;
             yield return null;
         }
-        _animator.SetBool("IsMoving", false);
+        if (!string.IsNullOrEmpty(action.MoveAnimationTrigger))
+        {
+            _animator.SetBool(action.MoveAnimationTrigger, false);
+        }
+
+        //_animator.SetBool("IsMoving", false);
 
         // change facing?
         //int diffX = TargetX - CellX;
@@ -347,40 +443,22 @@ public class Creature : MonoBehaviour
 
         foreach (Creature creature in actionResult.Creatures)
         {
-            BattleEvents.TakeDamage(creature, actionResult.Action.Damage);
+            //BattleEvents.TakeDamage(creature, actionResult.Action.Damage);
+            //creature.TakeDamageNew(action.Damage);
+            StartCoroutine(creature.CreatureSuffersDamage(action.Damage));
+
+            // wait for damage to resolve before continuing.
+
         }
+        //yield return new WaitWhile(() => actionResult.Creatures.Select(s => s.State == CharacterStatesEnum.BEING_ATTACKED).Any());
 
-        // set new facing
-        //int diffX = actionResult.X - CellX;
-        //int diffY = actionResult.Y - CellY;
-        //Debug.Log("DiffX = " + diffX + " DiffY = " + diffY);
-        //if (Math.Abs(diffX) >= Math.Abs(diffY))
-        //{
-        //    if (diffX > 0)
-        //    {
-        //        _orientation = Quaternion.Euler(0, 90, 0);
-        //    }
-        //    else
-        //    {
-        //        _orientation = Quaternion.Euler(0, -90, 0);
-        //    }
-
-        //}
-        //else
-        //{
-        //    if (diffY > 0)
-        //    {
-        //        _orientation = Quaternion.Euler(0, 0, 0);
-        //    }
-        //    else
-        //    {
-        //        _orientation = Quaternion.Euler(0, 180, 0);
-        //    }
-        //}
+        yield return new WaitWhile(() => BattleSystem.Instance.State == BattleStatesEnum.RESOLVING_PLAYER_ACTION);
 
         Reorientate(actionResult.X, actionResult.Y);
 
         yield return new WaitForSeconds(_animator.GetCurrentAnimatorStateInfo(0).length + 1);
+
+
 
         Transform.rotation = _orientation;
 
@@ -430,14 +508,13 @@ public class Creature : MonoBehaviour
     }
 
 
-
-
-
 }
 
 public enum CharacterStatesEnum
 {
     IDLE,
     MOVING,
-    ATTACKING
+    ATTACKING,
+    BEING_ATTACKED,
+    PARTY_SELECT
 }

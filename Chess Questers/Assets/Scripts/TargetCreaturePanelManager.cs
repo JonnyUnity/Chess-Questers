@@ -53,7 +53,7 @@ public class TargetCreaturePanelManager : MonoBehaviour
 
         if (_previousCreature != creature)
         {
-            _portrait.sprite = creature.PortraitSprite;
+            _portrait.sprite = creature.PortraitSprite;     
             _name.text = creature.Name;
 
             _healthValues.text = $"{creature.Health}/{creature.MaxHealth}";

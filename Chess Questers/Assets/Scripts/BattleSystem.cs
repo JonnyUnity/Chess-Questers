@@ -76,11 +76,13 @@ public class BattleSystem : Singleton<BattleSystem>
     [SerializeField] private IntVariable TurnNumber;
     [SerializeField] private IntVariable TurnPointer;
 
+    private List<Creature> _affectedCreatures;
+
     public void Awake()
     {
         _camera = Camera.main;
-
-        
+        _affectedCreatures = new List<Creature>();
+                
 
         State = BattleStatesEnum.START;
         UIHandler = CreaturePanel.GetComponent<BattleUIHandler>();
@@ -107,11 +109,33 @@ public class BattleSystem : Singleton<BattleSystem>
 
         BattleEvents.OnCellSelected += SelectCell;
 
+        BattleEvents.OnTakeDamageStart += AddToActionQueue;
+        BattleEvents.OnTakeDamageFinish += RemoveFromActionQueue;
+
         //BattleEvents.OnDeath += CharacterDied;
 
     }
 
+    private void RemoveFromActionQueue(Creature creature)
+    {
+        if (_affectedCreatures.Contains(creature))
+        {
+            _affectedCreatures.Remove(creature);
+        }
+        if (_affectedCreatures.Count == 0)
+        {
+            State = BattleStatesEnum.PLAYER_IDLE;
+        }
+    }
 
+    private void AddToActionQueue(Creature creature, int damage)
+    {
+        if (State != BattleStatesEnum.RESOLVING_PLAYER_ACTION)
+        {
+            State = BattleStatesEnum.RESOLVING_PLAYER_ACTION;
+        }
+        _affectedCreatures.Add(creature);
+    }
 
     private void OnDisable()
     {
@@ -133,6 +157,9 @@ public class BattleSystem : Singleton<BattleSystem>
         BattleEvents.OnCellSelected -= SelectCell;
 
         //BattleEvents.OnDeath -= CharacterDied;
+
+        BattleEvents.OnTakeDamageStart -= AddToActionQueue;
+        BattleEvents.OnTakeDamageFinish -= RemoveFromActionQueue;
 
         _playerCharacters.Empty();
         _enemies.Empty();
@@ -179,6 +206,8 @@ public class BattleSystem : Singleton<BattleSystem>
         StartCoroutine(PlayerActionCoroutine(cell));
 
     }
+
+    //public void 
 
     //private void SetupAttackTemplate(ActionClass action)
     //{
@@ -241,7 +270,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
         UIHandler.UpdateStateText("PLAYER ACTION");
 
-        Debug.Log("PLAYER ACTION!");
+        //Debug.Log("PLAYER ACTION!");
 
         //NewBattleAction action = _playerAction.Action;
 
@@ -534,13 +563,13 @@ public class BattleSystem : Singleton<BattleSystem>
         if (_activeCharacter.IsFriendly)
         {
             BattleEvents.StartPlayerTurn();
-            State = BattleStatesEnum.PLAYER_MOVE;
+            State = BattleStatesEnum.PLAYER_IDLE;
 
         }
         else
         {
             BattleEvents.EndPlayerTurn();
-            State = BattleStatesEnum.ENEMY_MOVE;
+            State = BattleStatesEnum.ENEMY_IDLE;
             StartCoroutine(EnemyActionCoroutine());
         }
 
@@ -549,61 +578,52 @@ public class BattleSystem : Singleton<BattleSystem>
 
 
 
-    private IEnumerator SetUpPlayerMoveCoroutine(Creature creature)
-    {
-        yield return new WaitForSeconds(1f);
 
-        UIHandler.UpdateStateText("CALC PLAYER MOVES");
-        //GameGrid.Instance.ShowMovesForPlayer(creature.MoveAction, creature.CellX, creature.CellY);
-        //GameGrid.Instance.ShowMovesForPlayerNew(creature.MoveClass, creature.CellX, creature.CellY);
-        UIHandler.UpdateStateText("WAITING FOR PLAYER MOVE");
+    //private IEnumerator SetUpPlayerMoveCoroutine(Creature creature)
+    //{
+    //    yield return new WaitForSeconds(1f);
 
-    }
+    //    UIHandler.UpdateStateText("CALC PLAYER MOVES");
+    //    //GameGrid.Instance.ShowMovesForPlayer(creature.MoveAction, creature.CellX, creature.CellY);
+    //    //GameGrid.Instance.ShowMovesForPlayerNew(creature.MoveClass, creature.CellX, creature.CellY);
+    //    UIHandler.UpdateStateText("WAITING FOR PLAYER MOVE");
 
-    public void CharacterLook(int x, int y)
-    {
-        //Creature adv = InitiativeManager.GetCurrentCreature();
-        //GridCell cell = Grid.GetCell(x, y);
-        //Vector3 cellPos = Grid.GetGridCellWorldPosition(cell);
-        //adv.LookAtCell(cellPos);
+    //}
 
+    //IEnumerator PlayerMoveCoroutine(GridCell cell)
+    //{
+    //    GameGrid.Instance.ClearGrid();
+    //    GameGrid.Instance.HideGrid();
 
-    }
+    //    UIHandler.UpdateStateText("PLAYER MOVE");
 
-    IEnumerator PlayerMoveCoroutine(GridCell cell)
-    {
-        GameGrid.Instance.ClearGrid();
-        GameGrid.Instance.HideGrid();
+    //    Vector3 cellPos = GameGrid.Instance.GetGridCellWorldPosition(cell);
 
-        UIHandler.UpdateStateText("PLAYER MOVE");
+    //    _activeCharacter.OccupiedCell.ResetCell();
 
-        Vector3 cellPos = GameGrid.Instance.GetGridCellWorldPosition(cell);
+    //    _activeCharacter.DoMove(cellPos, cell.X, cell.Y);
 
-        _activeCharacter.OccupiedCell.ResetCell();
+    //    do
+    //    {
+    //        yield return null;
+    //    } while (_activeCharacter.State == CharacterStatesEnum.MOVING);
 
-        _activeCharacter.DoMove(cellPos, cell.X, cell.Y);
+    //    //cell.SetUnit(_activeCharacter);
+    //    _activeCharacter.UpdatePosition(cell.X, cell.Y, cellPos, _activeCharacter.CurrentFacing);
 
-        do
-        {
-            yield return null;
-        } while (_activeCharacter.State == CharacterStatesEnum.MOVING);
+    //    _activeCharacter.MoveAction.DoAction();
+    //    //BattleEvents.CreatureMoved(_activeCharacter);
+    //    BattleEvents.ActionPerformed(_activeCharacter.MoveAction);
 
-        //cell.SetUnit(_activeCharacter);
-        _activeCharacter.UpdatePosition(cell.X, cell.Y, cellPos, _activeCharacter.CurrentFacing);
+    //    //yield return new WaitForSeconds(0.1f);
 
-        _activeCharacter.MoveAction.DoAction();
-        //BattleEvents.CreatureMoved(_activeCharacter);
-        BattleEvents.ActionPerformed(_activeCharacter.MoveAction);
+    //    //State = BattleStatesEnum.PLAYER_ATTACK;
 
-        //yield return new WaitForSeconds(0.1f);
+    //    //UIHandler.BuildAttackList(_activeCharacter);
 
-        //State = BattleStatesEnum.PLAYER_ATTACK;
-
-        //UIHandler.BuildAttackList(_activeCharacter);
-
-        // debug
-        yield return null;
-    }
+    //    // debug
+    //    yield return null;
+    //}
 
 
     //private void SetupPlayerAttack(Creature creature)
@@ -704,50 +724,50 @@ public class BattleSystem : Singleton<BattleSystem>
 
     }
 
-    IEnumerator PlayerAttackCoroutine(GridCell cell)
-    {
-        GameGrid.Instance.ClearGrid();
+    //IEnumerator PlayerAttackCoroutine(GridCell cell)
+    //{
+    //    GameGrid.Instance.ClearGrid();
 
-        // do attack!
-        UIHandler.UpdateStateText("PLAYER ATTACK");
+    //    // do attack!
+    //    UIHandler.UpdateStateText("PLAYER ATTACK");
 
-        Debug.Log("PLAYER ATTACK!");
+    //    Debug.Log("PLAYER ATTACK!");
 
-        //Creature adv = InitiativeManager.GetCurrentCreature();
-        //PlayerCharacter pc = (PlayerCharacter)_activeCharacter;
+    //    //Creature adv = InitiativeManager.GetCurrentCreature();
+    //    //PlayerCharacter pc = (PlayerCharacter)_activeCharacter;
 
-        //int damage = pc.GetAttackDamage();
-        //int damage = _currentAction.Damage;
-        int damage = _playerAction.Action.Damage;
+    //    //int damage = pc.GetAttackDamage();
+    //    //int damage = _currentAction.Damage;
+    //    int damage = _playerAction.Action.Damage;
 
-        foreach (var creature in _playerAction.Creatures)
-        {
-            BattleEvents.TakeDamage(creature, damage);
-        }
+    //    foreach (var creature in _playerAction.Creatures)
+    //    {
+    //        BattleEvents.TakeDamage(creature, damage);
+    //    }
 
-        //_playerAction.Action.DoAction();     //rename this!
+    //    //_playerAction.Action.DoAction();     //rename this!
 
-        // update attacked creatures list to creatures, not ids!
-        //List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(cell, _currentAction);
+    //    // update attacked creatures list to creatures, not ids!
+    //    //List<int> attackedCreatures = GameGrid.Instance.GetAttackedCreatures(cell, _currentAction);
 
-        //foreach (int creatureID in attackedCreatures)
-        //{
-        //    BattleEvents.TakeDamage(pc, damage);
-        //}
+    //    //foreach (int creatureID in attackedCreatures)
+    //    //{
+    //    //    BattleEvents.TakeDamage(pc, damage);
+    //    //}
 
-        //// new method
-        //foreach (Creature creature in _targets.Items)
-        //{
-        //    BattleEvents.TakeDamage(creature, damage);
-        //}
-        _targets.Empty();
+    //    //// new method
+    //    //foreach (Creature creature in _targets.Items)
+    //    //{
+    //    //    BattleEvents.TakeDamage(creature, damage);
+    //    //}
+    //    _targets.Empty();
 
-        yield return new WaitForSeconds(1f);
+    //    yield return new WaitForSeconds(1f);
 
-        //BattleEvents.TurnOver();
-        BattleEvents.ActionPerformed(_playerAction.Action);
+    //    //BattleEvents.TurnOver();
+    //    BattleEvents.ActionPerformed(_playerAction.Action);
 
-    }
+    //}
 
 
 
@@ -923,7 +943,7 @@ public class BattleSystem : Singleton<BattleSystem>
 
     public void TestButton()
     {
-        BattleEvents.Loss();
+        BattleEvents.Victory();
     }
 
 }
@@ -935,11 +955,8 @@ public enum BattleStatesEnum
 {
     START,
     START_TURN,
-    PLAYER_MOVE,
-    PLAYER_ATTACK,
-    PLAYER_ACTION,
-    ENEMY_MOVE,
-    ENEMY_ATTACK,
-    WON,
-    LOST
+    PLAYER_IDLE,
+    RESOLVING_PLAYER_ACTION,
+    ENEMY_IDLE,
+    RESOLVING_ENEMY_ACTION
 }

@@ -17,6 +17,10 @@ public class CameraHandler : MonoBehaviour
 
     private Vector3 NewPosition;
     private Vector2 MousePosition;
+
+    [SerializeField] private Vector3 MinZoom;
+    [SerializeField] private Vector3 MaxZoom;
+
     private Vector3 NewZoom;
 
     private Vector2 MoveDirection;
@@ -153,6 +157,9 @@ public class CameraHandler : MonoBehaviour
         NewRotation = _transform.rotation;
         NewZoom = CameraTransform.localPosition;
         _oldHitsNumber = 0;
+
+
+
     }
 
     // Update is called once per frame
@@ -171,6 +178,20 @@ public class CameraHandler : MonoBehaviour
     }
 
 
+    //private void FixedUpdate()
+    //{
+    //    int layerMask = 1 << 7;
+
+    //    RaycastHit hit;
+    //    if (Physics.Raycast(_transform.position, CameraTransform.position, out hit, Mathf.Infinity, layerMask))
+    //    {
+    //        Debug.DrawRay(_transform.position, CameraTransform.position * hit.distance, Color.yellow);
+    //        Debug.Log("Hit something!");
+    //    }
+
+    //}
+
+
     //private void LateUpdate()
     //{
     //    int layerNumber = LayerMask.NameToLayer("Environment");
@@ -179,7 +200,7 @@ public class CameraHandler : MonoBehaviour
     //    RaycastHit[] hits = Physics.RaycastAll(_transform.position, CameraTransform.position - _transform.position, Mathf.Infinity, layerMask);
     //    if (hits.Length > 0)
     //    {
-            
+
     //        int newHits = hits.Length - _oldHitsNumber;
 
     //        if (_obstructions != null && _obstructions.Length > 0 && newHits < 0)
@@ -246,7 +267,7 @@ public class CameraHandler : MonoBehaviour
     //                        }                            
     //                    }
     //                }
-                    
+
     //            }
     //            _oldHitsNumber = 0;
     //            _obstructions = null;
@@ -325,8 +346,31 @@ public class CameraHandler : MonoBehaviour
 
     private void MouseZoomScreen(float increment)
     {
+        //Debug.Log("Before: " + NewZoom);
 
-        NewZoom += (MouseZoomAmount * increment);
+        NewZoom += MouseZoomAmount * increment;
+
+        if (NewZoom.sqrMagnitude > MaxZoom.sqrMagnitude)
+        {
+            NewZoom = MaxZoom;
+        }
+
+        if (NewZoom.sqrMagnitude < MinZoom.sqrMagnitude)
+        {
+            NewZoom = MinZoom;
+        }
+
+        //if (Vector3.Distance(NewZoom, MaxZoom) > 0)
+        //{
+        //    NewZoom = MaxZoom;
+        //}
+        //if (Vector3.Distance(NewZoom, MinZoom) < 0)
+        //{
+        //    NewZoom = MinZoom;
+        //}
+        
+        //Debug.Log("After: " + NewZoom);
+
         CameraTransform.localPosition = Vector3.Lerp(CameraTransform.localPosition, NewZoom, 1/(Time.deltaTime * ZoomScrollSpeed));
 
     }
@@ -345,6 +389,7 @@ public class CameraHandler : MonoBehaviour
 
     private void KeyPan(Vector2 direction)
     {
+        //Debug.Log(NewPosition);
         NewPosition = _transform.position;
 
         if (direction.x > 0)
@@ -363,6 +408,24 @@ public class CameraHandler : MonoBehaviour
         {
             NewPosition += _transform.forward * -MoveSpeed;
         }
+
+        if (NewPosition.x < GameGrid.Instance.Bottom)
+        {
+            NewPosition.x = GameGrid.Instance.Bottom;
+        }
+        else if (NewPosition.x > GameGrid.Instance.Top)
+        {
+            NewPosition.x = GameGrid.Instance.Top;
+        }
+        if (NewPosition.z < GameGrid.Instance.Left)
+        {
+            NewPosition.z = GameGrid.Instance.Left;
+        }
+        else if (NewPosition.z > GameGrid.Instance.Right)
+        {
+            NewPosition.z = GameGrid.Instance.Right;
+        }
+
 
         _transform.position = Vector3.Lerp(_transform.position, NewPosition, 1/(Time.deltaTime * MovementTime));
     }

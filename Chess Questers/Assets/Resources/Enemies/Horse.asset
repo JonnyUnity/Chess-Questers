@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 1002
   Name: Horse
-  Health: 50
+  Health: 1
   ActionsPerTurn: 2
   CreatureModelID: 0
   ModelPrefab: {fileID: 615789327855940348, guid: 6ecf7906b0c0a4a4cb1d95663d966942, type: 3}

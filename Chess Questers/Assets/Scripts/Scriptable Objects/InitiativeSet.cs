@@ -14,7 +14,12 @@ public class InitiativeSet : CreatureRuntimeSet
     {
         get
         {
-            return Items[TurnPointer.Value];
+            if (Items.Count > 0)
+            {
+                return Items[TurnPointer.Value];
+            }
+
+            return null;
         }
     }
 

@@ -31,7 +31,7 @@ MonoBehaviour:
   DebugColor: {r: 0.042363837, g: 0.06451633, b: 0.5283019, a: 0}
   MoveLimit: 3
   IsJumpingMove: 0
-  MoveAnimationTrigger: 
+  MoveAnimationTrigger: IsMoving
   IsAction: 0
   Damage: 0
   MinRange: 0

@@ -27,7 +27,9 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnTurnOver;
 
     public static event Action OnAttack;
-    public static event Action<Creature, int> OnTakeDamage;
+    public static event Action<Creature, int> OnTakeDamageStart;
+    public static event Action<Creature> OnTakeDamageFinish;
+
     public static event Action<Creature> OnDeath;
 
     public static event Action OnBattleVictory;
@@ -185,7 +187,13 @@ public class BattleEvents : MonoBehaviour
 
     public static void TakeDamage(Creature creature, int damage)
     {
-        OnTakeDamage?.Invoke(creature, damage);
+        OnTakeDamageStart?.Invoke(creature, damage);
+    }
+
+
+    public static void TakenDamageResolved(Creature creature)
+    {
+        OnTakeDamageFinish?.Invoke(creature);
     }
 
 

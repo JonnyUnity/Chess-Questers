@@ -103,7 +103,7 @@ public class InitiativeManager : MonoBehaviour
     {
         _initiative.ActiveCharacter.UpdateActionCooldowns();
 
-        //Debug.Log("Initiative - NextTurn");
+        Debug.Log("Initiative - NextTurn " + TurnPointer.Value);
         TurnPointer.Inc();
         
         if (TurnPointer.Value > _initiative.Items.Count() - 1)
@@ -125,27 +125,69 @@ public class InitiativeManager : MonoBehaviour
 
     private void CharacterDied(Creature creature)
     {
+
+        StartCoroutine(CreatureDiedCoroutine(creature));
+
+        //// move to a co-routine to get a proper pause after 
+
+        //RemovePortrait(creature.ID);
+        
+        //// Move the turn pointer back if a creature earlier in the turn dies.
+        //int index = _initiative.Items.IndexOf(creature);
+        //if (index <= TurnPointer.Value)
+        //{
+        //    TurnPointer.Dec();
+        //}
+        //_initiative.Remove(creature);
+        
+        //if (_initiative.AllEnemiesDead)
+        //{
+        //    BattleEvents.Victory();
+        //}
+        //if (_initiative.AllFriendliesDead)
+        //{
+        //    BattleEvents.Loss();
+        //}
+
+    }
+
+
+    private IEnumerator CreatureDiedCoroutine(Creature creature)
+    {
         Debug.Log("Someone died! Update the turn order!");
 
-        RemovePortrait(creature.ID);
+        // move to a co-routine to get a proper pause after 
+
+        //RemovePortrait(creature.ID);
         
+
         // Move the turn pointer back if a creature earlier in the turn dies.
+        
         int index = _initiative.Items.IndexOf(creature);
+        Debug.Log("Creature died " + creature.Name + " - " + TurnPointer.Value + " <= " + index);
         if (index <= TurnPointer.Value)
         {
             TurnPointer.Dec();
         }
         _initiative.Remove(creature);
-        
+
+        Debug.Log("Remove portrait start");
+        CreaturePortrait deadCreature = _creaturePortraits.Where(w => w.ID == creature.ID).Single();
+        yield return StartCoroutine(RemovePortraitCoroutine(deadCreature.gameObject));
+        Debug.Log("Remove portrait finish");
+
         if (_initiative.AllEnemiesDead)
         {
+            yield return new WaitForSeconds(1f);
             BattleEvents.Victory();
         }
         if (_initiative.AllFriendliesDead)
         {
+            yield return new WaitForSeconds(1f);
             BattleEvents.Loss();
         }
 
+        yield return null;
     }
 
 
@@ -195,11 +237,13 @@ public class InitiativeManager : MonoBehaviour
     {
 
         Animator animator = portraitObj.GetComponent<Animator>();
-        animator.SetBool("HasDied", true);
 
         yield return new WaitForSeconds(1f);
 
-        Destroy(portraitObj);
+        LeanTween.moveLocalY(portraitObj, -150f, 1f);
+        LeanTween.alphaCanvas(portraitObj.GetComponent<CanvasGroup>(), 0, 1f).setDelay(0.1f).setOnComplete(() => Destroy(portraitObj));
+
+        //Destroy(portraitObj);
     }
 
     #endregion

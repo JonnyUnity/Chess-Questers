@@ -88,6 +88,12 @@ public class PlayerCharacter : Creature
         CurrentFacing = data.CurrentFacing;
     }
 
+    public void SetPartySelectMode()
+    {
+        State = CharacterStatesEnum.PARTY_SELECT;
+    }
+
+
 
     public void SetCharacterModel(int modelID)
     {
@@ -96,6 +102,7 @@ public class PlayerCharacter : Creature
             characterModel.SetActive(false);
         }
         _characterModels[modelID].SetActive(true);
+        _materialObject = _characterModels[modelID];
     }
 
 
@@ -108,15 +115,15 @@ public class PlayerCharacter : Creature
 
     private IEnumerator SelectedActionCoroutine(ActionResult actionResult)
     {
-        Debug.Log("Start action");
+        //Debug.Log("Start action");
 
-        BattleEvents.ActionStarted(actionResult.Action);
+        //BattleEvents.ActionStarted(actionResult.Action);
 
-        yield return StartCoroutine(DoActionCoroutine(actionResult));
+        yield return StartCoroutine(DoTurnCoroutine(actionResult));
 
-        BattleEvents.ActionFinished();
+        //Debug.Log("Finish action");
+        //BattleEvents.ActionFinished();
 
-        Debug.Log("Finish action");
 
     }
 

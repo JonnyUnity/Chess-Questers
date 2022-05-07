@@ -31,10 +31,14 @@ MonoBehaviour:
   DebugColor: {r: 0.5471698, g: 0.028390888, b: 0.028390888, a: 0}
   MoveLimit: 1
   IsJumpingMove: 0
+  MoveAnimationTrigger: IsMoving
+  IsAction: 0
   Damage: 0
   MinRange: 0
   MaxRange: 0
   IsRanged: 0
   IsAttack: 0
+  IncludeDiagonals: 0
+  ActionAnimationTrigger: 
   ActionTemplatePrefab: {fileID: 3275093222111191537, guid: 638a4850ea1c92943865797f6f89a8b1, type: 3}
   AdditionalAttackedCellOffsets: []

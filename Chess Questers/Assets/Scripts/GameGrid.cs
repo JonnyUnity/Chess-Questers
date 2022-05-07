@@ -10,7 +10,7 @@ public class GameGrid : Singleton<GameGrid>
 {
     public readonly int Height = 10;
     public readonly int Width = 10;
-    private float GridSpacesize = 5f;
+    private float GridSpacesize = 2f;
 
     private int NumObstacles;
 
@@ -55,16 +55,22 @@ public class GameGrid : Singleton<GameGrid>
 
     private NewBattleAction _currentAction;
 
+    private List<Creature> _currentHighlightedCreatures;
     private List<ActionResult> _actionResults;
 
     public void Awake()
     {
         PlayerCharacterPositions = new Dictionary<int, Vector2>();
         EnemyPositions = new Dictionary<int, Vector2>();
+        _currentHighlightedCreatures = new List<Creature>();
 
         GridCellPrefab = Resources.Load("Prefabs/NewGridCell") as GameObject;
         ObstaclePrefab = Resources.Load("Prefabs/Obstacle") as GameObject;
 
+    }
+
+    private void OnEnable()
+    {
         BattleEvents.OnPlayerActionSelected += ShowActionOnGrid;
         //BattleEvents.OnCreatureMoved += UpdateCreaturePosition;
         //BattleEvents.OnPlayerStartTurn += ShowGrid;
@@ -72,7 +78,6 @@ public class GameGrid : Singleton<GameGrid>
         BattleEvents.OnTurnOver += HideGrid;
         //BattleEvents.OnCellSelected += SelectCell;
         BattleEvents.OnPlayerSelectMove += ShowMovesForPlayerNew;
-
     }
 
 
@@ -137,11 +142,24 @@ public class GameGrid : Singleton<GameGrid>
 
         _initiative.ActiveCharacter.LookAtTarget(cell);
 
-        Creature highlightCreature = GetCellOccupant(cell.X, cell.Y);
-        if (highlightCreature != null)
+
+        List<Creature> highlightedCreatures = GetAttackedCreatures(cell, _currentAction);
+        foreach (Creature creature in highlightedCreatures)
         {
-            BattleEvents.CreatureHovered(highlightCreature);
+            BattleEvents.CreatureHovered(creature);
         }
+        foreach (Creature creature in _currentHighlightedCreatures.Except(highlightedCreatures))
+        {
+            BattleEvents.CreatureUnhovered(creature);
+        }
+
+        _currentHighlightedCreatures = highlightedCreatures;
+
+        //Creature highlightCreature = GetCellOccupant(cell.X, cell.Y);
+        //if (highlightCreature != null)
+        //{
+        //    BattleEvents.CreatureHovered(highlightCreature);
+        //}
 
         BattleEvents.HighlightCell(cell);
 
@@ -380,11 +398,49 @@ public class GameGrid : Singleton<GameGrid>
             }
         }
 
+        Debug.Log("TOP: " + Grid[Height - 1, 0].transform.position.x + " BOTTOM: " + Grid[0, 0].transform.position.z);
+        Debug.Log("LEFT: " + Grid[0, 0].transform.position.x + " RIGHT: " + Grid[0, Width - 1].transform.position.z);
+
         ComputeMoveData();
         SpawnObstacles();
         HideGrid();
 
     }
+
+    public float Top
+    {
+        get
+        {
+            return Grid[Height - 1, 0].transform.position.x;
+        }        
+    }
+
+    public float Bottom
+    {
+        get
+        {
+            return Grid[0, 0].transform.position.x;
+        }
+        
+    }
+
+    public float Left
+    {
+        get
+        {
+            return Grid[0, 0].transform.position.z;
+        }        
+    }
+
+    public float Right
+    {
+        get
+        {
+            return Grid[0, Width - 1].transform.position.z;
+        }        
+    }
+
+
 
     public void ShowGrid()
     {
