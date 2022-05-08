@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
+using JFlex.ChessQuesters.Core;
 
 public class TitleScreenManager : MonoBehaviour
 {
@@ -34,7 +35,6 @@ public class TitleScreenManager : MonoBehaviour
                 Debug.Log("Start Game!");
                 SceneManager.LoadScene(1);
             });
-
     }
 
 
@@ -48,7 +48,6 @@ public class TitleScreenManager : MonoBehaviour
                 Debug.Log("Continue Run!");
                 GameManager.Instance.ContinueQuest();
             });
-
     }
 
 
@@ -76,7 +75,6 @@ public class TitleScreenManager : MonoBehaviour
 #else
         Application.Quit();
 #endif
-
     }
 
 
@@ -96,6 +94,5 @@ public class TitleScreenManager : MonoBehaviour
         _abandonButton.SetActive(runInProgress);
 
     }
-
 
 }

@@ -1,0 +1,86 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+using JFlex.ChessQuesters.Core;
+
+public class BattleOverManager : MonoBehaviour
+{
+    private CanvasGroup _canvasGroup;
+    [SerializeField] private GameObject _panelBackground;
+    [SerializeField] private TextMeshProUGUI _header;
+    [SerializeField] private Button _continueButton;
+
+
+    private void OnEnable()
+    {
+        BattleEvents.OnBattleVictory += ShowVictoryDetails;
+        BattleEvents.OnBattleLoss += ShowQuestOverDetails;
+    }
+
+
+    private void OnDisable()
+    {
+        BattleEvents.OnBattleVictory -= ShowVictoryDetails;
+        BattleEvents.OnBattleLoss -= ShowQuestOverDetails;
+    }
+
+
+    void Start()
+    {
+        _canvasGroup = GetComponent<CanvasGroup>();
+    }
+
+
+    public void ShowVictoryDetails()
+    {
+        _header.text = "VICTORY!";
+        _continueButton.onClick.AddListener(ContinueQuest);
+        AnimatePanel();
+        _continueButton.interactable = true;
+    }
+
+
+    private void AnimatePanel()
+    {
+        _continueButton.interactable = false;
+        _canvasGroup.interactable = false;
+        _canvasGroup.blocksRaycasts = false;
+        LeanTween.alphaCanvas(_canvasGroup, 1f, 1f);
+        LeanTween.moveY(_panelBackground.GetComponent<RectTransform>(), 0, 1f).setEaseOutQuint().setDelay(0.5f);
+        _canvasGroup.interactable = true;
+        _canvasGroup.blocksRaycasts = true;
+    }
+
+
+    public void ShowQuestOverDetails()
+    {
+        _header.text = "DEFEAT!";
+        _continueButton.onClick.AddListener(EndQuest);
+        AnimatePanel();
+    }
+
+
+    public void ContinueQuest()
+    {
+        BattleEvents.FadeOut(() =>
+        {
+            Debug.Log("The quest continues!");
+            GameManager.Instance.GoToMap();
+        });
+        
+    }
+
+    public void EndQuest()
+    {
+        // Save Quest details? High score?...
+        BattleEvents.FadeOut(() =>
+        {
+            Debug.Log("Game over!");
+            GameManager.Instance.EndQuest();
+        });       
+
+    }
+
+}

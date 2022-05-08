@@ -2,31 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Chess Questers/Int Variable")]
-public class IntVariable : ScriptableObject
+
+namespace JFlex.ChessQuesters.Core.ScriptableObjects
 {
-    private int InitialValue;
-    public int Value;
-
-    private void OnEnable()
+    [CreateAssetMenu(menuName = "Chess Questers/Int Variable")]
+    public class IntVariable : ScriptableObject
     {
-        Value = InitialValue;
+        private int InitialValue;
+        public int Value; 
+        
+        private void OnEnable()
+        {
+            Value = InitialValue;
+        }
+        public void SetValue(int value)
+        {
+            Value = value;
+        }
+        public void Inc()
+        {
+            Value++;
+        }
+        public void Dec()
+        {
+            Value--;
+        }
     }
-
-
-    public void SetValue(int value)
-    {
-        Value = value;
-    }
-
-    public void Inc()
-    {
-        Value++;
-    }
-
-    public void Dec()
-    {
-        Value--;
-    }
-
 }

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Chess Questers/Creature Set")]
-public class CreatureRuntimeSet : RuntimeSet<Creature>
+
+namespace JFlex.ChessQuesters.Core.ScriptableObjects
 {
-
-
-    public void Sort()
+    [CreateAssetMenu(menuName = "Chess Questers/Creature Set")]
+    public class CreatureRuntimeSet : RuntimeSet<Creature>
     {
-        Items = Items.OrderBy(o => o.Initiative).ThenBy(t => t.ID).ToList();
+        public void Sort()
+        {
+            Items = Items.OrderBy(o => o.Initiative).ThenBy(t => t.ID).ToList();
+        }
     }
-
 }

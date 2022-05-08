@@ -1,3 +1,4 @@
+using JFlex.ChessQuesters.Core.ScriptableObjects;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ public class Enemy : Creature
 
     private ActionResult _enemyAction;
 
-    public void Init(NewEnemyJsonData data, EnemySO enemyObject)
+    public void Init(EnemyJsonData data, EnemySO enemyObject)
     {
         ID = data.ID;
         EnemyID = data.EnemyID;
@@ -103,8 +104,6 @@ public class Enemy : Creature
 
                 Debug.Log(action.Action.Name);
                 yield return StartCoroutine(DoTurnCoroutine(action));
-
-                //yield return new WaitForSeconds(2f);
 
                 Debug.Log("End enemy action!");
             }

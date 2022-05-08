@@ -3,14 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Brain : ScriptableObject
+
+namespace JFlex.ChessQuesters.Core.ScriptableObjects
 {
+    public abstract class Brain : ScriptableObject
+    {
 
-    public CreatureRuntimeSet PlayerCharacters;
-    public CreatureRuntimeSet Enemies;
+        public CreatureRuntimeSet PlayerCharacters;
+        public CreatureRuntimeSet Enemies;
 
-    //public abstract GridCell GetMove(Enemy enemy);
+        public abstract ActionResult GetAction(Enemy enemy);
 
-    public abstract ActionResult GetAction(Enemy enemy);
-
+    }
 }

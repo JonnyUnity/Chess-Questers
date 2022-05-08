@@ -2,58 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Encounter", menuName = "Chess Questers/Battle Encounter")]
-public class Encounter : ScriptableObject
+
+namespace JFlex.ChessQuesters.Core.ScriptableObjects
 {
-    public int ID;
-    public int Difficulty;
-    public EncounterTypesEnum Type;
-
-    public int Layout;
-    public EnemySO[] Enemies;
-
-    public Vector2[] PlayerSpawns;
-    public Vector2[] EnemySpawns;
-
-
-    public CharacterJsonData[] GetEnemiesJson()
+    [CreateAssetMenu(fileName = "New Encounter", menuName = "Chess Questers/Battle Encounter")]
+    public class Encounter : ScriptableObject
     {
-        
-        CharacterJsonData[] toReturn = new CharacterJsonData[Enemies.Length];
+        public int ID;
+        public int Difficulty;
+        public EncounterTypesEnum Type;
 
-        for (int i = 0; i < Enemies.Length; i++)
+        public int Layout;
+        public int Height;
+        public int Width;
+
+        public EnemySO[] Enemies;
+
+        public Vector2[] PlayerSpawns;
+        public Vector2[] EnemySpawns;
+
+
+        public EnemyJsonData[] GetEnemiesJson()
         {
-            toReturn[i] = new CharacterJsonData(Enemies[i]);
+            EnemyJsonData[] toReturn = new EnemyJsonData[Enemies.Length];
+
+            for (int i = 0; i < Enemies.Length; i++)
+            {
+                toReturn[i] = new EnemyJsonData(Enemies[i]);
+            }
+
+            return toReturn;
         }
 
-        return toReturn;
-
     }
-
-    public NewEnemyJsonData[] GetEnemiesJsonNew()
-    {
-        NewEnemyJsonData[] toReturn = new NewEnemyJsonData[Enemies.Length];
-
-        for (int i = 0; i < Enemies.Length; i++)
-        {
-            toReturn[i] = new NewEnemyJsonData(Enemies[i]);
-        }
-
-        return toReturn;
-
-    }
-
-
-    //public List<ImprovedCharacter> GetEnemies()
-    //{
-    //    List<ImprovedCharacter> toReturn = new List<ImprovedCharacter>();
-
-    //    foreach (var e in Enemies)
-    //    {
-    //        toReturn.Add(new ImprovedCharacter(e));
-    //    }
-
-    //    return toReturn;
-    //}
-
 }

@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using JFlex.ChessQuesters.Core;
+using JFlex.ChessQuesters.Core.ScriptableObjects;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 
 public class QuestStartManager : Singleton<QuestStartManager>
 {
@@ -59,32 +59,19 @@ public class QuestStartManager : Singleton<QuestStartManager>
     }
 
 
-
-
     public void StartQuest()
     {
-
         _questData.PartyMembers = NewChars;
-        //GameManager.Instance.SetupTestEncounter(_questData);
-        GameManager.Instance.GetEncounter(_questData);
+        //GameManager.Instance.GetEncounter(_questData);
         SaveDataManager.Save(_questData);
 
-        // randomise world map?
-
-        // go to map scene
-
-        BattleEvents.FadeOut(() => SceneManager.LoadScene(2));
-        //SceneManager.LoadScene(2);
+        BattleEvents.FadeOut(() => GameManager.Instance.StartQuest());
     }
 
 
     public void ReturnToTitle()
     {
-        //_simpleFade.FadeOut(() => SceneManager.LoadScene(0));
-        //SceneManager.LoadScene(0);
-
-        BattleEvents.FadeOut(() => SceneManager.LoadScene(0));
-
+        BattleEvents.FadeOut(() => GameManager.Instance.QuitToTitle());
     }
 
 }

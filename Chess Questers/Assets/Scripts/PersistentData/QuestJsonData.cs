@@ -1,3 +1,4 @@
+using JFlex.ChessQuesters.Core.ScriptableObjects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ public class QuestJsonData
 
     // public Object MapData
 
+    public int EncounterID;
     public EncounterTypesEnum CurrentEncounterType;
     public int TurnNumber;
     public int TurnPointer;
@@ -20,7 +22,7 @@ public class QuestJsonData
     // Battle Encounter data
     public int Battle_ID;
     public int Battle_Layout;
-    public NewEnemyJsonData[] Enemies;
+    public EnemyJsonData[] Enemies;
 
 
     public QuestJsonData()
@@ -35,37 +37,27 @@ public class QuestJsonData
 
     }
 
-    // create json version to save
-    //public QuestJsonData(QuestData data)
-    //{
-    //    // ImprovedCharacter => characterData
-    //    MapSeed = data.MapSeed;
-    //    Floor = data.Floor;
-    //    CurrentEncounterType = data.CurrentEncounterType;
-
-    //    PartyMembers = SaveDataManager.SerializeCharacterData(data.PartyMembers);
-
-    //    Battle_ID = data.Battle_ID;
-    //    Battle_Layout = data.Battle_Layout;
-    //    Enemies = SaveDataManager.SerializeEnemyData(data.Enemies);
-    //    //Enemies = SaveDataManager.SerializeEnemyData(data.Enemies);
-    //    Initiative = data.Initiative;
-
-    //}
 
     public void SetNextEncounter(Encounter encounter)
     {
         Floor++;
+        EncounterID = encounter.ID;
         CurrentEncounterType = encounter.Type;
         Battle_ID = encounter.ID;
         Battle_Layout = encounter.Layout;
 
-        NewEnemyJsonData[] enemies = encounter.GetEnemiesJsonNew();
+        EnemyJsonData[] enemies = encounter.GetEnemiesJson();
 
         Enemies = enemies;
 
     }
 
+    public void GoToMap()
+    {
+        CurrentEncounterType = EncounterTypesEnum.Map;
+        TurnNumber = 0;
+        TurnPointer = 0;
+    }
 
 
     public bool HasCombatStarted()

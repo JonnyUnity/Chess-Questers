@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using JFlex.ChessQuesters.Core.ScriptableObjects;
+using JFlex.ChessQuesters.Encounters.Battle.Grid;
 
 public class BattleActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {

@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using System;
 using UnityEngine.UI;
+using JFlex.ChessQuesters.Core.ScriptableObjects;
 
 public class ActionDisplay : MonoBehaviour
 {
@@ -20,7 +21,6 @@ public class ActionDisplay : MonoBehaviour
     private RectTransform _canvasRectTransform;
 
     private List<GameObject> _actionButtons;
-    private List<ActionClass> _actions;
 
     public static Action<string, string, Vector3> OnMouseHover;
     public static Action OnMouseLoseFocus;

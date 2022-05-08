@@ -1,3 +1,4 @@
+using JFlex.ChessQuesters.Core.ScriptableObjects;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

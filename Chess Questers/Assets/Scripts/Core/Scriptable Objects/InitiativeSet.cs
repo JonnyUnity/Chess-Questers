@@ -3,41 +3,45 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Chess Questers/Initiative Set")]
-public class InitiativeSet : CreatureRuntimeSet
+
+namespace JFlex.ChessQuesters.Core.ScriptableObjects
 {
-
-    public IntVariable TurnNumber;
-    public IntVariable TurnPointer;
-
-    public Creature ActiveCharacter
+    [CreateAssetMenu(menuName = "Chess Questers/Initiative Set")]
+    public class InitiativeSet : CreatureRuntimeSet
     {
-        get
+
+        public IntVariable TurnNumber;
+        public IntVariable TurnPointer;
+
+        public Creature ActiveCharacter
         {
-            if (Items.Count > 0)
+            get
             {
-                return Items[TurnPointer.Value];
+                if (Items.Count > 0)
+                {
+                    return Items[TurnPointer.Value];
+                }
+
+                return null;
             }
-
-            return null;
         }
-    }
 
-    public bool AllEnemiesDead
-    {
-        get
+        public bool AllEnemiesDead
         {
-            return !Items.Where(w => !w.IsFriendly).Any();
+            get
+            {
+                return !Items.Where(w => !w.IsFriendly).Any();
+            }
         }
-    }
 
-    public bool AllFriendliesDead
-    {
-        get
+        public bool AllFriendliesDead
         {
-            return !Items.Where(w => w.IsFriendly).Any();
+            get
+            {
+                return !Items.Where(w => w.IsFriendly).Any();
+            }
         }
+
+
     }
-
-
 }

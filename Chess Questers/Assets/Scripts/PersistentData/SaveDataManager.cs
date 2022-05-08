@@ -19,7 +19,6 @@ public class SaveDataManager
 
         string saveData = JsonUtility.ToJson(questData);
 
-        //Debug.Log(saveData);
         File.WriteAllText(dir + filename, saveData);
 
         return true;
@@ -67,45 +66,7 @@ public class SaveDataManager
 
     #region Character Data conversions
 
-    //public static List<ImprovedCharacter> DeserializeCharacterData(CharacterJsonData[] data, bool isFriendly)
-    //{
-    //    List<ImprovedCharacter> characters = new List<ImprovedCharacter>();
-    //    foreach (CharacterJsonData c in data)
-    //    {
-    //        //characters.Add(new ImprovedCharacter(c));
-    //    }
-
-    //    return characters;
-    //}
-    
-
-    public static CharacterJsonData[] SerializeCharacterData(List<PlayerCharacter> data)
-    {
-        CharacterJsonData[] characters = new CharacterJsonData[data.Count];
-
-        for (int i = 0; i < data.Count; i++)
-        {
-            characters[i] = new CharacterJsonData(data[i]);
-        }
-
-        return characters;
-    }
-
-    public static NewEnemyJsonData[] SerializeEnemyData(List<Enemy> data)
-    {
-        NewEnemyJsonData[] enemies = new NewEnemyJsonData[data.Count];
-
-        for (int i = 0; i < data.Count; i++)
-        {
-            enemies[i] = new NewEnemyJsonData(data[i]);
-        }
-
-        return enemies;
-
-    }
-
-
-    public static CharacterJsonData[] SerializeCharacterDataNew(List<Creature> data)
+    public static CharacterJsonData[] SerializeCharacterData(List<Creature> data)
     {
         CharacterJsonData[] characters = new CharacterJsonData[data.Count];
 
@@ -117,13 +78,13 @@ public class SaveDataManager
         return characters;
     }
 
-    public static NewEnemyJsonData[] SerializeEnemyDataNew(List<Creature> data)
+    public static EnemyJsonData[] SerializeEnemyData(List<Creature> data)
     {
-        NewEnemyJsonData[] enemies = new NewEnemyJsonData[data.Count];
+        EnemyJsonData[] enemies = new EnemyJsonData[data.Count];
 
         for (int i = 0; i < data.Count; i++)
         {
-            enemies[i] = new NewEnemyJsonData((Enemy)data[i]);
+            enemies[i] = new EnemyJsonData((Enemy)data[i]);
         }
 
         return enemies;
@@ -131,7 +92,5 @@ public class SaveDataManager
     }
 
     #endregion
-
-
 
 }

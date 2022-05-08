@@ -1,37 +1,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class RuntimeSet<T> : ScriptableObject
+
+namespace JFlex.ChessQuesters.Core.ScriptableObjects
 {
-    public List<T> Items = new List<T>();
-
-    public void Add(T thing)
+    public abstract class RuntimeSet<T> : ScriptableObject
     {
-        if (!Items.Contains(thing))
+        public List<T> Items = new List<T>();
+
+        public void Add(T thing)
         {
-            Items.Add(thing);
+            if (!Items.Contains(thing))
+            {
+                Items.Add(thing);
+            }
         }
-    }
 
 
-    public void Remove(T thing)
-    {
-        if (Items.Contains(thing))
+        public void Remove(T thing)
         {
-            Items.Remove(thing);
+            if (Items.Contains(thing))
+            {
+                Items.Remove(thing);
+            }
         }
+
+
+        public void Empty()
+        {
+            Items.Clear();
+        }
+
+
+        public void OnDisable()
+        {
+            Items.Clear();
+        }
+
     }
-
-
-    public void Empty()
-    {
-        Items.Clear();
-    }
-
-
-    public void OnDisable()
-    {
-        Items.Clear();
-    }
-    
 }

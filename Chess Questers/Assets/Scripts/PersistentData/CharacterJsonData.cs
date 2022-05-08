@@ -1,3 +1,4 @@
+using JFlex.ChessQuesters.Core.ScriptableObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,6 @@ public class CharacterJsonData
     public int Health;
     public int MaxHealth;
     public int MoveActionID;
-    //public int[] Actions;
-    public List<ActionJsonData> Actions = new List<ActionJsonData>();
 
     public BattleActionJsonData MoveAction;
     public List<BattleActionJsonData> BattleActions = new List<BattleActionJsonData>();
@@ -32,23 +31,23 @@ public class CharacterJsonData
 
     public int CurrentFacing;
 
-    public CharacterJsonData(string name, int creatureModel, int moveClassID, List<ActionClass> actions, int maxHealth)
-    {
-        Name = name;
-        IsFriendly = true;
-        Health = maxHealth;
-        MaxHealth = maxHealth;
-        ActionsPerTurn = 2;
-        ActionsRemaining = 2;
+    //public CharacterJsonData(string name, int creatureModel, int moveClassID, List<ActionClass> actions, int maxHealth)
+    //{
+    //    Name = name;
+    //    IsFriendly = true;
+    //    Health = maxHealth;
+    //    MaxHealth = maxHealth;
+    //    ActionsPerTurn = 2;
+    //    ActionsRemaining = 2;
 
-        MoveActionID = moveClassID;
-        foreach (var action in actions)
-        {
-            Actions.Add(new ActionJsonData(action));
-        }
+    //    MoveActionID = moveClassID;
+    //    foreach (var action in actions)
+    //    {
+    //        Actions.Add(new ActionJsonData(action));
+    //    }
 
-        CreatureModelID = creatureModel;
-    }
+    //    CreatureModelID = creatureModel;
+    //}
 
 
     public CharacterJsonData(string name, int creatureModel, PlayerClass playerClass)

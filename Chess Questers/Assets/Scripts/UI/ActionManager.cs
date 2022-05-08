@@ -4,6 +4,8 @@ using UnityEngine;
 using TMPro;
 using System;
 using UnityEngine.UI;
+using JFlex.ChessQuesters.Core.ScriptableObjects;
+using JFlex.ChessQuesters.Encounters.Battle.Grid;
 
 public class ActionManager : MonoBehaviour
 {

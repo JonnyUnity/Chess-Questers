@@ -15,6 +15,12 @@ EditorBuildSettings:
     path: Assets/Scenes/BattleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Scenes/DebugVictory.unity
-    guid: 4dea24e4557af7849943a51142d651aa
+    path: Assets/Scenes/Map.unity
+    guid: c38617205a0844040a1d7113dc5fc8b2
+  - enabled: 1
+    path: Assets/Scenes/Rest.unity
+    guid: c8e55a3213cd89c42a843b4cce172f71
+  - enabled: 1
+    path: Assets/Scenes/Shop.unity
+    guid: dcfa6c0f177548941837d993357e44fb
   m_configObjects: {}
