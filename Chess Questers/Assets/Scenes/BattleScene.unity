@@ -4770,8 +4770,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fc0ce98d8aca92d4295e2bc903423af1, type: 2}
+  m_sharedMaterial: {fileID: 2330421601751087111, guid: fc0ce98d8aca92d4295e2bc903423af1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4795,8 +4795,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -6389,7 +6389,7 @@ MeshRenderer:
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
+  m_ScaleInLightmap: 0.50064206
   m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
@@ -6432,7 +6432,7 @@ MeshRenderer:
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
+  m_ScaleInLightmap: 0.6139959
   m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
@@ -6475,7 +6475,7 @@ MeshRenderer:
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
+  m_ScaleInLightmap: 0.55760527
   m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
@@ -6530,25 +6530,25 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1525017558062355152}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: -0.51881313, y: 12.117273, z: -0.500124}
-  m_Size: 25.523697
+  m_LocalReferencePoint: {x: -0.51881313, y: 11.767273, z: -0.500124}
+  m_Size: 1
   m_FadeMode: 0
   m_AnimateCrossFading: 1
   m_LastLODIsBillboard: 0
   m_LODs:
-  - screenRelativeHeight: 0.25032103
+  - screenRelativeHeight: 0.009807397
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1525017558064352272}
-  - screenRelativeHeight: 0.15349898
+  - screenRelativeHeight: 0.006013979
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1525017558064352274}
-  - screenRelativeHeight: 0.06970066
+  - screenRelativeHeight: 0.0027308215
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1525017558064352276}
-  - screenRelativeHeight: 0.017846687
+  - screenRelativeHeight: 0.0006992203
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1525017558064352278}
