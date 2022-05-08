@@ -63,8 +63,6 @@ public class Creature : MonoBehaviour
 
     [SerializeField] protected GameObject _materialObject;
 
-    private CreatureHealthBar _creatureHealthBar;
-
     public Faction Faction;
 
 
@@ -82,7 +80,6 @@ public class Creature : MonoBehaviour
         _orientation = transform.rotation;
         Actions = new List<NewBattleAction>();
         _animator = GetComponent<Animator>();
-        _creatureHealthBar = GetComponent<CreatureHealthBar>();
     }
 
     protected virtual void OnEnable()
@@ -175,6 +172,9 @@ public class Creature : MonoBehaviour
     {
         Debug.Log("CreatureSuffersDamage Start!");
         State = CharacterStatesEnum.BEING_ATTACKED;
+
+        // apply any modifiers to incomning damage, e.g. resistances, vulnerabilities
+
         Health -= healthChange; // assume no healing actions for now...
         BattleEvents.TakeDamage(this, healthChange);
 
@@ -431,10 +431,15 @@ public class Creature : MonoBehaviour
     private IEnumerator ActionCoroutine(ActionResult actionResult)
     {
         Debug.Log("Started action!");
-        //yield return new WaitForSeconds(4f);
+
+        // roll damage?
+
+
 
         // do character action animation...
         var action = actionResult.Action;
+        int damage = action.Damage;
+
         if (!string.IsNullOrEmpty(action.ActionAnimationTrigger))
         {
             _animator.SetTrigger(action.ActionAnimationTrigger);
@@ -445,7 +450,7 @@ public class Creature : MonoBehaviour
         {
             //BattleEvents.TakeDamage(creature, actionResult.Action.Damage);
             //creature.TakeDamageNew(action.Damage);
-            StartCoroutine(creature.CreatureSuffersDamage(action.Damage));
+            StartCoroutine(creature.CreatureSuffersDamage(damage));
 
             // wait for damage to resolve before continuing.
 
@@ -493,11 +498,6 @@ public class Creature : MonoBehaviour
                 _orientation = Quaternion.Euler(0, 180, 0);
             }
         }
-    }
-
-    public virtual int GetAttackDamage()
-    {
-        return 0;
     }
 
 

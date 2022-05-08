@@ -135,11 +135,4 @@ public class PlayerCharacter : Creature
         _selectedAction = Actions.Where(w => w.ID == action.ID).Single();
     }
 
-    public override int GetAttackDamage()
-    {
-        // action base damage
-        // (+  any modifiers?)
-        return _selectedAction.Damage;
-    }
-
 }

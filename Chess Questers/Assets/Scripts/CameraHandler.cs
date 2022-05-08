@@ -310,7 +310,6 @@ public class CameraHandler : MonoBehaviour
     {
         while (IsRotating)
         {
-            //Debug.Log(NewRotation);
             NewRotation *= Quaternion.Euler(rotateDirection * RotationAmount * Vector3.up);
             _transform.rotation = Quaternion.Lerp(_transform.rotation, NewRotation, 1/(Time.deltaTime * MovementTime));
             yield return null;

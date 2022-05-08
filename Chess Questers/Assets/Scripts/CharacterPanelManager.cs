@@ -7,7 +7,7 @@ using System;
 
 public class CharacterPanelManager : MonoBehaviour
 {
-
+    [SerializeField] private GameObject _panel;
 
     [SerializeField] private Image _portrait;
     [SerializeField] private TextMeshProUGUI _name;
@@ -36,6 +36,11 @@ public class CharacterPanelManager : MonoBehaviour
         _healthBarMaxWidth = _healthBarFullRect.rect.width;
     }
 
+    private void Start()
+    {
+        _panel.SetActive(false);
+    }
+
 
     private void SetupPanel(Creature creature)
     {
@@ -44,12 +49,12 @@ public class CharacterPanelManager : MonoBehaviour
 
         _healthValues.text = $"{creature.Health}/{creature.MaxHealth}";
 
-        //float barWidth = ((float)creature.Health / (float)creature.MaxHealth) * _healthBarMaxWidth;
         float barWidth = (float) creature.Health / creature.MaxHealth;
         barWidth = barWidth * _healthBarMaxWidth;
         _healthBarRect.sizeDelta = new Vector2(barWidth, _healthBarRect.rect.height);
-        
-        // show health?
+
+        _panel.SetActive(true);
+
 
     }
 

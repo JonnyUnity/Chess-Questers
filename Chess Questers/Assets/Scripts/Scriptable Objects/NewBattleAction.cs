@@ -44,7 +44,13 @@ public class NewBattleAction : ScriptableObject
     [Header("Action Information")]
     [Tooltip("Does this action attack a creature, cast a spell, buff an ally etc")]
     public bool IsAction;
-    public int Damage;
+
+    
+    public int BaseDamage;
+    public int MinBonusDamage;
+    public int MaxBonusDamage;
+
+
     [Tooltip("The minimum number of grid cells away that the action can be performed")]
     public int MinRange;
     [Tooltip("The maximum number of grid cells away that the action can be performed")]
@@ -61,7 +67,22 @@ public class NewBattleAction : ScriptableObject
     public CreatureRuntimeSet NonFriendlies { get; private set; }
 
 
+    public string DamageRangeText
+    {
+        get
+        {
+            return $"{BaseDamage + MinBonusDamage} to {BaseDamage + MaxBonusDamage} Damage";
+        }
+    }
 
+
+    public int Damage
+    { 
+        get
+        {
+            return BaseDamage + Random.Range(MinBonusDamage, MaxBonusDamage);
+        }
+    }
 
     public bool IsActive
     {

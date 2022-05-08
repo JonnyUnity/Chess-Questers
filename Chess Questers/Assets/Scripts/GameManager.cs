@@ -10,16 +10,13 @@ public class GameManager : Singleton<GameManager>
     public GameStatesEnum State { get; private set; }
 
     private MoveClass[] _moveClasses;
-    private ActionClass[] _actionClasses;
     private NewBattleAction[] _actions;
     private EnemySO[] _enemies;
     private Encounter[] _encounters;
-    private Sprite[] _debugPortraitSprites;
     private CreatureModel[] _creatureModels;
 
     private PlayerClass[] _playerClasses;
 
-    //private QuestData _questData;
     private QuestJsonData _questData;
 
 
@@ -28,24 +25,22 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private Faction _partyFaction;
 
     [SerializeField] private GameObject _characterPrefab;
-    
+
+    [SerializeField] private bool _useTestEncounter;
+    [SerializeField] private int _debugEncounterID;
 
     public void Awake()
     {
         _moveClasses = Resources.LoadAll<MoveClass>("MoveClasses/");
-        _actionClasses = Resources.LoadAll<ActionClass>("ActionClasses/");
-        _actions = Resources.LoadAll<NewBattleAction>("ActionsNEW/");
-        _debugPortraitSprites = Resources.LoadAll<Sprite>("Sprites/");
+        _actions = Resources.LoadAll<NewBattleAction>("Actions/");
         _enemies = Resources.LoadAll<EnemySO>("Enemies/");
         _encounters = Resources.LoadAll<Encounter>("BattleEncounters/");
         _creatureModels = Resources.LoadAll<CreatureModel>("Creatures/");
         _playerClasses = Resources.LoadAll<PlayerClass>("PlayerClasses/");
 
         SceneManager.sceneLoaded += LoadScene;
-        //EventSystem.OnBattleLoss += LostBattle;
-        //EventSystem.OnBattleVictory += WonBattle;
-
         DontDestroyOnLoad(gameObject);
+
     }
 
 
@@ -110,6 +105,23 @@ public class GameManager : Singleton<GameManager>
 
     //}
 
+    public void GetEncounter(QuestJsonData data)
+    {
+        Encounter encounter;
+        if (_useTestEncounter)
+        {
+            encounter = GetEncounter(_debugEncounterID);
+        }
+        else
+        {
+            // get random seeded encounter
+            // replace for real random select function!
+            encounter = GetEncounter(_debugEncounterID);
+        }
+
+        data.SetNextEncounter(encounter);
+
+    }
 
     public void SetupTestEncounter(QuestJsonData data)
     {
@@ -117,6 +129,9 @@ public class GameManager : Singleton<GameManager>
 
         data.SetNextEncounter(testEncounter);    
     }
+
+
+
 
 
     public QuestJsonData GetQuestData()
@@ -229,59 +244,12 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-    public ActionClass[] GetAttacks(MoveClass moveClass)
-    {
-        // Attacks might be limited to certain move classes...
 
-        return _actionClasses;
-
-    }
-
-    public List<ActionClass> GetActions(MoveClass moveClass)
-    {
-        return _actionClasses.Where(w => w.ForPlayer).ToList();
-    }
-
-
-    public List<ActionClass> GetActionsWithIDs(int[] ids)
-    {
-        List<ActionClass> actions = new List<ActionClass>();
-
-        foreach (var action in _actionClasses)
-        {
-            if (ids.Contains(action.ID))
-            {
-                actions.Add(Instantiate(action));
-            }
-        }
-
-        return actions;
-
-    }
-
-    public ActionClass GetAction(int actionID)
-    {
-        var action = _actionClasses.Where(w => w.ID == actionID).Single();
-        //var action = Instantiate(actionRef);
-        //action.Init(jsonData, _partyFaction);
-        //return Instantiate(action);
-
-        return action;
-    }
 
     public NewBattleAction GetActionNew(int actionID)
     {
         return _actions.Where(w => w.ID == actionID).Single();
     }
-
-
-
-    public string GetActionNamesFromIDs(int[] ids)
-    {
-        var list = _actionClasses.Where(w => ids.Contains(w.ID)).Select(s => s.Name).ToArray();
-        return string.Join(",", list);
-    }
-
 
     #endregion
 

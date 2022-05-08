@@ -4,12 +4,15 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class TitleScreenManager : MonoBehaviour
 {
     [SerializeField] private GameObject _startButton;
     [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _abandonButton;
+    [SerializeField] private AudioMixer _audioMixer;
+    [SerializeField] private CanvasGroup _fadeOutCanvas;
 
     void Start()
     {
@@ -20,17 +23,32 @@ public class TitleScreenManager : MonoBehaviour
     }
 
 
+
     public void StartGame()
     {
-        Debug.Log("Start Game!");
-        SceneManager.LoadScene(1);
+
+        StartCoroutine(FadeMixerGroup.StartFade(_audioMixer, "TitleVolume", 1.5f, 0));
+        LeanTween.alphaCanvas(_fadeOutCanvas, 1, 1.5f).setDelay(0.2f)
+            .setOnComplete(() =>
+            {
+                Debug.Log("Start Game!");
+                SceneManager.LoadScene(1);
+            });
 
     }
 
+
     public void ContinueRun()
     {
-        Debug.Log("Continue Run!");
-        GameManager.Instance.ContinueQuest();
+
+        StartCoroutine(FadeMixerGroup.StartFade(_audioMixer, "TitleVolume", 1.5f, 0));
+        LeanTween.alphaCanvas(_fadeOutCanvas, 1, 1.5f).setDelay(0.2f)
+            .setOnComplete(() =>
+            {
+                Debug.Log("Continue Run!");
+                GameManager.Instance.ContinueQuest();
+            });
+
     }
 
 
@@ -67,6 +85,7 @@ public class TitleScreenManager : MonoBehaviour
         // the real guts of this method will check for a game save...
         return SaveDataManager.QuestDataExists();
     }
+
 
     private void UpdateMenuButtons()
     {

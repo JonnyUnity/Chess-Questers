@@ -62,6 +62,21 @@ public class BattleEvents : MonoBehaviour
     public static event Action OnActionFinish;
 
 
+    public static event Action<Action> OnFadeIn;
+    public static event Action<Action> OnFadeOut;
+
+
+
+    public static void FadeIn(Action action)
+    {
+        OnFadeIn?.Invoke(action);
+    }
+
+    public static void FadeOut(Action action)
+    {
+        OnFadeOut?.Invoke(action);
+    }
+
 
     public static void BattleStarted()
     {

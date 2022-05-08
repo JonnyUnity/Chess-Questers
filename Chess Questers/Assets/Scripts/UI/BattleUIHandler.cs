@@ -50,11 +50,6 @@ public class BattleUIHandler : MonoBehaviour
         BattleEvents.OnCellSelected -= AttackSelected;
     }
 
-    public void UpdateStateText(string text)
-    {
-        _stateText.text = text;
-    }
-
 
     public void ShowActions(Creature currentCreature, List<ActionClass> actions, int x, int y)
     {

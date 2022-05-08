@@ -20,7 +20,7 @@ public class EnemyActionResult
         X = cell.X;
         Y = cell.Y;
         Action = action;
-        Damage = action.Damage;
+        Damage = action.BaseDamage;
         Creatures = new List<Creature>();
 
     }

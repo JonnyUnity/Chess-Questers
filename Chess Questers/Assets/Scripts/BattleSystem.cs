@@ -91,6 +91,14 @@ public class BattleSystem : Singleton<BattleSystem>
 
         
 
+
+
+        //BattleEvents.OnDeath += CharacterDied;
+
+    }
+
+    private void OnEnable()
+    {        
         //EventSystem.OnBattleStarted += BattleStarted;
         //BattleEvents.OnBattleVictory += GoToVictory;
         BattleEvents.OnTurnStart += StartNextTurn;
@@ -112,9 +120,8 @@ public class BattleSystem : Singleton<BattleSystem>
         BattleEvents.OnTakeDamageStart += AddToActionQueue;
         BattleEvents.OnTakeDamageFinish += RemoveFromActionQueue;
 
-        //BattleEvents.OnDeath += CharacterDied;
-
     }
+
 
     private void RemoveFromActionQueue(Creature creature)
     {
@@ -268,8 +275,6 @@ public class BattleSystem : Singleton<BattleSystem>
 
         GameGrid.Instance.ClearGrid();
 
-        UIHandler.UpdateStateText("PLAYER ACTION");
-
         //Debug.Log("PLAYER ACTION!");
 
         //NewBattleAction action = _playerAction.Action;
@@ -333,6 +338,7 @@ public class BattleSystem : Singleton<BattleSystem>
     {
         // load data here that needs to happen on scene load regardless of whether it's the player
         // starting the encounter, or resuming from save
+        
 
         State = BattleStatesEnum.START;
         _questData = GameManager.Instance.GetQuestData();
@@ -361,18 +367,22 @@ public class BattleSystem : Singleton<BattleSystem>
 
         //}
 
+
+
         SpawnCharacters();
         SpawnEnemies();
-        
-        if (combatHasStarted)
-        {
-            //StartNextTurn(_combatants.Items[_questData.TurnPointer].ID);
-            BattleEvents.ResumeCombat();
-        }
-        else
-        {
-            BattleEvents.StartCombat();
-        }
+
+        BattleEvents.FadeIn(() => StartCombat(combatHasStarted));
+
+        //if (combatHasStarted)
+        //{
+        //    //StartNextTurn(_combatants.Items[_questData.TurnPointer].ID);
+        //    BattleEvents.ResumeCombat();
+        //}
+        //else
+        //{
+        //    BattleEvents.StartCombat();
+        //}
 
         //if (IM.HasCombatStarted())
         //{
@@ -384,6 +394,21 @@ public class BattleSystem : Singleton<BattleSystem>
         //}
 
     }
+
+
+    private void StartCombat(bool combatHasStarted)
+    {
+        if (combatHasStarted)
+        {
+            //StartNextTurn(_combatants.Items[_questData.TurnPointer].ID);
+            BattleEvents.ResumeCombat();
+        }
+        else
+        {
+            BattleEvents.StartCombat();
+        }
+    }
+
 
     private IEnumerator InitBattleCoroutine()
     {
@@ -668,8 +693,6 @@ public class BattleSystem : Singleton<BattleSystem>
     {
         GameGrid.Instance.ClearGrid();
 
-        UIHandler.UpdateStateText("PLAYER ACTION");
-
         Debug.Log("PLAYER ACTION!");
 
         NewBattleAction action = _playerAction.Action;
@@ -774,7 +797,6 @@ public class BattleSystem : Singleton<BattleSystem>
 
     private IEnumerator EnemyActionCoroutine()
     {
-        UIHandler.UpdateStateText("ENEMY ACTION");
         yield return new WaitForSeconds(2f);
 
         Enemy enemy = (Enemy)_activeCharacter;
@@ -932,13 +954,6 @@ public class BattleSystem : Singleton<BattleSystem>
             CameraHandler.LookAtCreature(_activeCharacter.Transform);
         }
 
-    }
-
-
-    private void GoToVictory()
-    {
-        Debug.Log("EVENT: VICTORY!");
-        SceneManager.LoadSceneAsync(3);
     }
 
     public void TestButton()

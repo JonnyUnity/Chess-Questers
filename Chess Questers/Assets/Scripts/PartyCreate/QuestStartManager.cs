@@ -19,21 +19,17 @@ public class QuestStartManager : Singleton<QuestStartManager>
     [SerializeField] private CharacterSelectManager _character2Manager;
     [SerializeField] private CharacterSelectManager _character3Manager;
 
-    //private QuestData _questData;
-    private QuestJsonData _newData;
+    private QuestJsonData _questData;
 
     private CharacterJsonData[] NewChars;
 
-    private CreatureModel[] _creatureModels;
-
-    private Dictionary<int, GameObject> _creatureModelPrefabs = new Dictionary<int, GameObject>(); 
-
-
     void Start()
     {
+        BattleEvents.FadeIn(() => { });
+
         NewChars = new CharacterJsonData[3];
         _characterNames = _namesText.Split(" ");
-        _newData = new QuestJsonData();
+        _questData = new QuestJsonData();
 
         _character1Manager.RerollCharacter();
         _character2Manager.RerollCharacter();
@@ -64,43 +60,31 @@ public class QuestStartManager : Singleton<QuestStartManager>
 
 
 
-    public GameObject GetModelPrefab(int id)
-    {
-        if (_creatureModelPrefabs.ContainsKey(id))
-        {
-            return _creatureModelPrefabs[id];
-        }
-
-        return null;
-    }
-
-
-    public void AddModelPrefabToPool(int id, GameObject prefab)
-    {
-        _creatureModelPrefabs.Add(id, prefab);
-    }
-
-
 
     public void StartQuest()
     {
 
-        _newData.PartyMembers = NewChars;
-        GameManager.Instance.SetupTestEncounter(_newData);
-        SaveDataManager.Save(_newData);
+        _questData.PartyMembers = NewChars;
+        //GameManager.Instance.SetupTestEncounter(_questData);
+        GameManager.Instance.GetEncounter(_questData);
+        SaveDataManager.Save(_questData);
 
         // randomise world map?
 
         // go to map scene
 
-
-        SceneManager.LoadScene(2);
+        BattleEvents.FadeOut(() => SceneManager.LoadScene(2));
+        //SceneManager.LoadScene(2);
     }
 
 
     public void ReturnToTitle()
     {
-        SceneManager.LoadScene(0);
+        //_simpleFade.FadeOut(() => SceneManager.LoadScene(0));
+        //SceneManager.LoadScene(0);
+
+        BattleEvents.FadeOut(() => SceneManager.LoadScene(0));
+
     }
 
 }
