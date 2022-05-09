@@ -5807,19 +5807,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02ed239a7a278ae47b221c0aba45d47f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _stateText: {fileID: 0}
-  _attackList: {fileID: 1075325908}
-  _attackButtons:
-  - {fileID: 2064017076}
-  - {fileID: 249085224}
-  - {fileID: 757209885}
-  - {fileID: 1427562218}
-  PassButton: {fileID: 450473291}
-  _currentActions: []
-  _characterX: 0
-  _characterY: 0
-  _currentCharacter: {fileID: 0}
-  _playerAction: {fileID: 11400000, guid: 53b85ab6d3265144f93c660861484111, type: 2}
 --- !u!1 &2059817723
 GameObject:
   m_ObjectHideFlags: 0

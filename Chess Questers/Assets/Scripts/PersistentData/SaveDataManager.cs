@@ -31,7 +31,7 @@ public class SaveDataManager
 
         if (QuestDataExists())
         {
-            string json = File.ReadAllText(Filename());
+            string json = File.ReadAllText(Filename);
             jsonData = JsonUtility.FromJson<QuestJsonData>(json);
 
         }
@@ -48,20 +48,18 @@ public class SaveDataManager
     {
         if (QuestDataExists())
         {
-            File.Delete(Filename());
+            File.Delete(Filename);
         }
     }
 
 
-    public static string Filename()
-    {
-        return Application.persistentDataPath + directory + filename;
-    }
+    public static string Filename => Application.persistentDataPath + directory + filename;
+    
 
 
     public static bool QuestDataExists()
     {
-        return File.Exists(Filename());
+        return File.Exists(Filename);
     }
 
     #region Character Data conversions

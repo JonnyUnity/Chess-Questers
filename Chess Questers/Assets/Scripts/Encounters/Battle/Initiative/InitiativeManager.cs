@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using JFlex.ChessQuesters.Core.ScriptableObjects;
+using JFlex.ChessQuesters.Encounters.Battle.UI;
 
 public class InitiativeManager : MonoBehaviour
 {

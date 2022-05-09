@@ -71,7 +71,7 @@ namespace JFlex.ChessQuesters.Core
 
         public void GoToMap()
         {
-
+            //EndQuest();
             SceneManager.LoadScene("Map");
         }
 
@@ -146,7 +146,8 @@ namespace JFlex.ChessQuesters.Core
 
         public void EndQuest()
         {
-            SceneManager.LoadScene(0);
+            //SceneManager.LoadScene(0);
+            SceneManager.LoadScene("WIP");
         }
 
 
@@ -196,9 +197,12 @@ namespace JFlex.ChessQuesters.Core
 
         public void WonBattle()
         {
-            _questData = SaveDataManager.Load();
-            _questData.CurrentEncounterType = EncounterTypesEnum.Map;
-            GoToEncounterType(EncounterTypesEnum.Map);
+            //_questData = SaveDataManager.Load();
+            //_questData.CurrentEncounterType = EncounterTypesEnum.Map;
+            //GoToEncounterType(EncounterTypesEnum.Map);
+
+            SceneManager.LoadScene("WIP");
+
         }
 
         #endregion

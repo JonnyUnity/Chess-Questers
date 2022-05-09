@@ -70,7 +70,7 @@ public class ActionDisplay : MonoBehaviour
 
         foreach (NewBattleAction action in playerClass.AvailableActions)
         {
-            Debug.Log(action);
+            //Debug.Log(action);
             var buttonObj = Instantiate(_buttonPrefab, _actionsContainer.transform);
             buttonObj.GetComponent<BattleActionButton>().SetAction(action);
             _actionButtons.Add(buttonObj);

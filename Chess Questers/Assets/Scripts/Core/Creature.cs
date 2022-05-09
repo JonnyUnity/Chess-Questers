@@ -182,47 +182,38 @@ public class Creature : MonoBehaviour
         {
             Health = 0;
             _animator.SetTrigger("Dies");
-            // audio, fx to be handled by those subscribed to the event.
+            BattleEvents.CharacterDied(this);
 
-            // death animation!
-            //Debug.Log("Creature died start!");
-            ////yield return StartCoroutine(CreatureDied());
-            
-            //Debug.Log("Creature died finish!");
+            // audio, fx to be handled by those subscribed to the event.
 
         }
         else
         {
             _animator.SetTrigger("Hurt");
             Debug.Log("Damage resolved for " + Name);
-            //BattleEvents.TakenDamageResolved(this);
         }
-
 
         yield return new WaitUntil(() => State != CharacterStatesEnum.BEING_ATTACKED);
         BattleEvents.TakenDamageResolved(this);
 
-        // raise event that damage has been resolved.
         Debug.Log("CreatureSuffersDamage Finish!");
-
-
     }
 
 
+    // Called on last frame of "hurt" animation
     private void DamageResolved()
     {
         State = CharacterStatesEnum.IDLE;
     }
 
 
+    // Called on last frame of "dies" animation
     private void CreatureDied()
     {
-        //yield return new WaitForSeconds(2f);
 
         Faction.Friendlies.Remove(this);
         State = CharacterStatesEnum.IDLE;
 
-        BattleEvents.CharacterDied(this);
 
         LeanTween.alpha(_materialObject, 0, 1f);
 
@@ -238,24 +229,6 @@ public class Creature : MonoBehaviour
         Position = position;
         CurrentFacing = currentFacing;
     }
-
-    //public void UpdatePositionNew(Creature creature)
-    //{
-    //    if (creature != this)
-    //        return;
-
-
-    //    X = TargetX;
-    //    Y = TargetY;
-    //    Position = TargetPosition;
-
-    //}
-
-
-    //public virtual void DoAction(ActionResult actionResult)
-    //{
-    //    StartCoroutine(DoTurnCoroutine(actionResult));
-    //}
 
 
     protected IEnumerator DoTurnCoroutine(ActionResult actionResult)

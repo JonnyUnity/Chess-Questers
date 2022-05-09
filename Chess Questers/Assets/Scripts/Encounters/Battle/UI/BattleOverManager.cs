@@ -67,7 +67,8 @@ public class BattleOverManager : MonoBehaviour
         BattleEvents.FadeOut(() =>
         {
             Debug.Log("The quest continues!");
-            GameManager.Instance.GoToMap();
+            //GameManager.Instance.GoToMap();
+            GameManager.Instance.EndQuest();
         });
         
     }
