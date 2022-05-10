@@ -6108,6 +6108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _camera: {fileID: 963194227}
   _cellsContainer: {fileID: 187922691}
+  _gridCellPrefab: {fileID: 1596664623871405919, guid: 000ef3c9fc8d4af42a32c317b7351e9a, type: 3}
   lightColor: {r: 0.2706924, g: 0.7264151, b: 0.37991005, a: 0.45490196}
   darkColor: {r: 0.10239409, g: 0.3679245, b: 0.16648762, a: 0.45490196}
   _highlightMovePrefab: {fileID: 3275093222111191537, guid: 638a4850ea1c92943865797f6f89a8b1, type: 3}

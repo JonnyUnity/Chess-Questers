@@ -287,7 +287,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle
             TurnNumber.SetValue(_questData.TurnNumber);
             TurnPointer.SetValue(_questData.TurnPointer);
 
-            GameGrid.Instance.CreateGameGrid();
+            GameGrid.Instance.CreateGameGrid(10, 10);
 
             bool combatHasStarted = _questData.HasCombatStarted();
 

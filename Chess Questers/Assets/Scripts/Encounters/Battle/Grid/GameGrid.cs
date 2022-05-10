@@ -12,8 +12,8 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
 {
     public class GameGrid : Singleton<GameGrid>
     {
-        public readonly int Height = 10;
-        public readonly int Width = 10;
+        public readonly int _height = 10;
+        public readonly int _width = 10;
         private float GridSpacesize = 2f;
 
         private int NumObstacles;
@@ -21,7 +21,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
         [SerializeField] private Camera _camera;
         [SerializeField] private GameObject _cellsContainer;
 
-        private GameObject GridCellPrefab;
+        [SerializeField] private GameObject _gridCellPrefab;
         private GameObject ObstaclePrefab;
         private GameObject[,] Grid;
 
@@ -67,7 +67,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
             EnemyPositions = new Dictionary<int, Vector2>();
             _currentHighlightedCreatures = new List<Creature>();
 
-            GridCellPrefab = Resources.Load("Prefabs/NewGridCell") as GameObject;
+            //_gridCellPrefab = Resources.Load("Prefabs/NewGridCell") as GameObject;
             ObstaclePrefab = Resources.Load("Prefabs/Obstacle") as GameObject;
 
         }
@@ -237,7 +237,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
                     {
                         for (int j = y - maxRange; j <= y + maxRange; j++)
                         {
-                            if (0 <= i && i < Width && 0 <= j && j < Height)
+                            if (0 <= i && i < _width && 0 <= j && j < _height)
                             {
 
 
@@ -271,7 +271,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
                                     continue;
                                 }
 
-                                if (0 <= i && i < Width && 0 <= j && j < Height)
+                                if (0 <= i && i < _width && 0 <= j && j < _height)
                                 {
 
                                     if (IsCellOccupied(action.TargetCreatures, i, j))
@@ -306,7 +306,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
 
                                 if (i == x && j != y || i != x && j == y)
                                 {
-                                    if (0 <= i && i < Width && 0 <= j && j < Height)
+                                    if (0 <= i && i < _width && 0 <= j && j < _height)
                                     {
                                         if (IsCellOccupied(action.TargetCreatures, i, j))
                                         {
@@ -331,24 +331,24 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
 
         }
 
-        public void CreateGameGrid()
+        public void CreateGameGrid(int height, int width)
         {
-            Grid = new GameObject[Height, Width];
+            Grid = new GameObject[_height, _width];
 
             //yield return new WaitForSeconds(1f);
 
-            if (GridCellPrefab == null)
+            if (_gridCellPrefab == null)
             {
                 Debug.Log("ERROR: Grid cell prefab not set!");
             }
 
-            for (int x = 0; x < Height; x++)
+            for (int x = 0; x < _height; x++)
             {
-                for (int y = 0; y < Width; y++)
+                for (int y = 0; y < _width; y++)
                 {
                     Vector3 cellPosition = new Vector3(x * GridSpacesize, 0.01f, y * GridSpacesize);
 
-                    Grid[x, y] = Instantiate(GridCellPrefab, cellPosition, Quaternion.Euler(90, 0, 0), _cellsContainer.transform);
+                    Grid[x, y] = Instantiate(_gridCellPrefab, cellPosition, Quaternion.Euler(90, 0, 0), _cellsContainer.transform);
 
                     bool isLightSquare = (x + y) % 2 != 0;
                     var squareColour = isLightSquare ? lightColor : darkColor;
@@ -373,7 +373,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
         {
             get
             {
-                return Grid[Height - 1, 0].transform.position.x;
+                return Grid[_height - 1, 0].transform.position.x;
             }
         }
 
@@ -398,7 +398,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
         {
             get
             {
-                return Grid[0, Width - 1].transform.position.z;
+                return Grid[0, _width - 1].transform.position.z;
             }
         }
 
@@ -422,19 +422,19 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
             slideOffsets = new List<(int, int)>() { (0, 1), (0, -1), (-1, 0), (1, 0), (-1, 1), (1, -1), (1, 1), (-1, -1) };
             knightOffsets = new List<(int, int)>() { (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2) };
 
-            int totalSquares = Width * Height;
+            int totalSquares = _width * _height;
             numSquaresToEdge = new int[totalSquares][];
 
             // First 4 are orthogonal, last 4 are diagonals (N, S, W, E, NW, SE, NE, SW)
             for (int squareIndex = 0; squareIndex < totalSquares; squareIndex++)
             {
-                int x = squareIndex / Width;
-                int y = squareIndex - x * Width;
+                int x = squareIndex / _width;
+                int y = squareIndex - x * _width;
 
-                int north = Height - x - 1;
+                int north = _height - x - 1;
                 int south = x;
                 int west = y;
-                int east = Width - y - 1;
+                int east = _width - y - 1;
                 numSquaresToEdge[squareIndex] = new int[8];
                 numSquaresToEdge[squareIndex][0] = north;
                 numSquaresToEdge[squareIndex][1] = south;
@@ -462,8 +462,8 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
                 do
                 {
                     //todo : set spawn area where obstacles cannot be spawned...
-                    randX = Random.Range(0, Width);
-                    randY = Random.Range(0, Height);
+                    randX = Random.Range(0, _width);
+                    randY = Random.Range(0, _height);
                     //cell = GetCell(randX, randY);
                 } while (IsCellOccupied(randX, randY));
 
@@ -554,7 +554,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
                     {
                         int squareX = x + jumpMove.Item1;
                         int squareY = y + jumpMove.Item2;
-                        if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
+                        if (0 <= squareX && squareX < _width && 0 <= squareY && squareY < _height)
                         {
                             if (!IsCellOccupied(squareX, squareY))
                             {
@@ -569,7 +569,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
             }
             else
             {
-                int playerSquare = (y * Height) + x;
+                int playerSquare = (y * _height) + x;
 
                 switch (moveAction.MoveType)
                 {
@@ -631,7 +631,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
                     {
                         int squareX = x + jumpMove.Item1;
                         int squareY = y + jumpMove.Item2;
-                        if (0 <= squareX && squareX < Width && 0 <= squareY && squareY < Height)
+                        if (0 <= squareX && squareX < _width && 0 <= squareY && squareY < _height)
                         {
                             if (!IsCellOccupied(squareX, squareY))
                             {
@@ -644,7 +644,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
             }
             else
             {
-                int playerSquare = (y * Height) + x;
+                int playerSquare = (y * _height) + x;
 
                 switch (moveAction.MoveType)
                 {
@@ -730,7 +730,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
                 {
                     for (int j = y - maxRange; j <= y + maxRange; j++)
                     {
-                        if (0 <= i && i < Width && 0 <= j && j < Height)
+                        if (0 <= i && i < _width && 0 <= j && j < _height)
                         {
 
                             GridCell cell = Grid[i, j].GetComponent<GridCell>();
@@ -766,7 +766,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
 
                         if (i == x && j != y || i != x && j == y || action.IncludeDiagonals)
                         {
-                            if (0 <= i && i < Width && 0 <= j && j < Height)
+                            if (0 <= i && i < _width && 0 <= j && j < _height)
                             {
                                 GridCell cell = Grid[i, j].GetComponent<GridCell>();
 
@@ -927,9 +927,9 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
         public void ClearGrid()
         {
 
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < _height; y++)
             {
-                for (int x = 0; x < Width; x++)
+                for (int x = 0; x < _width; x++)
                 {
                     //Grid[x, y].gameObject.SetActive(false);
                     GridCell cell = GetCell(x, y);
@@ -946,8 +946,8 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
             int x = Mathf.FloorToInt(worldPosition.x / GridSpacesize);
             int y = Mathf.FloorToInt(worldPosition.y / GridSpacesize);
 
-            x = Mathf.Clamp(x, 0, Width);
-            y = Mathf.Clamp(y, 0, Height);
+            x = Mathf.Clamp(x, 0, _width);
+            y = Mathf.Clamp(y, 0, _height);
 
             return new Vector3(x, 0.1f, y);
 
@@ -982,8 +982,8 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
 
         public GridCell GetRandomCell()
         {
-            int x = Random.Range(0, Width);
-            int y = Random.Range(0, Height);
+            int x = Random.Range(0, _width);
+            int y = Random.Range(0, _height);
 
             return GetCell(x, y);
         }
@@ -996,8 +996,8 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
             do
             {
                 //todo : set spawn area where obstacles cannot be spawned...
-                randX = Random.Range(0, Width);
-                randY = Random.Range(0, Height);
+                randX = Random.Range(0, _width);
+                randY = Random.Range(0, _height);
             } while (IsCellOccupied(randX, randY));
 
             GridCell cell = GetCell(randX, randY);
@@ -1008,7 +1008,7 @@ namespace JFlex.ChessQuesters.Encounters.Battle.Grid
 
         private bool CellExists(int x, int y)
         {
-            return ((0 <= x) && (x < Height) && (0 <= y) && (y < Width));
+            return ((0 <= x) && (x < _height) && (0 <= y) && (y < _width));
         }
 
         private void Update()
