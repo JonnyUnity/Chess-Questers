@@ -61,10 +61,14 @@ namespace JFlex.ChessQuesters.Core
         {
             // seed the map
 
-            //_questData = GetQuestData();
+            _questData = GetQuestData();
             //_questData.GoToMap();
 
-            GoToMap();
+            //GoToMap();
+            //GoToEncounterType(EncounterTypesEnum.Battle);
+            GetEncounter(_questData);
+            SaveDataManager.Save(_questData);
+            GoToEncounterType(EncounterTypesEnum.Battle);
 
         }
 

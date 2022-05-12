@@ -20,9 +20,10 @@ public class ActionDisplay : MonoBehaviour
     private RectTransform _backgroundRectTransform;
     private RectTransform _canvasRectTransform;
 
+    private int _thisCharacterSlot;
     private List<GameObject> _actionButtons;
 
-    public static Action<string, string, Vector3> OnMouseHover;
+    public static Action<string, string, int> OnMouseHover;
     public static Action OnMouseLoseFocus;
     
     private void OnEnable()
@@ -53,8 +54,10 @@ public class ActionDisplay : MonoBehaviour
 
 
 
-    public void SetActions(PlayerClass playerClass)
+    public void SetActions(PlayerClass playerClass, int characterSlot)
     {
+
+        _thisCharacterSlot = characterSlot;
 
         foreach (GameObject actionButton in _actionButtons)
         {
@@ -65,14 +68,14 @@ public class ActionDisplay : MonoBehaviour
 
         // add the move button.
         var moveButtonObj = Instantiate(_buttonPrefab, _actionsContainer.transform);
-        moveButtonObj.GetComponent<BattleActionButton>().SetAction(playerClass.MoveAction);
+        moveButtonObj.GetComponent<BattleActionButton>().SetAction(playerClass.MoveAction, characterSlot);
         _actionButtons.Add(moveButtonObj);
 
         foreach (NewBattleAction action in playerClass.AvailableActions)
         {
             //Debug.Log(action);
             var buttonObj = Instantiate(_buttonPrefab, _actionsContainer.transform);
-            buttonObj.GetComponent<BattleActionButton>().SetAction(action);
+            buttonObj.GetComponent<BattleActionButton>().SetAction(action, characterSlot);
             _actionButtons.Add(buttonObj);
         }
 
@@ -80,28 +83,37 @@ public class ActionDisplay : MonoBehaviour
     }
 
 
-    private void ShowToolTip(string header, string content, Vector3 position)
+    private void ShowToolTip(string header, string content, int characterSlot)
     {
+        if (characterSlot != _thisCharacterSlot)
+            return;
+
         _headerText.text = header;
         _contentText.text = content;
 
-        _layoutElement.enabled = (header.Length > 80 || content.Length > 80);
 
-        //var width = _toolTip.preferredWidth > 300 ? 300 : _toolTip.preferredWidth;
-        //_toolTipWindow.sizeDelta = new Vector2(width, _toolTip.preferredHeight);
-        //Debug.Log($"{_toolTipWindow.sizeDelta}");
+        //_layoutElement.enabled = (header.Length > 80 || content.Length > 80);
 
-        //_layoutElement.enabled = (toolTip.Length > 80);
+        ////var width = _toolTip.preferredWidth > 300 ? 300 : _toolTip.preferredWidth;
+        ////_toolTipWindow.sizeDelta = new Vector2(width, _toolTip.preferredHeight);
+        ////Debug.Log($"{_toolTipWindow.sizeDelta}");
 
-        if (position.x + _backgroundRectTransform.rect.width > _canvasRectTransform.rect.width)
-        {
-            position.x = _canvasRectTransform.rect.width - _backgroundRectTransform.rect.width;
-        }
+        ////_layoutElement.enabled = (toolTip.Length > 80);
+        //float pivotX = transform.position.x / Screen.width;
+        //float pivotY = transform.position.y / Screen.height;
 
-        _toolTipWindow.transform.position = position + _toolTipOffset;
-        //_toolTipWindow.anchoredPosition = position + _toolTipOffset;
+        //_toolTipWindow.pivot = new Vector2(pivotX, pivotY);
+        
 
-        _toolTipWindow.gameObject.SetActive(true);
+        ////if (position.x + _backgroundRectTransform.rect.width > _canvasRectTransform.rect.width)
+        ////{
+        ////    position.x = _canvasRectTransform.rect.width - _backgroundRectTransform.rect.width;
+        ////}
+
+        //_toolTipWindow.transform.position = position + _toolTipOffset;
+        ////_toolTipWindow.anchoredPosition = position + _toolTipOffset;
+
+        //_toolTipWindow.gameObject.SetActive(true);
         
     }
 
@@ -110,7 +122,7 @@ public class ActionDisplay : MonoBehaviour
     {
         _headerText.text = default;
         _contentText.text = default;
-        _toolTipWindow.gameObject.SetActive(false);
+        //_toolTipWindow.gameObject.SetActive(false);
     }
 
 }

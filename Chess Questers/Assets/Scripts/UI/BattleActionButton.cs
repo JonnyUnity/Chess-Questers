@@ -25,6 +25,10 @@ public class BattleActionButton : MonoBehaviour, IPointerEnterHandler, IPointerE
     private RectTransform _buttonRectTransform;
     private RectTransform _toolTipRectTransform;
 
+    private int _characterSlot;
+    private string _name;
+    private string _description;
+
 
     private void Awake()
     {
@@ -40,13 +44,20 @@ public class BattleActionButton : MonoBehaviour, IPointerEnterHandler, IPointerE
     }
 
 
-    public void SetAction(NewBattleAction action)
+    public void SetAction(NewBattleAction action, int characterSlot)
     {
         _action = action;
         _buttonImage.sprite = _action.Icon;
         _headerText.text = _action.Name;
         _contentText.text = _action.Description;
+
+        _characterSlot = characterSlot;
+        _name = _action.Name;
+        _description = _action.Description;
+
         _layoutElement.enabled = (_headerText.text.Length > 80 || _contentText.text.Length > 80);
+        _toolTipRectTransform.ForceUpdateRectTransforms();
+
     }
 
 
@@ -73,6 +84,7 @@ public class BattleActionButton : MonoBehaviour, IPointerEnterHandler, IPointerE
         Vector3 worldPos = _buttonRectTransform.TransformPoint(pos);
 
         Vector3 toolTipPosition = pos;
+        
         if (toolTipPosition.x + _toolTipRectTransform.rect.width > Screen.width)
         {
             toolTipPosition.x = Screen.width - _toolTipRectTransform.rect.width;
@@ -85,7 +97,8 @@ public class BattleActionButton : MonoBehaviour, IPointerEnterHandler, IPointerE
     {
         yield return _toolTipDelay;
 
-        ShowMessage();
+        //ShowMessage();
+        ActionDisplay.OnMouseHover(_name, _description, _characterSlot);
 
 
     }
@@ -98,7 +111,8 @@ public class BattleActionButton : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     private void HideToolTip()
     {
-        _toolTipWindow.gameObject.SetActive(false);
+        ActionDisplay.OnMouseLoseFocus();
+        //_toolTipWindow.gameObject.SetActive(false);
     }
 
 

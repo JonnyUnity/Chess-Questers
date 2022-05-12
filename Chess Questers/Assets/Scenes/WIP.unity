@@ -343,9 +343,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1956413899}
-        m_TargetAssemblyTypeName: JFlex.ChessQuesters.Encounters.OverworldMap.MapManager,
-          Assembly-CSharp
-        m_MethodName: QuitToTitle
+        m_TargetAssemblyTypeName: JFlex.ChessQuesters.Encounters.WIPManager, Assembly-CSharp
+        m_MethodName: BackToTitle
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1252,6 +1251,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1956413894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a3a18e3199b7154db347f6367b16396, type: 3}
+  m_Script: {fileID: 11500000, guid: 44648e1abaf47d3499b5eb0a9691b28c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

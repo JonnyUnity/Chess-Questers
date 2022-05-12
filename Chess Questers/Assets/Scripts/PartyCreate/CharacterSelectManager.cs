@@ -12,8 +12,7 @@ public class CharacterSelectManager : MonoBehaviour
 
     [SerializeField] private int _characterSlot;
     [SerializeField] private TextMeshProUGUI _nameText;
-    [SerializeField] private TextMeshProUGUI _moveClassText;
-    [SerializeField] private TextMeshProUGUI _actionsText;
+    [SerializeField] private TextMeshProUGUI _classText;
     [SerializeField] private Image _portraitImage;
     [SerializeField] private GameObject _modelParent;
     [SerializeField] private ActionDisplay _actionDisplay;
@@ -41,7 +40,8 @@ public class CharacterSelectManager : MonoBehaviour
         _playerCharacer.SetCharacterModel(creatureModel.ID);
 
         _nameText.text = newChar.Name;
-        _actionDisplay.SetActions(newChar.PlayerClass);
+        _classText.text = $"the {newChar.PlayerClass.Name}";
+        _actionDisplay.SetActions(newChar.PlayerClass, _characterSlot);
 
     }
 

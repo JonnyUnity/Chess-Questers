@@ -212,6 +212,8 @@ public class Creature : MonoBehaviour
     {
 
         Faction.Friendlies.Remove(this);
+
+
         State = CharacterStatesEnum.IDLE;
 
 
